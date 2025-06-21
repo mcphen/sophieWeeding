@@ -394,9 +394,7 @@ onMounted(() => {
                             Wedding Planner & Wedding Designer Depuis 2016
                         </p>
                         <div class="flex space-x-4">
-                            <a :href="contactSettings.social_twitter" target="_blank" class="text-gray-300 hover:text-primary transition-colors">
-                                <i class="bi bi-twitter text-xl"></i>
-                            </a>
+
                             <a :href="contactSettings.social_facebook" target="_blank" class="text-gray-300 hover:text-primary transition-colors">
                                 <i class="bi bi-facebook text-xl"></i>
                             </a>

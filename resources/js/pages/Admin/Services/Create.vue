@@ -144,16 +144,16 @@ function submit() {
                             <label for="min_price" class="block text-sm font-medium text-gray-700 mb-2">Prix minimum (€)</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">€</span>
+                                    <span class="text-gray-500">FCFA</span>
                                 </div>
                                 <input
                                     id="min_price"
                                     v-model="form.min_price"
                                     type="number"
-                                    step="0.01"
+
                                     min="0"
                                     class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="0.00"
+                                    placeholder="0"
                                 >
                             </div>
                             <p class="mt-2 text-xs text-gray-500 flex items-center">

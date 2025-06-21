@@ -28,7 +28,7 @@ class HomeController extends Controller
             'contact_email' => Setting::get('contact_email', 'sophieweddings5@gmail.com'),
             'contact_address' => Setting::get('contact_address', 'Rue NG-70, 91 Ngor Almadies, Dakar 12000'),
             'social_facebook' => Setting::get('social_facebook', 'https://www.facebook.com/Sophieweddingsdreams22/'),
-            'social_twitter' => Setting::get('social_twitter', '#'),
+           // 'social_twitter' => Setting::get('social_twitter', '#'),
             'social_instagram' => Setting::get('social_instagram', 'https://www.instagram.com/sophie_weddings_dreams/'),
             'opening_hours' => Setting::get('opening_hours', 'Lundi - Vendredi: 8am - 6pm'),
         ];
