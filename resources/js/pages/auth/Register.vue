@@ -16,9 +16,12 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+    // Registration is disabled - Users are managed through the admin panel
+    console.log('Registration is disabled. Please contact an administrator to create an account.');
+    // Uncomment the following code if registration is enabled
+    // form.post(route('register'), {
+    //     onFinish: () => form.reset('password', 'password_confirmation'),
+    // });
 };
 </script>
 
