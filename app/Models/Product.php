@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\StorageHelper;
 
 class Product extends Model
 {
@@ -14,9 +15,25 @@ class Product extends Model
         'price',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImagePathAttribute($value)
+    {
+        // In production, prepend sophieWeeding/public/storage to the path
+        if (app()->environment('production') && $value && !str_starts_with($value, '/sophieWeeding/public/storage/')) {
+            return '/sophieWeeding/public/storage/' . ltrim($value, '/');
+        }
+
+        return $value;
+    }
+
     // Accesseur pour l'URL de l'image
     public function getImageUrlAttribute()
     {
-        return $this->image_path ? Storage::url($this->image_path) : null;
+        if (app()->environment('production')) {
+            return $this->image_path;
+        }
+
+        return $this->image_path ? Storage::url($this->getRawOriginal('image_path')) : null;
     }
 }
