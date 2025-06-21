@@ -17,7 +17,8 @@ import {
     Image,
     Calendar,
     CalendarClock,
-    Mail
+    Mail,
+    FileText
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
@@ -26,6 +27,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'À Propos',
+        href: route('admin.about.edit'),
+        icon: FileText,
     },
     {
         title: 'Services',
@@ -77,6 +83,7 @@ const mainNavItems: NavItem[] = [
         href: route('admin.users.index'),
         icon: Users,
     },
+
 ];
 
 

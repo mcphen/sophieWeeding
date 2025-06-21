@@ -111,7 +111,7 @@ const fetchLatestActualites = async () => {
       title: actualite.title,
       category: 'Actualité', // Catégorie par défaut
       date: new Date(actualite.published_at),
-      imageUrl: actualite.image_path ? `/storage/${actualite.image_path}` : '/images/blog-default.jpg',
+      imageUrl: actualite.image_path ? `${actualite.image_path}` : '/images/blog-default.jpg',
       url: `/${actualite.id}/blog`,
       content: actualite.description || ''
     }));

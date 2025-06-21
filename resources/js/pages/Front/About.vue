@@ -62,17 +62,7 @@ onMounted(() => {
 });
 
 
-const partners = [
-    { name: 'Le Château des Rêves', type: 'Lieu de réception', image: '/images/partners/chateau.jpg' },
-    { name: 'Délices & Saveurs', type: 'Traiteur', image: '/images/partners/traiteur.jpg' },
-    { name: 'Clic Émotion', type: 'Photographie', image: '/images/partners/photo.jpg' }
-];
 
-const testimonials = [
-    { name: 'Marie & Jean', date: 'Juin 2023', content: 'L\'équipe d\'Amour Éternel a transformé notre mariage en un conte de fées. Chaque détail était parfait !', image: '/images/testimonials/couple1.jpg' },
-    { name: 'Sophie & Pierre', date: 'Septembre 2023', content: 'Un grand merci pour votre professionnalisme et votre créativité. Notre journée était magique grâce à vous.', image: '/images/testimonials/couple2.jpg' },
-    { name: 'Camille & Lucas', date: 'Mai 2024', content: 'Organisation impeccable, un stress en moins pour nous et des souvenirs inoubliables. Nous recommandons vivement !', image: '/images/testimonials/couple3.jpg' }
-];
 
 // Données pour le breadcrumb
 const breadcrumbItems = [

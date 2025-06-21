@@ -102,7 +102,7 @@ class ServiceController extends Controller
                     'id' => $service->id,
                     'title' => $service->title,
                     'description' => $service->description,
-                    'image_url' => $service->image_path ? \App\Helpers\StorageHelper::url($service->image_path) : null,
+                    'image_url' => $service->image_path ,
                     'min_price' => $service->min_price,
                 ];
             });

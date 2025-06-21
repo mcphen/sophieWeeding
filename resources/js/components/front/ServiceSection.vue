@@ -71,6 +71,7 @@ interface Service {
     title: string;
     description: string;
     image_url: string | null;
+    image_path: string | null;
     min_price: number | null;
 }
 
@@ -102,7 +103,7 @@ const fetchServices = async () => {
 };
 
 // Fonction pour tronquer le HTML tout en conservant la structure
-const truncateHtml = (html, maxLength = 120) => {
+const truncateHtml = (html: string, maxLength = 120) => {
     // Retirer les balises HTML pour compter les caractères
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;

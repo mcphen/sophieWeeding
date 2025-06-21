@@ -332,7 +332,7 @@ const breadcrumbItems = [
             >
               <div class="relative pb-[100%]">
                 <img
-                    :src="`/storage/${photo.image_path}`"
+                    :src="`${photo.image_path}`"
                   :alt="photo.caption || album.title"
                   class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
@@ -403,7 +403,7 @@ const breadcrumbItems = [
           <div class="relative bg-black h-full flex items-center justify-center">
             <img
               v-if="selectedAlbum?.photos[currentPhotoIndex]"
-              :src="`/storage/${selectedAlbum.photos[currentPhotoIndex].image_path}`"
+              :src="`${selectedAlbum.photos[currentPhotoIndex].image_path}`"
 
               :alt="selectedAlbum.photos[currentPhotoIndex].caption || selectedAlbum.title"
               class="max-h-[70vh] max-w-full object-contain"
@@ -444,7 +444,7 @@ const breadcrumbItems = [
                 :class="{'ring-2 ring-primary': currentPhotoIndex === index, 'opacity-60': currentPhotoIndex !== index}"
               >
                 <img
-                    :src="`/storage/${photo.image_path}`"
+                    :src="`${photo.image_path}`"
                   :alt="photo.caption || selectedAlbum?.title"
                   class="w-full h-full object-cover"
                   loading="lazy"

@@ -27,7 +27,7 @@
 
                   <Link :href="partner.website_url" :target="'_blank'" >
                       <img
-                          :src="`/storage/${partner.logo_path}`"
+                          :src="`${partner.logo_path}`"
                           :alt="partner.name"
                           class="max-h-16 max-w-full object-contain"
                       />
