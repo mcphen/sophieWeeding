@@ -1,0 +1,32 @@
+; PHP Configuration for Laravel on Shared Hosting
+
+; Memory Limit
+memory_limit = 128M
+
+; File Upload Settings
+upload_max_filesize = 10M
+post_max_size = 12M
+max_file_uploads = 20
+
+; Execution Time
+max_execution_time = 60
+max_input_time = 60
+
+; Error Handling
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+error_log = /path/to/your/error_log
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+
+; Session Settings
+session.gc_maxlifetime = 7200
+session.save_path = "/path/to/your/sessions"
+
+; Opcache Settings (if available)
+opcache.enable = 1
+opcache.memory_consumption = 128
+opcache.interned_strings_buffer = 8
+opcache.max_accelerated_files = 4000
+opcache.revalidate_freq = 60
+opcache.fast_shutdown = 1

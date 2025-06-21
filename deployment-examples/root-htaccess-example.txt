@@ -1,0 +1,16 @@
+# Redirect all requests to the public directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Deny access to sensitive files and directories
+<FilesMatch "^\.env|composer\.json|composer\.lock|package\.json|package-lock\.json|phpunit\.xml|README\.md|webpack\.mix\.js">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<DirectoryMatch "^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)">
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>
