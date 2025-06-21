@@ -18,6 +18,11 @@ class BannerController extends Controller
             ->orderBy('banner_order')
             ->get();
 
+        // Append image_url attribute to each photo
+        $photos->each(function($photo) {
+            $photo->append('image_url');
+        });
+
         return Inertia::render('Admin/Banner/BannerIndex', [
             'photos' => $photos
         ]);
@@ -62,6 +67,11 @@ class BannerController extends Controller
             ->orderBy('banner_order')
             ->limit(4)
             ->get(['id', 'image_path', 'caption']);
+
+        // Append image_url attribute to each photo
+        $bannerPhotos->each(function($photo) {
+            $photo->append('image_url');
+        });
 
         return response()->json($bannerPhotos);
     }

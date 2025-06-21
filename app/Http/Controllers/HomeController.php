@@ -41,6 +41,11 @@ class HomeController extends Controller
             ->limit(4)
             ->get(['id', 'image_path', 'caption']);
 
+        // Append image_url attribute to each photo
+        $bannerPhotos->each(function($photo) {
+            $photo->append('image_url');
+        });
+
         return Inertia::render('Welcome', [
             'bannerPhotos' => $bannerPhotos,
             'contactSettings' => $this->getContactSettings()
@@ -153,6 +158,13 @@ class HomeController extends Controller
 
         // Pagination
         $albums = $query->paginate(12)->withQueryString();
+
+        // Append image_url attribute to each photo in each album
+        $albums->each(function($album) {
+            $album->photos->each(function($photo) {
+                $photo->append('image_url');
+            });
+        });
 
         return Inertia::render('Front/Portfolio', [
             'albums' => $albums,

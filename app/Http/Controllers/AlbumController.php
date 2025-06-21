@@ -63,12 +63,24 @@ class AlbumController extends Controller
     public function show(Album $album)
     {
         $album->load('photos');
+
+        // Append image_url attribute to each photo
+        $album->photos->each(function($photo) {
+            $photo->append('image_url');
+        });
+
         return Inertia::render('Admin/Albums/AlbumsShow',['album'=>$album]);
     }
 
     public function edit(Album $album)
     {
         $album->load('photos');
+
+        // Append image_url attribute to each photo
+        $album->photos->each(function($photo) {
+            $photo->append('image_url');
+        });
+
         return Inertia::render('Admin/Albums/AlbumsForm',['album'=>$album]);
     }
 
@@ -122,6 +134,13 @@ class AlbumController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(3)
             ->get();
+
+        // Append image_url attribute to each photo in each album
+        $albums->each(function($album) {
+            $album->photos->each(function($photo) {
+                $photo->append('image_url');
+            });
+        });
 
         return response()->json($albums);
     }
