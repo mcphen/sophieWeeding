@@ -102,7 +102,7 @@ class ProductController extends Controller
                     'id' => $product->id,
                     'title' => $product->title,
                     'description' => $product->description,
-                    'image_url' => $product->image_path ? '/storage/' . $product->image_path : null,
+                    'image_url' => $product->image_path ? \App\Helpers\StorageHelper::url($product->image_path) : null,
                     'price' => $product->price,
                 ];
             });

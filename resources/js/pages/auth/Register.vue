@@ -18,16 +18,12 @@ const form = useForm({
 const submit = () => {
     // Registration is disabled - Users are managed through the admin panel
     console.log('Registration is disabled. Please contact an administrator to create an account.');
-    // Uncomment the following code if registration is enabled
-    // form.post(route('register'), {
-    //     onFinish: () => form.reset('password', 'password_confirmation'),
-    // });
 };
 </script>
 
 <template>
     <AuthBase title="Create an account" description="Enter your details below to create your account">
-        <Head title="Register" />
+        <Head title="Create Account" />
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
@@ -79,7 +75,7 @@ const submit = () => {
 
             <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
-                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
+                <TextLink :href="'/login'" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
             </div>
         </form>
     </AuthBase>

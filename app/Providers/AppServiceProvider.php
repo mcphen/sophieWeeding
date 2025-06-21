@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Override the Storage::url method to use our StorageHelper
+        \Illuminate\Support\Facades\Storage::macro('url', function ($path) {
+            return \App\Helpers\StorageHelper::url($path);
+        });
     }
 }
