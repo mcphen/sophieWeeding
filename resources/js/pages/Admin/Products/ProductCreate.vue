@@ -18,13 +18,16 @@ const form = useForm({
     title: '',
     description: '',
     image: null as File | null,
+    images: [] as File[],
     price: '' as string | number,
     stock: 0
 });
 
-// Prévisualisation de l'image
+// Prévisualisation des images
 const imagePreview = ref<string | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
+const multipleFileInput = ref<HTMLInputElement | null>(null);
+const imagePreviews = ref<{file: File, preview: string}[]>([]);
 
 // Quill editor
 const editorRef = ref<HTMLDivElement | null>(null);
@@ -67,12 +70,39 @@ function handleImageUpload(event: Event) {
     }
 }
 
+function handleMultipleImageUpload(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
+
+    if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                imagePreviews.value.push({
+                    file: file,
+                    preview: e.target?.result as string
+                });
+                form.images.push(file);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+}
+
 function removeImage() {
     form.image = null;
     imagePreview.value = null;
     if (fileInput.value) {
         fileInput.value.value = '';
     }
+}
+
+function removeMultipleImage(index: number) {
+    imagePreviews.value.splice(index, 1);
+    form.images.splice(index, 1);
 }
 
 function submit() {
@@ -182,9 +212,9 @@ function submit() {
 <!--                            <p v-if="form.errors.stock" class="mt-2 text-sm text-red-600">{{ form.errors.stock }}</p>-->
 <!--                        </div>-->
 
-                        <!-- Image -->
+                        <!-- Image principale -->
                         <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-                            <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image du produit</label>
+                            <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image principale du produit</label>
 
                             <div class="flex flex-col sm:flex-row items-center gap-4">
                                 <!-- Prévisualisation -->
@@ -210,7 +240,7 @@ function submit() {
                                         <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        <p class="mt-2 text-sm text-gray-500">Ajouter une image</p>
+                                        <p class="mt-2 text-sm text-gray-500">Ajouter une image principale</p>
                                     </div>
                                 </div>
 
@@ -231,13 +261,63 @@ function submit() {
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                                         </svg>
-                                        {{ imagePreview ? 'Changer l\'image' : 'Sélectionner une image' }}
+                                        {{ imagePreview ? 'Changer l\'image principale' : 'Sélectionner l\'image principale' }}
                                     </button>
                                     <p class="text-xs text-gray-500">Format recommandé : JPG, PNG (max 2Mo)</p>
                                 </div>
                             </div>
 
                             <p v-if="form.errors.image" class="mt-2 text-sm text-red-600">{{ form.errors.image }}</p>
+                        </div>
+
+                        <!-- Images additionnelles -->
+                        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                            <label for="multiple-images" class="block text-sm font-medium text-gray-700 mb-2">Images additionnelles</label>
+
+                            <!-- Prévisualisations des images multiples -->
+                            <div v-if="imagePreviews.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+                                <div
+                                    v-for="(preview, index) in imagePreviews"
+                                    :key="index"
+                                    class="relative w-full aspect-square border rounded-lg overflow-hidden"
+                                >
+                                    <img :src="preview.preview" :alt="`Image ${index + 1}`" class="w-full h-full object-cover">
+                                    <button
+                                        @click.prevent="removeMultipleImage(index)"
+                                        type="button"
+                                        class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <input
+                                    id="multiple-images"
+                                    ref="multipleFileInput"
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    class="hidden"
+                                    @change="handleMultipleImageUpload"
+                                >
+                                <button
+                                    type="button"
+                                    @click="multipleFileInput?.click()"
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition flex items-center justify-center gap-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                                    </svg>
+                                    Ajouter des images
+                                </button>
+                                <p class="text-xs text-gray-500">Vous pouvez sélectionner plusieurs images (max 2Mo chacune)</p>
+                            </div>
+
+                            <p v-if="form.errors.images" class="mt-2 text-sm text-red-600">{{ form.errors.images }}</p>
                         </div>
                     </div>
 

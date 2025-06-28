@@ -13,9 +13,18 @@ class Product extends Model
         'description',
         'image_path',
         'price',
+        'slug',
     ];
 
     protected $appends = ['image_url'];
+
+    /**
+     * Get the images for the product.
+     */
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('order');
+    }
 
     public function getImagePathAttribute($value)
     {
@@ -24,7 +33,7 @@ class Product extends Model
             return '/sophieWeeding/public/storage/' . ltrim($value, '/');
         }
 
-        return $value;
+        return '/storage/'.$value;
     }
 
     // Accesseur pour l'URL de l'image
@@ -35,5 +44,25 @@ class Product extends Model
         }
 
         return $this->image_path ? Storage::url($this->getRawOriginal('image_path')) : null;
+    }
+
+    /**
+     * Generate a slug from the title if not already set
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = \Illuminate\Support\Str::slug($product->title);
+            }
+        });
+
+        static::updating(function ($product) {
+            if ($product->isDirty('title') && empty($product->slug)) {
+                $product->slug = \Illuminate\Support\Str::slug($product->title);
+            }
+        });
     }
 }

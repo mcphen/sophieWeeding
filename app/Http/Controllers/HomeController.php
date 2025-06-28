@@ -24,6 +24,7 @@ class HomeController extends Controller
     {
         return [
             'contact_phone' => Setting::get('contact_phone', '(+221) 78 538 30 69'),
+            'whatsapp_number' => Setting::get('contact_phone', '+221785383069'),
             'contact_phone_fixed' => Setting::get('contact_phone_fixed', '(+221) 33 865 27 11'),
             'contact_email' => Setting::get('contact_email', 'sophieweddings5@gmail.com'),
             'contact_address' => Setting::get('contact_address', 'Rue NG-70, 91 Ngor Almadies, Dakar 12000'),
@@ -264,15 +265,15 @@ class HomeController extends Controller
     /**
      * Display a single product
      *
-     * @param int $id
+     * @param string $slug
      * @return \Inertia\Response
      */
-    public function productShow($id)
+    public function productShow($slug)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::where('slug', $slug)->firstOrFail();
 
         // Get related products (for example, the 4 most recent other products)
-        $relatedProducts = Product::where('id', '!=', $id)
+        $relatedProducts = Product::where('id', '!=', $product->id)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get()
@@ -283,6 +284,7 @@ class HomeController extends Controller
                     'description' => $product->description,
                     'image_url' => $product->image_path ? \App\Helpers\StorageHelper::url($product->image_path) : null,
                     'price' => $product->price,
+                    'slug' => $product->slug,
                 ];
             });
 

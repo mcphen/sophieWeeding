@@ -4,6 +4,7 @@ import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { debounce } from 'lodash';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 
 // Define props
 const props = defineProps({
@@ -22,6 +23,16 @@ const maxPrice = ref(props.filters?.max_price || '');
 const sort = ref(props.filters?.sort || 'newest');
 const currentUrl = ref('');
 let jsonLdScript: HTMLScriptElement | null = null;
+
+// WhatsApp sharing
+const whatsappShareUrl = computed(() => {
+    const message = `Découvrez les produits chez Sophie Wedding - ${currentUrl.value}`;
+    // Default WhatsApp number if not provided in settings
+    const whatsappNumber = props.contactSettings?.whatsapp_number || '+221785383069';
+    // Format number: remove spaces, +, and ensure it starts with country code
+    const formattedNumber = whatsappNumber.replace(/\s+|\+/g, '');
+    return `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+});
 
 // Function to inject JSON-LD script into the document head
 const injectJsonLdScript = () => {
@@ -77,6 +88,24 @@ const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(price);
 };
 
+// Truncate description to a specific length and preserve HTML
+const truncateDescription = (description: string, length: number = 100): string => {
+    if (!description) return '';
+
+    // Create a temporary div to parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = description;
+
+    // Get text content
+    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+    // Truncate text
+    if (textContent.length <= length) return description;
+
+    // Return truncated text with ellipsis
+    return textContent.substring(0, length) + '...';
+};
+
 // Apply filters with debounce
 const applyFilters = debounce(() => {
     router.get(route('products'), {
@@ -99,6 +128,19 @@ watch([search, minPrice, maxPrice, sort], () => {
 const noResults = computed(() => {
     return props.products?.data?.length === 0;
 });
+
+// Track WhatsApp click
+const trackWhatsAppClick = (productId = null) => {
+    const actionDetails = productId ? `product_id:${productId}` : 'product_list';
+
+    axios.post('/api/track-action', {
+        page_visited: window.location.pathname,
+        action: 'whatsapp_click',
+        action_details: actionDetails
+    }).catch(error => {
+        console.error('Error tracking WhatsApp click:', error);
+    });
+};
 
 // Get current URL on mount and inject JSON-LD
 onMounted(() => {
@@ -224,29 +266,46 @@ onUnmounted(() => {
                 <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div v-for="product in products?.data || []" :key="product.id" class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
                         <!-- Image du produit -->
-                        <div class="h-48 overflow-hidden">
+                        <Link :href="route('product.show', { slug: product.slug })" class="h-48 overflow-hidden block">
                             <img
                                 v-if="product.image_path"
-                                :src="'/storage/' + product.image_path"
+                                :src="product.image_path"
                                 :alt="product.title"
                                 class="w-full h-full object-cover object-center"
                             />
                             <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center">
                                 <span class="text-gray-400">Pas d'image</span>
                             </div>
-                        </div>
+                        </Link>
 
                         <!-- Contenu du produit -->
                         <div class="p-4">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ product.title }}</h3>
-                            <p class="text-primary font-bold mb-2">{{ formatPrice(product.price) }}</p>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ product.description }}</p>
-                            <Link
-                                :href="route('appointment.create')"
-                                class="block w-full text-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
-                            >
-                                Prendre rendez-vous
+                            <Link :href="route('product.show', { slug: product.slug })">
+                                <h3 class="text-lg font-medium text-gray-900 mb-2 hover:text-primary">{{ product.title }}</h3>
                             </Link>
+                            <p class="text-primary font-bold mb-2">{{ formatPrice(product.price) }}</p>
+                            <div class="text-gray-600 text-sm mb-4 line-clamp-3" v-html="truncateDescription(product.description, 100)"></div>
+                            <div class="flex flex-col space-y-2">
+                                <Link
+                                    :href="route('product.show', { slug: product.slug })"
+                                    class="block w-full text-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
+                                >
+                                    Voir détails
+                                </Link>
+                                <a
+                                    :href="whatsappShareUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center"
+                                    @click="trackWhatsAppClick(product.id)"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                                        <path d="M12 0C5.373 0 0 5.373 0 12c0 6.628 5.373 12 12 12 6.628 0 12-5.373 12-12 0-6.628-5.373-12-12-12zm.029 18.88a7.947 7.947 0 0 1-3.76-.954l-4.17 1.093 1.112-4.063A7.935 7.935 0 0 1 4.2 12c0-4.373 3.557-7.93 7.93-7.93S20.06 7.627 20.06 12c0 4.373-3.557 7.93-7.93 7.93h-.1z" fill-rule="nonzero"/>
+                                    </svg>
+                                    Contacter sur WhatsApp
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -287,12 +346,19 @@ onUnmounted(() => {
                     Contactez-nous pour obtenir des conseils personnalisés sur nos produits et services.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <Link
-                        :href="route('appointment.create')"
-                        class="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors font-medium"
+                    <a
+                        :href="whatsappShareUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="px-8 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors font-medium flex items-center justify-center"
+                        @click="trackWhatsAppClick()"
                     >
-                        Prendre rendez-vous
-                    </Link>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                            <path d="M12 0C5.373 0 0 5.373 0 12c0 6.628 5.373 12 12 12 6.628 0 12-5.373 12-12 0-6.628-5.373-12-12-12zm.029 18.88a7.947 7.947 0 0 1-3.76-.954l-4.17 1.093 1.112-4.063A7.935 7.935 0 0 1 4.2 12c0-4.373 3.557-7.93 7.93-7.93S20.06 7.627 20.06 12c0 4.373-3.557 7.93-7.93 7.93h-.1z" fill-rule="nonzero"/>
+                        </svg>
+                        Contacter sur WhatsApp
+                    </a>
                     <Link
                         :href="route('contact')"
                         class="px-8 py-3 bg-white text-primary border border-primary rounded-full hover:bg-gray-50 transition-colors font-medium"

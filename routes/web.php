@@ -23,7 +23,7 @@ Route::get('/', [HomeController::class,'index'])->name('home');
 Route::get('/about', [HomeController::class,'about'])->name('about');
 Route::get('/services', [HomeController::class,'services'])->name('services');
 Route::get('/products', [HomeController::class,'products'])->name('products');
-Route::get('/products/{id}', [HomeController::class,'productShow'])->name('product.show');
+Route::get('/products/{slug}', [HomeController::class,'productShow'])->name('product.show');
 Route::get('/portfolio', [HomeController::class,'portfolio'])->name('portfolio');
 Route::get('/team-members/listes', [TeamMemberController::class,'getListeDatas'])->name('api.team-members.listes');
 Route::get('/partners/listes', [PartnerController::class,'getListeDatas'])->name('api.team-members.listes');

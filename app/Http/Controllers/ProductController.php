@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -31,14 +33,31 @@ class ProductController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'image'       => 'nullable|image|max:2048',
+            'images.*'    => 'nullable|image|max:2048',
             'price'       => 'required|numeric|min:0',
         ]);
 
+        // Keep backward compatibility with single image upload
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($data);
+        // Generate slug from title
+        $data['slug'] = Str::slug($data['title']);
+
+        $product = Product::create($data);
+
+        // Handle multiple image uploads
+        if ($request->hasFile('images')) {
+            $order = 0;
+            foreach ($request->file('images') as $image) {
+                $imagePath = $image->store('products', 'public');
+                $product->images()->create([
+                    'image_path' => $imagePath,
+                    'order' => $order++,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produit créé.');
@@ -59,9 +78,13 @@ class ProductController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'image'       => 'nullable|image|max:2048',
+            'images.*'    => 'nullable|image|max:2048',
             'price'       => 'required|numeric|min:0',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'nullable|integer',
         ]);
 
+        // Keep backward compatibility with single image upload
         if ($request->hasFile('image')) {
             if ($product->image_path) {
                 Storage::disk('public')->delete($product->image_path);
@@ -69,7 +92,35 @@ class ProductController extends Controller
             $data['image_path'] = $request->file('image')->store('products', 'public');
         }
 
+        // Update slug if title has changed
+        if (isset($data['title']) && $data['title'] !== $product->title) {
+            $data['slug'] = Str::slug($data['title']);
+        }
+
         $product->update($data);
+
+        // Delete images if requested
+        if ($request->has('delete_images')) {
+            foreach ($request->delete_images as $imageId) {
+                $image = ProductImage::find($imageId);
+                if ($image && $image->product_id == $product->id) {
+                    Storage::disk('public')->delete($image->getRawOriginal('image_path'));
+                    $image->delete();
+                }
+            }
+        }
+
+        // Handle multiple image uploads
+        if ($request->hasFile('images')) {
+            $maxOrder = $product->images()->max('order') ?? -1;
+            foreach ($request->file('images') as $image) {
+                $imagePath = $image->store('products', 'public');
+                $product->images()->create([
+                    'image_path' => $imagePath,
+                    'order' => ++$maxOrder,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produit mis à jour.');
@@ -78,9 +129,17 @@ class ProductController extends Controller
     // Suppression
     public function destroy(Product $product)
     {
+        // Delete main product image if exists
         if ($product->image_path) {
             Storage::disk('public')->delete($product->image_path);
         }
+
+        // Delete all associated product images
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->getRawOriginal('image_path'));
+        }
+
+        // The product and its images will be deleted due to the cascade constraint
         $product->delete();
 
         return redirect()->route('admin.products.index')
@@ -94,7 +153,8 @@ class ProductController extends Controller
      */
     public function getProducts()
     {
-        $products = Product::select('id', 'title', 'description', 'image_path', 'price')
+        $products = Product::with('images')
+            ->select('id', 'title', 'description', 'image_path', 'price', 'slug')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($product) {
@@ -104,6 +164,14 @@ class ProductController extends Controller
                     'description' => $product->description,
                     'image_url' => $product->image_path ? \App\Helpers\StorageHelper::url($product->image_path) : null,
                     'price' => $product->price,
+                    'slug' => $product->slug,
+                    'images' => $product->images->map(function ($image) {
+                        return [
+                            'id' => $image->id,
+                            'image_url' => $image->image_url,
+                            'order' => $image->order,
+                        ];
+                    }),
                 ];
             });
 

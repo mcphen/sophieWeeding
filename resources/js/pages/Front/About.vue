@@ -151,7 +151,7 @@ const breadcrumbItems = [
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div v-for="member in teamMembers" :key="member.firstname" class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:scale-105">
-                            <img :src="`/storage/${member.image_path}`" :alt="member.firstname" class="w-full h-64 object-cover">
+                            <img :src="`${member.image_path}`" :alt="member.firstname" class="w-full h-64 object-cover">
                             <div class="p-6">
                                 <h3 class="text-xl font-semibold text-gray-800 mb-1">{{ member.firstname }} {{member.lastname}}</h3>
                                 <p class="text-primary font-medium mb-3">{{ member.position }}</p>

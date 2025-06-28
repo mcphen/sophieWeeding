@@ -93,6 +93,20 @@ onMounted(() => {
     fetchServices();
 });
 
+// Function to track WhatsApp button clicks
+const trackWhatsAppClick = () => {
+    const currentPage = window.location.pathname;
+
+    axios.post('/api/track-action', {
+        page_visited: currentPage,
+        action: 'whatsapp_click',
+        action_details: 'WhatsApp button clicked'
+    })
+    .catch(error => {
+        console.error('Error tracking WhatsApp click:', error);
+    });
+};
+
 </script>
 
 <template>
@@ -502,6 +516,16 @@ onMounted(() => {
                 </div>
             </div>
         </footer>
+        <!-- WhatsApp Button -->
+        <a
+            :href="`https://wa.me/${contactSettings.whatsapp_number?.replace(/[^0-9]/g, '')}`"
+            target="_blank"
+            class="fixed bottom-6 right-6 bg-green-500 text-white rounded-full p-3 shadow-lg hover:bg-green-600 transition-all z-50 flex items-center justify-center"
+            style="width: 60px; height: 60px;"
+            @click="trackWhatsAppClick"
+        >
+            <i class="bi bi-whatsapp text-2xl"></i>
+        </a>
     </div>
 </template>
 <style scoped>
