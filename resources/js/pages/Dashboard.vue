@@ -72,6 +72,7 @@ const props = defineProps<{
             email: string;
         };
     }>;
+    logoUrl?: string;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -108,9 +109,12 @@ const timeSeriesData = {
 </script>
 
 <template>
-    <Head title="Visitor Tracking Dashboard" />
+    <Head title="Visitor Tracking Dashboard">
+        <!-- Favicon -->
+        <link rel="icon" :href="logoUrl" type="image/png">
+    </Head>
 
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AppLayout :breadcrumbs="breadcrumbs" :logoUrl="logoUrl">
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6 bg-gray-50 dark:bg-gray-900">
             <!-- Stats Cards -->
             <div class="grid auto-rows-min gap-4 md:grid-cols-4">

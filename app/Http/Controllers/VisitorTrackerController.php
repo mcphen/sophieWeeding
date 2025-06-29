@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\VisitorTracker;
 use App\Models\Appointment;
 use App\Models\Contact;
+use App\Models\Setting;
+use App\Helpers\StorageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -226,6 +228,9 @@ class VisitorTrackerController extends Controller
             ->limit(5)
             ->get();
 
+        // Get the site logo from settings
+        $siteLogo = StorageHelper::url(Setting::get('site_logo', 'images/logo.png'));
+
         // Return the dashboard view with data
         return Inertia::render('Dashboard', [
             'visitorStats' => [
@@ -241,6 +246,7 @@ class VisitorTrackerController extends Controller
             'timeData' => $timeData,
             'recentAppointments' => $recentAppointments,
             'recentContacts' => $recentContacts,
+            'logoUrl' => $siteLogo,
         ]);
     }
 }

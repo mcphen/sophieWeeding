@@ -8,6 +8,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Helpers\StorageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +33,7 @@ class HomeController extends Controller
            // 'social_twitter' => Setting::get('social_twitter', '#'),
             'social_instagram' => Setting::get('social_instagram', 'https://www.instagram.com/sophie_weddings_dreams/'),
             'opening_hours' => Setting::get('opening_hours', 'Lundi - Vendredi: 8am - 6pm'),
+            'site_logo' => StorageHelper::url(Setting::get('site_logo', 'images/logo.png')),
         ];
     }
     public function index(){

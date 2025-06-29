@@ -18,9 +18,17 @@ import {
     Calendar,
     CalendarClock,
     Mail,
-    FileText
+    FileText,
+    Settings,
+    Send
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+
+interface Props {
+    logoUrl?: string;
+}
+
+defineProps<Props>();
 
 const mainNavItems: NavItem[] = [
     {
@@ -79,6 +87,16 @@ const mainNavItems: NavItem[] = [
         icon: Mail,
     },
     {
+        title: 'Newsletter',
+        href: route('admin.newsletter.index'),
+        icon: Send,
+    },
+    {
+        title: 'Paramètres',
+        href: route('admin.contact-settings'),
+        icon: Settings,
+    },
+    {
         title: 'Utilisateurs',
         href: route('admin.users.index'),
         icon: Users,
@@ -97,7 +115,7 @@ const mainNavItems: NavItem[] = [
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="route('dashboard')">
-                            <AppLogo />
+                            <AppLogo :logoUrl="logoUrl" />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

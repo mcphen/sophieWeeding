@@ -4,6 +4,7 @@ import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
+    logoUrl?: string;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -12,7 +13,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AppLayout :breadcrumbs="breadcrumbs" :logoUrl="logoUrl">
         <slot />
     </AppLayout>
 </template>

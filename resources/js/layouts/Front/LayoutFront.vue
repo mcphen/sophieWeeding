@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 
 // Define Service interface
 interface Service {
@@ -21,6 +22,11 @@ const dropdownStates = ref({
 });
 const isLoading = ref(true);
 const services = ref<Service[]>([]);
+const showBackToTop = ref(false);
+const newsletterEmail = ref('');
+const isSubscribing = ref(false);
+const showCookieConsent = ref(true);
+const toast = useToast();
 
 // Function to fetch services from the backend
 const fetchServices = async () => {
@@ -72,6 +78,43 @@ const closeMobileMenu = () => {
     mobileMenuOpen.value = false;
 };
 
+// Function to handle scroll for back-to-top button
+const handleScroll = () => {
+    showBackToTop.value = window.scrollY > 500;
+};
+
+// Function to scroll back to top
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+};
+
+// Function to accept cookies
+const acceptCookies = async () => {
+    showCookieConsent.value = false;
+    localStorage.setItem('cookiesAccepted', 'true');
+
+    try {
+        // Track the cookie acceptance
+        const currentPage = window.location.pathname;
+        await axios.post('/api/track-action', {
+            page_visited: currentPage,
+            action: 'cookie_consent',
+            action_details: 'Cookie consent accepted'
+        });
+
+        // Store the consent in the database
+        await axios.post('/api/cookie-consent');
+
+        // No need to show a toast message for cookie acceptance
+    } catch (error) {
+        console.error('Error recording cookie consent:', error);
+        // We don't show an error message to the user for this
+    }
+};
+
 // Configuration du système de chargement
 onMounted(() => {
     // Initialiser le loader comme visible
@@ -91,6 +134,19 @@ onMounted(() => {
 
     // Fetch services when component is mounted
     fetchServices();
+
+    // Add scroll event listener for back-to-top button
+    window.addEventListener('scroll', handleScroll);
+
+    // Check if cookies have been accepted
+    if (localStorage.getItem('cookiesAccepted') === 'true') {
+        showCookieConsent.value = false;
+    }
+});
+
+// Remove event listeners when component is unmounted
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
 });
 
 // Function to track WhatsApp button clicks
@@ -105,6 +161,48 @@ const trackWhatsAppClick = () => {
     .catch(error => {
         console.error('Error tracking WhatsApp click:', error);
     });
+};
+
+// Function to handle newsletter subscription
+const subscribeToNewsletter = async () => {
+    if (!newsletterEmail.value || !newsletterEmail.value.includes('@')) {
+        toast.error('Veuillez entrer une adresse email valide');
+        return;
+    }
+
+    isSubscribing.value = true;
+
+    try {
+        // Track the subscription attempt
+        const currentPage = window.location.pathname;
+        await axios.post('/api/track-action', {
+            page_visited: currentPage,
+            action: 'newsletter_subscription',
+            action_details: 'Newsletter subscription attempt'
+        });
+
+        // Send the email to our backend
+        const response = await axios.post('/api/newsletter/subscribe', {
+            email: newsletterEmail.value,
+            source: 'website_footer'
+        });
+
+        // Display appropriate message based on the response
+        if (response.data.status === 'success') {
+            toast.success(response.data.message);
+            newsletterEmail.value = '';
+        } else if (response.data.status === 'info') {
+            toast.info(response.data.message);
+        } else {
+            toast.error(response.data.message);
+        }
+    } catch (error) {
+        console.error('Error subscribing to newsletter:', error);
+        const errorMessage = error.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer plus tard.';
+        toast.error(errorMessage);
+    } finally {
+        isSubscribing.value = false;
+    }
 };
 
 </script>
@@ -123,14 +221,17 @@ const trackWhatsAppClick = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Sophie Weddings Dreams - Votre agence de mariage à Dakar" />
         <meta property="og:description" content="Sophie Weddings Dreams - Votre agence de mariage pour un événement inoubliable à Dakar, Sénégal. Organisation de mariages, décoration, traiteur et plus." />
-        <meta property="og:image" content="/images/logo.png" />
+        <meta property="og:image" :content="contactSettings.site_logo" />
         <meta property="og:site_name" content="Sophie Weddings Dreams" />
 
         <!-- Twitter -->
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Sophie Weddings Dreams - Votre agence de mariage à Dakar" />
         <meta name="twitter:description" content="Sophie Weddings Dreams - Votre agence de mariage pour un événement inoubliable à Dakar, Sénégal. Organisation de mariages, décoration, traiteur et plus." />
-        <meta name="twitter:image" content="/images/logo.png" />
+        <meta name="twitter:image" :content="contactSettings.site_logo" />
+
+        <!-- Favicon -->
+        <link rel="icon" :href="contactSettings.site_logo" type="image/png">
     </Head>
 
     <!-- Loader -->
@@ -191,7 +292,7 @@ const trackWhatsAppClick = () => {
                     <div class="flex items-center">
                         <Link :href="'#'" class="flex-shrink-0 flex items-center">
                             <span class="text-2xl font-serif font-bold text-primary">
-                                <img :src="'/images/logo.png'" style="width: 115px;">
+                                <img :src="contactSettings.site_logo" style="width: 115px;">
                             </span>
                         </Link>
                     </div>
@@ -261,6 +362,9 @@ const trackWhatsAppClick = () => {
                         <button
                             @click="mobileMenuOpen = !mobileMenuOpen"
                             class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary hover:bg-primary-bg-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-light"
+                            :aria-expanded="mobileMenuOpen"
+                            aria-controls="mobile-menu"
+                            aria-label="Menu principal"
                         >
                             <span class="sr-only">Ouvrir le menu</span>
                             <svg
@@ -301,7 +405,7 @@ const trackWhatsAppClick = () => {
             </div>
 
             <!-- Mobile menu -->
-            <div :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}" class="md:hidden">
+            <div id="mobile-menu" :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}" class="md:hidden">
                 <div class="pt-2 pb-4 space-y-1">
                     <Link
                         :href="route('home')"
@@ -402,6 +506,38 @@ const trackWhatsAppClick = () => {
         <footer class="bg-gray-800 text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Newsletter Subscription -->
+                    <div class="lg:col-span-4 mb-8 p-6 bg-gray-700 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 text-white">Abonnez-vous à notre Newsletter</h3>
+                        <p class="text-gray-300 mb-5">
+                            Recevez nos dernières actualités, offres spéciales et conseils pour votre mariage.
+                        </p>
+                        <form @submit.prevent="subscribeToNewsletter" class="flex flex-col sm:flex-row gap-3">
+                            <div class="relative flex-grow">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="bi bi-envelope text-gray-500"></i>
+                                </div>
+                                <input
+                                    type="email"
+                                    v-model="newsletterEmail"
+                                    placeholder="Votre adresse email"
+                                    class="pl-10 pr-4 py-3 w-full rounded-md text-gray-800 border-2 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 transition-all duration-200"
+                                    aria-label="Adresse email pour la newsletter"
+                                    required
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-md transition-colors font-medium shadow-md hover:shadow-lg"
+                                :disabled="isSubscribing"
+                            >
+                                <span v-if="!isSubscribing">S'abonner</span>
+                                <span v-else>
+                                    <i class="bi bi-arrow-repeat animate-spin inline-block"></i> Envoi...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Sophie Weddings Dreams</h3>
                         <p class="text-gray-300 mb-4">
@@ -448,7 +584,7 @@ const trackWhatsAppClick = () => {
                             <li>
                                 <Link :href="route('products')" class="text-gray-300 hover:text-primary transition-colors">
                                     Nos Produits
-                                </Link>php
+                                </Link>
                             </li>
                             <li>
                                 <Link :href="route('portfolio')" class="text-gray-300 hover:text-primary transition-colors">
@@ -472,7 +608,7 @@ const trackWhatsAppClick = () => {
                         <h3 class="text-lg font-semibold mb-4">Nos Services</h3>
                         <ul class="space-y-2">
                             <li v-for="service in services" :key="service.id">
-                                <Link :href="'#'" class="text-gray-300 hover:text-primary transition-colors">
+                                <Link :href="route('services') + '#service-' + service.id" class="text-gray-300 hover:text-primary transition-colors">
                                     {{ service.title }}
                                 </Link>
                             </li>
@@ -511,18 +647,55 @@ const trackWhatsAppClick = () => {
 
                 <div class="mt-12 pt-8 border-t border-gray-700">
                     <p class="text-gray-400 text-center">
-                        &copy; 2025 Sophie Weddings Dreams. Tous droits réservés.
+                        &copy; {{ new Date().getFullYear() }} Sophie Weddings Dreams. Tous droits réservés.
                     </p>
                 </div>
             </div>
         </footer>
+        <!-- Cookie Consent Banner -->
+        <div
+            v-if="showCookieConsent"
+            class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 shadow-lg z-40"
+            role="alert"
+            aria-live="polite"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm">
+                        Nous utilisons des cookies pour améliorer votre expérience sur notre site. En continuant à naviguer, vous acceptez notre utilisation des cookies.
+                        <a href="#" class="underline hover:text-primary">En savoir plus</a>
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button
+                        @click="acceptCookies"
+                        class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md text-sm transition-colors"
+                    >
+                        Accepter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Top Button -->
+        <button
+            v-show="showBackToTop"
+            @click="scrollToTop"
+            class="fixed bottom-6 left-6 bg-primary text-white rounded-full p-3 shadow-lg hover:bg-primary-dark transition-all z-50 flex items-center justify-center"
+            style="width: 50px; height: 50px;"
+            aria-label="Retour en haut de page"
+        >
+            <i class="bi bi-arrow-up text-xl"></i>
+        </button>
+
         <!-- WhatsApp Button -->
         <a
-            :href="`https://wa.me/${contactSettings.whatsapp_number?.replace(/[^0-9]/g, '')}`"
+            :href="`https://wa.me/${(contactSettings.whatsapp_number || contactSettings.contact_phone || '221785383069').replace(/[^0-9]/g, '')}`"
             target="_blank"
             class="fixed bottom-6 right-6 bg-green-500 text-white rounded-full p-3 shadow-lg hover:bg-green-600 transition-all z-50 flex items-center justify-center"
             style="width: 60px; height: 60px;"
             @click="trackWhatsAppClick"
+            aria-label="Contactez-nous sur WhatsApp"
         >
             <i class="bi bi-whatsapp text-2xl"></i>
         </a>
@@ -537,5 +710,11 @@ const trackWhatsAppClick = () => {
 
 .animate-spin {
     animation: spin 1s linear infinite;
+}
+
+/* Style pour le placeholder du champ newsletter */
+footer input[type="email"]::placeholder {
+    color: white;
+    opacity: 0.8;
 }
 </style>

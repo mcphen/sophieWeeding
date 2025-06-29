@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\StorageHelper;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SettingController extends Controller
@@ -108,7 +110,30 @@ class SettingController extends Controller
      */
     public function contactSettings()
     {
-        $contactSettings = Setting::where('group', 'contact')->get();
+        // Get all settings that are used in the contact settings form
+        $contactSettings = collect([
+            'contact_phone' => Setting::get('contact_phone', ''),
+            'contact_phone_fixed' => Setting::get('contact_phone_fixed', ''),
+            'contact_email' => Setting::get('contact_email', ''),
+            'contact_address' => Setting::get('contact_address', ''),
+            'social_facebook' => Setting::get('social_facebook', ''),
+            'social_twitter' => Setting::get('social_twitter', ''),
+            'social_instagram' => Setting::get('social_instagram', ''),
+            'social_youtube' => Setting::get('social_youtube', ''),
+            'social_linkedin' => Setting::get('social_linkedin', ''),
+            'social_tiktok' => Setting::get('social_tiktok', ''),
+            'opening_hours' => Setting::get('opening_hours', ''),
+            'site_logo' => StorageHelper::url(Setting::get('site_logo', 'images/logo.png')),
+        ])->map(function ($value, $key) {
+            return [
+                'id' => $key,
+                'key' => $key,
+                'value' => $value,
+                'group' => 'contact',
+                'type' => 'text',
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+            ];
+        })->values()->all();
 
         return Inertia::render('Admin/Settings/Contact', [
             'settings' => $contactSettings
@@ -120,7 +145,21 @@ class SettingController extends Controller
      */
     public function updateContactSettings(Request $request)
     {
-        foreach ($request->all() as $key => $value) {
+        // Handle logo upload if present
+        if ($request->hasFile('site_logo')) {
+            // Delete old logo if it exists and is not the default
+            $oldLogo = Setting::get('site_logo', 'images/logo.png');
+            if ($oldLogo && $oldLogo !== 'images/logo.png' && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+
+            // Store the new logo
+            $logoPath = $request->file('site_logo')->store('logos', 'public');
+            Setting::set('site_logo', $logoPath);
+        }
+
+        // Process other settings
+        foreach ($request->except('site_logo') as $key => $value) {
             Setting::set($key, $value);
         }
 

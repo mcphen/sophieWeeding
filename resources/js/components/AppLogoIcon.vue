@@ -7,13 +7,15 @@ defineOptions({
 
 interface Props {
     className?: HTMLAttributes['class'];
+    logoUrl?: string;
 }
 
 defineProps<Props>();
 </script>
 
 <template>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42" :class="className" v-bind="$attrs">
+    <img v-if="logoUrl" style="width: 100px;height: 100px" :src="logoUrl" :class="className" v-bind="$attrs" alt="Site Logo" />
+    <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42" :class="className" v-bind="$attrs">
         <path
             fill="currentColor"
             fill-rule="evenodd"

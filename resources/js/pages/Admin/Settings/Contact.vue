@@ -2,37 +2,91 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 
-const props = defineProps({
-    settings: Array
-});
+// Type declaration for the route function
+declare function route(name: string, params?: Record<string, any>): string;
+
+interface Setting {
+    id: number;
+    key: string;
+    value: string;
+    group: string;
+    type: string;
+    label: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+interface SettingsObject {
+    [key: string]: string;
+}
+
+interface FormData {
+    contact_phone: string;
+    contact_phone_fixed: string;
+    contact_email: string;
+    contact_address: string;
+    social_facebook: string;
+    social_twitter: string;
+    social_instagram: string;
+    social_youtube: string;
+    social_linkedin: string;
+    social_tiktok: string;
+    opening_hours: string;
+    site_logo: File | null;
+}
+
+const props = defineProps<{
+    settings: Setting[]
+}>();
 
 // Convert settings array to an object for easier form handling
-const settingsObject = {};
+const settingsObject: SettingsObject = {};
 if (props.settings) {
-    props.settings.forEach(setting => {
+    props.settings.forEach((setting: Setting) => {
         settingsObject[setting.key] = setting.value;
     });
 }
 
 // Create form with default values
-const form = useForm({
+const form = useForm<FormData>({
     // Contact information
-    'contact_phone': settingsObject['contact_phone'] || '',
-    'contact_phone_fixed': settingsObject['contact_phone_fixed'] || '',
-    'contact_email': settingsObject['contact_email'] || '',
-    'contact_address': settingsObject['contact_address'] || '',
+    contact_phone: settingsObject['contact_phone'] || '',
+    contact_phone_fixed: settingsObject['contact_phone_fixed'] || '',
+    contact_email: settingsObject['contact_email'] || '',
+    contact_address: settingsObject['contact_address'] || '',
 
     // Social media
-    'social_facebook': settingsObject['social_facebook'] || '',
-    'social_twitter': settingsObject['social_twitter'] || '',
-    'social_instagram': settingsObject['social_instagram'] || '',
+    social_facebook: settingsObject['social_facebook'] || '',
+    social_twitter: settingsObject['social_twitter'] || '',
+    social_instagram: settingsObject['social_instagram'] || '',
+    social_youtube: settingsObject['social_youtube'] || '',
+    social_linkedin: settingsObject['social_linkedin'] || '',
+    social_tiktok: settingsObject['social_tiktok'] || '',
 
     // Opening hours
-    'opening_hours': settingsObject['opening_hours'] || '',
+    opening_hours: settingsObject['opening_hours'] || '',
+
+    // Site logo
+    site_logo: null,
 });
 
+// Current logo path
+const currentLogo = settingsObject['site_logo'] || '/images/logo.png';
+
+// Handle logo file selection
+const handleLogoUpload = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        form.site_logo = target.files[0];
+    }
+};
+
 const submit = () => {
-    form.post(route('admin.contact-settings.update'));
+    // Use multipart/form-data for file uploads
+    form.post(route('admin.contact-settings.update'), {
+        forceFormData: true,
+        preserveScroll: true,
+    });
 };
 </script>
 
@@ -130,6 +184,39 @@ const submit = () => {
                                         placeholder="https://instagram.com/sophieweddings"
                                     >
                                 </div>
+
+                                <div class="mb-4">
+                                    <label for="social_youtube" class="block text-sm font-medium text-gray-700">YouTube URL</label>
+                                    <input
+                                        id="social_youtube"
+                                        v-model="form.social_youtube"
+                                        type="url"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                                        placeholder="https://youtube.com/c/sophieweddings"
+                                    >
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="social_linkedin" class="block text-sm font-medium text-gray-700">LinkedIn URL</label>
+                                    <input
+                                        id="social_linkedin"
+                                        v-model="form.social_linkedin"
+                                        type="url"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                                        placeholder="https://linkedin.com/company/sophieweddings"
+                                    >
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="social_tiktok" class="block text-sm font-medium text-gray-700">TikTok URL</label>
+                                    <input
+                                        id="social_tiktok"
+                                        v-model="form.social_tiktok"
+                                        type="url"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                                        placeholder="https://tiktok.com/@sophieweddings"
+                                    >
+                                </div>
                             </div>
 
                             <div class="mb-8">
@@ -146,6 +233,37 @@ const submit = () => {
 Saturday: 10am - 4pm
 Sunday: Closed"
                                     ></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mb-8">
+                                <h2 class="text-lg font-medium mb-4 text-gray-700 border-b pb-2">Site Logo</h2>
+
+                                <div class="mb-4">
+                                    <label for="site_logo" class="block text-sm font-medium text-gray-700">Logo</label>
+
+                                    <!-- Current logo preview -->
+                                    <div class="mt-2 mb-4">
+                                        <p class="text-sm text-gray-500 mb-2">Current logo:</p>
+                                        <img :src="currentLogo" alt="Current Logo" class="h-16 object-contain border rounded p-1">
+                                    </div>
+
+                                    <!-- Logo upload -->
+                                    <input
+                                        id="site_logo"
+                                        type="file"
+                                        @change="handleLogoUpload"
+                                        class="mt-1 block w-full text-sm text-gray-500
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-primary file:text-white
+                                        hover:file:bg-primary-dark"
+                                        accept="image/*"
+                                    >
+                                    <p class="mt-1 text-sm text-gray-500">
+                                        Upload a new logo image (PNG, JPG, GIF up to 2MB)
+                                    </p>
                                 </div>
                             </div>
 

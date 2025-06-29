@@ -174,6 +174,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('contacts/{contact}', [ContactController::class, 'show'])->name('admin.contacts.show');
         Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('admin.contacts.destroy');
 
+        // Newsletter subscribers management routes
+        Route::get('newsletter', [App\Http\Controllers\NewsletterController::class, 'index'])->name('admin.newsletter.index');
+        Route::get('newsletter/export', [App\Http\Controllers\NewsletterController::class, 'export'])->name('admin.newsletter.export');
+
         // Users management routes
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
             ->except(['show'])
@@ -197,6 +201,8 @@ Route::get('/api/services', [ServiceController::class, 'getServices'])->name('ap
 Route::get('/api/products', [ProductController::class, 'getProducts'])->name('api.products');
 Route::get('/api/schedules/available', [App\Http\Controllers\Admin\ScheduleController::class, 'getAvailableSchedules'])->name('api.schedules.available');
 Route::get('/api/actualites/latest', [ActualiteController::class, 'latest'])->name('api.actualites.latest');
+Route::post('/api/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'store'])->name('api.newsletter.subscribe');
+Route::post('/api/cookie-consent', [App\Http\Controllers\CookieConsentController::class, 'store'])->name('api.cookie-consent.store');
 
 // Visitor tracking route
 Route::post('/api/track-action', [App\Http\Controllers\VisitorTrackerController::class, 'trackAction'])->name('api.track-action');

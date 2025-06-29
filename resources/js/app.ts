@@ -8,6 +8,8 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { initializeTracking } from './lib/tracker';
 import vTrack from './lib/trackingDirective';
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -33,6 +35,11 @@ createInertiaApp({
         // Register plugins
         app.use(plugin);
         app.use(ZiggyVue);
+        app.use(Toast, {
+            transition: "Vue-Toastification__bounce",
+            maxToasts: 5,
+            newestOnTop: true
+        });
 
         // Register directives
         app.directive('track', vTrack);
