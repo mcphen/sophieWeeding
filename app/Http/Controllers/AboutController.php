@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\About;
+use App\Helpers\StorageHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class AboutController extends Controller
@@ -31,9 +33,23 @@ class AboutController extends Controller
     {
         $data = $request->validate([
             'content' => 'required|string',
+            'image' => 'nullable|image|max:2048',
         ]);
 
-        About::updateOrCreate([], ['content' => $data['content']]);
+        $about = About::first();
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($about && $about->image_path) {
+                Storage::disk('public')->delete($about->image_path);
+            }
+
+            // Store new image
+            $data['image_path'] = $request->file('image')->store('about', 'public');
+        }
+
+        About::updateOrCreate([], $data);
 
         $about = About::first();
         return Inertia::render('Admin/About/Edit', [

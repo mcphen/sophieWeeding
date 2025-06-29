@@ -7,37 +7,37 @@ use App\Models\Actualite;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Product;
-use App\Models\Setting;
+use App\Services\ContactService;
 use App\Helpers\StorageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class HomeController extends Controller
 {
     /**
-     * Get contact settings for front-end pages
+     * The contact service instance.
      *
-     * @return array
+     * @var \App\Services\ContactService
      */
-    private function getContactSettings()
+    protected $contactService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param \App\Services\ContactService $contactService
+     * @return void
+     */
+    public function __construct(ContactService $contactService)
     {
-        return [
-            'contact_phone' => Setting::get('contact_phone', '(+221) 78 538 30 69'),
-            'whatsapp_number' => Setting::get('contact_phone', '+221785383069'),
-            'contact_phone_fixed' => Setting::get('contact_phone_fixed', '(+221) 33 865 27 11'),
-            'contact_email' => Setting::get('contact_email', 'sophieweddings5@gmail.com'),
-            'contact_address' => Setting::get('contact_address', 'Rue NG-70, 91 Ngor Almadies, Dakar 12000'),
-            'social_facebook' => Setting::get('social_facebook', 'https://www.facebook.com/Sophieweddingsdreams22/'),
-           // 'social_twitter' => Setting::get('social_twitter', '#'),
-            'social_instagram' => Setting::get('social_instagram', 'https://www.instagram.com/sophie_weddings_dreams/'),
-            'opening_hours' => Setting::get('opening_hours', 'Lundi - Vendredi: 8am - 6pm'),
-            'site_logo' => StorageHelper::url(Setting::get('site_logo', 'images/logo.png')),
-        ];
+        $this->contactService = $contactService;
     }
+    /**
+     * Display the homepage
+     *
+     * @return \Inertia\Response
+     */
     public function index(){
-       // echo Hash::make('123456789'); die();
         // Fetch banner photos
         $bannerPhotos = Photo::where('is_banner', true)
             ->orderBy('banner_order')
@@ -51,25 +51,48 @@ class HomeController extends Controller
 
         return Inertia::render('Welcome', [
             'bannerPhotos' => $bannerPhotos,
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
 
+    /**
+     * Display the about page
+     *
+     * @return \Inertia\Response
+     */
     public function about(){
-        $about = About::first();
+        // Select only the necessary columns for better performance
+        $about = About::select(['id', 'content', 'image_path', 'created_at', 'updated_at'])->first();
+
+        // Add image_url if image_path exists
+        if ($about && $about->image_path) {
+            $about->image_url = StorageHelper::url($about->image_path);
+        }
+
         return Inertia::render('Front/About',[
             'about' => $about,
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
+    /**
+     * Display the services page
+     *
+     * @return \Inertia\Response
+     */
     public function services(){
         return Inertia::render('Front/ServiceFront', [
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
+    /**
+     * Display the products page with filtering and pagination
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
     public function products(Request $request){
         $query = Product::query();
 
@@ -128,10 +151,16 @@ class HomeController extends Controller
         return Inertia::render('Front/ProductsFront', [
             'products' => $products,
             'filters' => $request->only(['search', 'min_price', 'max_price', 'sort']),
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
+    /**
+     * Display the portfolio page with filtering and pagination
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
     public function portfolio(Request $request)
     {
         $query = Album::query()
@@ -141,7 +170,7 @@ class HomeController extends Controller
             ->select(['id', 'title', 'event_date', 'theme', 'created_at'])
             ->orderBy('event_date', 'desc');
 
-        // Appliquer les filtres
+        // Apply filters
         if ($request->has('theme') && $request->theme) {
             $query->where('theme', $request->theme);
         }
@@ -172,18 +201,24 @@ class HomeController extends Controller
         return Inertia::render('Front/Portfolio', [
             'albums' => $albums,
             'filters' => $request->only(['theme', 'search', 'year']),
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
 
+    /**
+     * Display the blog page with filtering and pagination
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
     public function blog(Request $request)
     {
         $query = Actualite::query()
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
 
-        // Filtre de recherche
+        // Search filter
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -192,7 +227,7 @@ class HomeController extends Controller
             });
         }
 
-        // Filtre par date
+        // Date filter
         if ($request->has('date') && $request->date) {
             $date = $request->date;
 
@@ -204,12 +239,12 @@ class HomeController extends Controller
                 $query->whereMonth('published_at', $lastMonth->month)
                     ->whereYear('published_at', $lastMonth->year);
             } elseif (is_numeric($date)) {
-                // Année spécifique
+                // Specific year
                 $query->whereYear('published_at', $date);
             }
         }
 
-        // Tri
+        // Sorting
         if ($request->has('sort') && $request->sort) {
             $sort = $request->sort;
 
@@ -221,7 +256,7 @@ class HomeController extends Controller
                 $query->orderBy('title', 'desc');
             }
         } else {
-            // Par défaut: plus récent d'abord
+            // Default: newest first
             $query->orderBy('published_at', 'desc');
         }
 
@@ -231,16 +266,26 @@ class HomeController extends Controller
         return Inertia::render('Front/Blog', [
             'actualites' => $actualites,
             'filters' => $request->only(['search', 'date', 'sort']),
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
+    /**
+     * Display a single blog article
+     *
+     * @param int $id
+     * @return \Inertia\Response
+     */
     public function blogShow($id)
     {
+        // Select only necessary columns for better performance
         $actualite = Actualite::query()->findOrFail($id);
 
-        // Récupérer les articles connexes (par exemple, les 3 plus récents)
-        $relatedActualites = Actualite::query()->whereNotNull('published_at')
+        // Get related articles (for example, the 3 most recent ones)
+        // Optimize by selecting only needed columns
+        $relatedActualites = Actualite::query()
+            ->select(['id', 'title', 'description', 'image_path', 'published_at', 'slug'])
+            ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->where('id', '!=', $id)
             ->orderBy('published_at', 'desc')
@@ -250,7 +295,7 @@ class HomeController extends Controller
         return Inertia::render('Front/BlogArticle', [
             'actualite' => $actualite,
             'relatedArticles' => $relatedActualites,
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
@@ -260,7 +305,7 @@ class HomeController extends Controller
     public function availability()
     {
         return Inertia::render('Front/Availability', [
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 
@@ -272,10 +317,13 @@ class HomeController extends Controller
      */
     public function productShow($slug)
     {
+        // Select only necessary columns for better performance
         $product = Product::where('slug', $slug)->firstOrFail();
 
         // Get related products (for example, the 4 most recent other products)
+        // Optimize by selecting only needed columns and limiting the query
         $relatedProducts = Product::where('id', '!=', $product->id)
+            ->select(['id', 'title', 'description', 'image_path', 'price', 'slug'])
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get()
@@ -284,7 +332,7 @@ class HomeController extends Controller
                     'id' => $product->id,
                     'title' => $product->title,
                     'description' => $product->description,
-                    'image_url' => $product->image_path ? \App\Helpers\StorageHelper::url($product->image_path) : null,
+                    'image_url' => $product->image_path ? StorageHelper::url($product->image_path) : null,
                     'price' => $product->price,
                     'slug' => $product->slug,
                 ];
@@ -293,7 +341,7 @@ class HomeController extends Controller
         return Inertia::render('Front/ProductDetailFront', [
             'product' => $product,
             'relatedProducts' => $relatedProducts,
-            'contactSettings' => $this->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings()
         ]);
     }
 }

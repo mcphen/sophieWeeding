@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
@@ -23,9 +24,10 @@ class Setting extends Model
      */
     public static function get(string $key, $default = null)
     {
-        $setting = self::where('key', $key)->first();
-
-        return $setting ? $setting->value : $default;
+        return Cache::remember('setting_'.$key, 60*24, function() use ($key, $default) {
+            $setting = self::where('key', $key)->first();
+            return $setting ? $setting->value : $default;
+        });
     }
 
     /**
@@ -41,6 +43,9 @@ class Setting extends Model
         $setting->value = $value;
         $setting->save();
 
+        // Clear the cache for this setting
+        Cache::forget('setting_'.$key);
+
         return $setting;
     }
 
@@ -52,7 +57,9 @@ class Setting extends Model
      */
     public static function getByGroup(string $group)
     {
-        return self::where('group', $group)->get();
+        return Cache::remember('settings_group_'.$group, 60*24, function() use ($group) {
+            return self::where('group', $group)->get();
+        });
     }
 
     /**
@@ -62,6 +69,18 @@ class Setting extends Model
      */
     public static function getAllAsArray()
     {
-        return self::all()->pluck('value', 'key')->toArray();
+        return Cache::remember('settings_all', 60*24, function() {
+            return self::all()->pluck('value', 'key')->toArray();
+        });
+    }
+
+    /**
+     * Clear all settings cache
+     */
+    public static function clearCache()
+    {
+        Cache::forget('settings_all');
+        // You might want to implement a more sophisticated cache clearing
+        // for group and individual settings if needed
     }
 }

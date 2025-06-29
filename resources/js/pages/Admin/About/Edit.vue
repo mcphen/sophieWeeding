@@ -13,14 +13,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // Récupération des props
-const page = usePage<{ about: { content: string }, flash: { success?: string } }>();
+const page = usePage<{ about: { content: string, image_path?: string, image_url?: string }, flash: { success?: string } }>();
 const flash = page.props.flash || {};
-
+const about = page.props.about || {};
 
 // Formulaire Inertia
-const form = useForm<{ content: string }>({
-    content: page.props.about?.content || ''
+const form = useForm<{ content: string, image: File | null }>({
+    content: about.content || '',
+    image: null
 });
+
+// Référence pour l'aperçu de l'image
+const imagePreview = ref<string | null>(about.image_url || null);
 
 // Référence pour l'éditeur Quill
 const editorRef = ref<HTMLDivElement | null>(null);
@@ -34,10 +38,28 @@ onMounted(() => {
     }
 });
 
+// Fonction pour gérer le changement d'image
+function handleImageChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        form.image = input.files[0];
+
+        // Créer un aperçu de l'image
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 // Soumission du form
 function submit() {
     form.content = editor.root.innerHTML;
-    form.post(route('admin.about.update'), { preserveState: true });
+    form.post(route('admin.about.update'), {
+        preserveState: true,
+        forceFormData: true
+    });
 }
 </script>
 
@@ -49,6 +71,33 @@ function submit() {
             <h2 class="text-2xl font-semibold">Modifier « À propos »</h2>
 
             <form @submit.prevent="submit" class="space-y-4">
+                <!-- Image upload section -->
+                <div>
+                    <label for="image" class="block text-sm font-medium mb-1">Image</label>
+                    <div class="flex flex-col space-y-2">
+                        <!-- Image preview -->
+                        <div v-if="imagePreview" class="mb-2">
+                            <img :src="imagePreview" alt="Aperçu de l'image" class="max-w-xs max-h-48 object-contain border rounded">
+                        </div>
+
+                        <!-- File input -->
+                        <input
+                            type="file"
+                            id="image"
+                            @change="handleImageChange"
+                            accept="image/*"
+                            class="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100"
+                        />
+                        <p class="text-xs text-gray-500">Format recommandé: JPG, PNG. Taille max: 2MB</p>
+                        <p v-if="form.errors.image" class="text-red-600 text-sm">{{ form.errors.image }}</p>
+                    </div>
+                </div>
+
                 <div>
                     <label for="content" class="block text-sm font-medium mb-1">Contenu</label>
                     <!-- Élément pour Quill -->

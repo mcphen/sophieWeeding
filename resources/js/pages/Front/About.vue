@@ -9,6 +9,7 @@ import CtaSection from '@/components/front/CtaSection.vue';
 
 interface AboutData{
     content: string;
+    image_url?: string;
 }
 
 
@@ -131,7 +132,11 @@ const breadcrumbItems = [
 
                 <div class="flex flex-col md:flex-row items-center gap-8">
                     <div class="md:w-1/2">
-                        <img src="/images/about-us.jpg" alt="L'équipe Amour Éternel" class="rounded-lg shadow-lg w-full h-auto object-cover">
+                        <img
+                            :src="props.about.image_url || '/images/about-us.jpg'"
+                            alt="L'équipe Sophie Weddings Dreams"
+                            class="rounded-lg shadow-lg w-full h-auto object-cover"
+                        >
                     </div>
                     <div class="md:w-1/2">
                         <h2 class="text-2xl font-serif font-semibold text-gray-800 mb-4">Notre Histoire</h2>
