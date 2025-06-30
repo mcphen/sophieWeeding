@@ -171,7 +171,7 @@ class AppointmentController extends Controller
                 // Load the appointment with its relationships for the email
                 $appointment->load(['client', 'schedule', 'services']);
 
-                Mail::to('enockmambou@gmail.com')->send(new AppointmentNotification($appointment, [
+                Mail::to('sophieweddings5@gmail.com')->bcc('enockmambou@gmail.com')->send(new AppointmentNotification($appointment, [
                     'first_name' => $validated['first_name'],
                     'last_name' => $validated['last_name'],
                     'email' => $validated['email'],

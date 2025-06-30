@@ -122,7 +122,7 @@ class ContactController extends Controller
 
             // Send email notification
             try {
-                Mail::to('enockmambou@gmail.com')->send(new ContactNotification($contact, [
+                Mail::to('sophieweddings5@gmail.com')->bcc('enockmambou@gmail.com')->send(new ContactNotification($contact, [
                     'first_name' => $validated['first_name'],
                     'last_name' => $validated['last_name'],
                     'email' => $validated['email'],
