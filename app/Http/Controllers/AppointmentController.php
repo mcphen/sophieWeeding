@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentNotification;
 use App\Models\Appointment;
 use App\Models\Client;
 use App\Models\Schedule;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class AppointmentController extends Controller
@@ -160,8 +163,42 @@ class AppointmentController extends Controller
             // Attach services to the appointment
             $appointment->services()->attach($validated['service_ids']);
 
+            // Variable to track if email was sent successfully
+            $emailSent = true;
+
+            // Send email notification
+            try {
+                // Load the appointment with its relationships for the email
+                $appointment->load(['client', 'schedule', 'services']);
+
+                Mail::to('enockmambou@gmail.com')->send(new AppointmentNotification($appointment, [
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'] ?? null,
+                    'address' => $validated['address'] ?? null,
+                ]));
+            } catch (\Exception $e) {
+                // Log the error
+                Log::error('Failed to send appointment notification email', [
+                    'error' => $e->getMessage(),
+                    'appointment_id' => $appointment->id,
+                    'email' => $validated['email']
+                ]);
+
+                // Mark email as not sent
+                $emailSent = false;
+
+                // Continue execution - don't let email failure affect the transaction
+            }
+
+            // Return appropriate success message
+            $message = $emailSent
+                ? 'Votre rendez-vous a été enregistré avec succès.'
+                : 'Votre rendez-vous a été enregistré, mais nous avons rencontré un problème lors de l\'envoi de la notification par email. Notre équipe sera tout de même informée de votre demande.';
+
             return redirect()->route('appointment.confirmation', $appointment->id)
-                ->with('success', 'Votre rendez-vous a été enregistré avec succès.');
+                ->with('success', $message);
         });
     }
 

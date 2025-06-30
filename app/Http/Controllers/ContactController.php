@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactNotification;
 use App\Models\Client;
 use App\Models\Contact;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class ContactController extends Controller
@@ -108,13 +111,43 @@ class ContactController extends Controller
             );
 
             // Create the contact message
-            Contact::create([
+            $contact = Contact::create([
                 'client_id' => $client->id,
                 'subject' => $validated['subject'],
                 'description' => $validated['description'],
             ]);
 
-            return back()->with('success', 'Votre message a été envoyé avec succès.');
+            // Variable to track if email was sent successfully
+            $emailSent = true;
+
+            // Send email notification
+            try {
+                Mail::to('enockmambou@gmail.com')->send(new ContactNotification($contact, [
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'] ?? null,
+                ]));
+            } catch (\Exception $e) {
+                // Log the error
+                Log::error('Failed to send contact notification email', [
+                    'error' => $e->getMessage(),
+                    'contact_id' => $contact->id,
+                    'email' => $validated['email']
+                ]);
+
+                // Mark email as not sent
+                $emailSent = false;
+
+                // Continue execution - don't let email failure affect the transaction
+            }
+
+            // Return appropriate success message
+            $message = $emailSent
+                ? 'Votre message a été envoyé avec succès.'
+                : 'Votre message a été enregistré, mais nous avons rencontré un problème lors de l\'envoi de la notification par email. Notre équipe sera tout de même informée de votre demande.';
+
+            return back()->with('success', $message);
         });
     }
 }
