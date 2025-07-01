@@ -256,7 +256,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
                                     v-if="actualite.image_path"
-                                    :src="${actualite.image_path}`"
+                                    :src="`${actualite.image_path}`"
                                     :alt="actualite.title"
                                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                                 >
