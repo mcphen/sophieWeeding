@@ -212,7 +212,7 @@ const saveBannerPhotos = () => {
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <div v-for="(photo, index) in selectedBannerPhotos" :key="photo.id" class="bg-white border rounded-lg shadow-sm overflow-hidden">
                         <div class="relative h-48">
-                            <img :src="`/storage/${photo.image_path}`" :alt="photo.caption || 'Photo de bannière'" class="w-full h-full object-cover" />
+                            <img :src="`${photo.image_path}`" :alt="photo.caption || 'Photo de bannière'" class="w-full h-full object-cover" />
                             <div class="absolute top-2 left-2 bg-white rounded-full w-6 h-6 flex items-center justify-center shadow-md">
                                 {{ index + 1 }}
                             </div>
@@ -271,7 +271,7 @@ const saveBannerPhotos = () => {
                         :class="{ 'ring-2 ring-blue-500': isPhotoSelected(photo) }"
                     >
                         <div class="relative h-48">
-                            <img :src="`/storage/${photo.image_path}`" :alt="photo.caption || 'Photo'" class="w-full h-full object-cover" />
+                            <img :src="${photo.image_path}`" :alt="photo.caption || 'Photo'" class="w-full h-full object-cover" />
                             <div v-if="isPhotoSelected(photo)" class="absolute top-2 right-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
                                 {{ selectedBannerPhotos.findIndex(p => p.id === photo.id) + 1 }}
                             </div>

@@ -49,7 +49,7 @@ const form = useForm({
 });
 
 // Prévisualisation des images
-const imagePreview = ref<string | null>(props.product.image_path ? `/storage/${props.product.image_path}` : null);
+const imagePreview = ref<string | null>(props.product.image_path ? `${props.product.image_path}` : null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const multipleFileInput = ref<HTMLInputElement | null>(null);
 const existingImages = ref<ProductImage[]>(props.product.images || []);
@@ -96,7 +96,7 @@ function handleImageUpload(event: Event) {
         reader.readAsDataURL(file);
     } else {
         form.image = null;
-        imagePreview.value = props.product.image_path ? `/storage/${props.product.image_path}` : null;
+        imagePreview.value = props.product.image_path ? `${props.product.image_path}` : null;
     }
 }
 

@@ -31,7 +31,7 @@ const form = useForm({
 });
 
 // Prévisualisation de l'image existante ou nouvelle
-const imagePreview = ref<string | null>(props.actualite.image_path ? `/storage/${props.actualite.image_path}` : null);
+const imagePreview = ref<string | null>(props.actualite.image_path ? `${props.actualite.image_path}` : null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
 // Quill editor

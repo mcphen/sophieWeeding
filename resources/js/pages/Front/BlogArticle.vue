@@ -177,7 +177,7 @@ onMounted(() => {
           <!-- Image principale -->
           <div class="relative mb-10 shadow-xl rounded-lg overflow-hidden">
             <img
-                :src="`/storage/${actualite.image_path}`"
+                :src="`${actualite.image_path}`"
 
               :alt="actualite.title"
               class="w-full h-auto object-cover object-center rounded-lg"

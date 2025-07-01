@@ -165,4 +165,53 @@ class SettingController extends Controller
 
         return redirect()->back()->with('success', 'Contact settings updated successfully.');
     }
+
+    /**
+     * Display color settings form.
+     */
+    public function colorSettings()
+    {
+        // Get all settings that are used in the color settings form
+        $colorSettings = collect([
+            'primary_color' => Setting::get('primary_color', '#AA6808'),
+            'primary_light' => Setting::get('primary_light', '#d1922f'),
+            'primary_dark' => Setting::get('primary_dark', '#8a5406'),
+            'primary_bg_light' => Setting::get('primary_bg_light', '#fcf5ea'),
+            'accent_light' => Setting::get('accent_light', '#f3e3c8'),
+            'text_dark' => Setting::get('text_dark', '#1b1b18'),
+            'text_light' => Setting::get('text_light', '#ffffff'),
+            'gray_light' => Setting::get('gray_light', '#f8f8f8'),
+            'gray_medium' => Setting::get('gray_medium', '#e5e5e5'),
+            'gray_dark' => Setting::get('gray_dark', '#4b4b4b'),
+        ])->map(function ($value, $key) {
+            return [
+                'id' => $key,
+                'key' => $key,
+                'value' => $value,
+                'group' => 'appearance',
+                'type' => 'color',
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+            ];
+        })->values()->all();
+
+        return Inertia::render('Admin/Settings/Colors', [
+            'settings' => $colorSettings
+        ]);
+    }
+
+    /**
+     * Update color settings.
+     */
+    public function updateColorSettings(Request $request)
+    {
+        // Process color settings
+        foreach ($request->all() as $key => $value) {
+            Setting::set($key, $value);
+        }
+
+        // Clear the cache to ensure new settings are used
+        Setting::clearCache();
+
+        return redirect()->back()->with('success', 'Color settings updated successfully.');
+    }
 }

@@ -194,7 +194,7 @@ function formatDate(dateString: string): string {
             <!-- Image principale -->
             <div class="relative w-full flex items-center justify-center">
                 <img
-                    :src="`/storage/${album.photos[currentPhotoIndex].image_path}`"
+                    :src="`${album.photos[currentPhotoIndex].image_path}`"
                     :alt="album.photos[currentPhotoIndex].caption || 'Photo d\'album'"
                     class="max-h-[80vh] max-w-full object-contain"
                 />

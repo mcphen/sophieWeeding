@@ -448,7 +448,7 @@ watch([selectedDate, sortBy], () => {
                         <!-- Image de l'article -->
                         <div class="relative h-56 overflow-hidden">
                             <img
-                                :src="`/storage/${actualite.image_path}`"
+                                :src="`${actualite.image_path}`"
                                 :alt="actualite.title"
                                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 loading="lazy"

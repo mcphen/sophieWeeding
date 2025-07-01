@@ -38,7 +38,7 @@ const form = useForm({
 // Prévisualisation de l'image
 const imagePreview = ref<string | null>(
     props.member.image_path
-    ? `/storage/${props.member.image_path}`
+    ? `${props.member.image_path}`
     : null
 );
 const fileInput = ref<HTMLInputElement | null>(null);

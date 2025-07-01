@@ -236,7 +236,7 @@ function handleSubmit() {
                             ]"
                         >
                             <img
-                                :src="`/storage/${photo.image_path}`"
+                                :src="`${photo.image_path}`"
                                 :alt="photo.caption || 'Photo d\'album'"
                                 class="w-full h-48 object-cover"
                             />

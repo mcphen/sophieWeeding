@@ -49,7 +49,7 @@ const fetchLatestAlbums = async () => {
 // Récupérer une photo d'un album
 const getAlbumPhoto = (album: Album) => {
   if (album.photos && album.photos.length > 0) {
-    //return `/storage/${album.photos[0].image_path}`;
+    //return `${album.photos[0].image_path}`;
     return `${album.photos[0].image_path}`;
   }
   return '/images/placeholder.jpg';

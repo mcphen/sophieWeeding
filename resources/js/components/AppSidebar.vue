@@ -7,7 +7,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
     LayoutGrid,
-
+    Home,
     Briefcase,
     ShoppingCart,
     Users,
@@ -32,8 +32,13 @@ defineProps<Props>();
 
 const mainNavItems: NavItem[] = [
     {
+        title: 'Accueil',
+        href: route('home'),
+        icon: Home,
+    },
+    {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: route('dashboard'),
         icon: LayoutGrid,
     },
     {
@@ -92,8 +97,13 @@ const mainNavItems: NavItem[] = [
         icon: Send,
     },
     {
-        title: 'Paramètres',
+        title: 'Paramètres de contact',
         href: route('admin.contact-settings'),
+        icon: Settings,
+    },
+    {
+        title: 'Paramètres de couleur',
+        href: route('admin.color-settings'),
         icon: Settings,
     },
     {

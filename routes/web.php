@@ -146,6 +146,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('contact-settings', [SettingController::class, 'contactSettings'])->name('admin.contact-settings');
         Route::post('contact-settings', [SettingController::class, 'updateContactSettings'])->name('admin.contact-settings.update');
 
+        // Color settings
+        Route::get('color-settings', [SettingController::class, 'colorSettings'])->name('admin.color-settings');
+        Route::post('color-settings', [SettingController::class, 'updateColorSettings'])->name('admin.color-settings.update');
+
         // Schedules management routes
         Route::resource('schedules', ScheduleController::class)
             ->only(['index', 'store', 'update', 'destroy'])
@@ -199,6 +203,9 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/api/albums/latest', [AlbumController::class, 'latest'])->name('api.albums.latest');
 Route::get('/api/services', [ServiceController::class, 'getServices'])->name('api.services');
 Route::get('/api/products', [ProductController::class, 'getProducts'])->name('api.products');
+
+// Dynamic CSS route
+Route::get('/css/colors.css', [App\Http\Controllers\ColorController::class, 'css'])->name('css.colors');
 Route::get('/api/schedules/available', [App\Http\Controllers\Admin\ScheduleController::class, 'getAvailableSchedules'])->name('api.schedules.available');
 Route::get('/api/actualites/latest', [ActualiteController::class, 'latest'])->name('api.actualites.latest');
 Route::post('/api/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'store'])->name('api.newsletter.subscribe');
