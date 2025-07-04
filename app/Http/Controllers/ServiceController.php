@@ -95,7 +95,7 @@ class ServiceController extends Controller
     {
         $services = Service::select('id', 'title', 'description', 'image_path', 'min_price')
             ->orderBy('created_at', 'desc')
-            ->limit(3)
+            //->limit(3)
             ->get()
             ->map(function ($service) {
                 return [
