@@ -18,6 +18,7 @@ const form = useForm({
     firstname: '',
     lastname: '',
     position: '',
+    ordre: 0,
     bio: '',
     image: null as File | null
 });
@@ -168,6 +169,21 @@ function submit() {
                             <p v-if="form.errors.position" class="mt-2 text-sm text-red-600">{{ form.errors.position }}</p>
                         </div>
 
+                        <!-- Ordre -->
+                        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                            <label for="ordre" class="block text-sm font-medium text-gray-700 mb-2">Ordre d'affichage</label>
+                            <input
+                                id="ordre"
+                                v-model="form.ordre"
+                                type="number"
+                                min="0"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                placeholder="Ordre d'affichage (0, 1, 2, ...)"
+                            >
+                            <p class="mt-1 text-xs text-gray-500">L'ordre d'affichage permet de classer les membres d'équipe (0 = premier)</p>
+                            <p v-if="form.errors.ordre" class="mt-2 text-sm text-red-600">{{ form.errors.ordre }}</p>
+                        </div>
+
                         <!-- Image -->
                         <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
                             <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Photo du membre</label>
@@ -205,7 +221,7 @@ function submit() {
                                         id="image"
                                         ref="fileInput"
                                         type="file"
-                                        accept="image/*"
+                                        accept=".jpg,.jpeg,.png,.gif,.webp"
                                         class="hidden"
                                         @change="handleImageUpload"
                                     >

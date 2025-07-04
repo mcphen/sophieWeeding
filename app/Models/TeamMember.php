@@ -12,6 +12,7 @@ class TeamMember extends Model
         'firstname',
         'lastname',
         'position',
+        'ordre',
         'bio',
         'image_path',
     ];

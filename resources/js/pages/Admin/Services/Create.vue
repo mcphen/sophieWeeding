@@ -141,10 +141,10 @@ function submit() {
 
                         <!-- Prix minimum -->
                         <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-                            <label for="min_price" class="block text-sm font-medium text-gray-700 mb-2">Prix minimum (€)</label>
+                            <label for="min_price" class="block text-sm font-medium text-gray-700 mb-2">Prix minimum (CFA)</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">FCFA</span>
+                                    <span class="text-gray-500">CFA</span>
                                 </div>
                                 <input
                                     id="min_price"

@@ -11,7 +11,7 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        $testimonials = Testimonial::orderBy('created_at', 'desc')->paginate(10);
+        $testimonials = Testimonial::orderBy('position')->paginate(10);
         return Inertia::render('Admin/Testimonials/TestimonialIndex', [
             'testimonials' => $testimonials,
             'flash'        => ['success' => session('success')],
@@ -19,7 +19,7 @@ class TestimonialController extends Controller
     }
 
     public function getListeDatas(){
-        $testimonials = Testimonial::query()->orderBy('created_at','desc')->get();
+        $testimonials = Testimonial::query()->orderBy('position')->get();
         return response()->json($testimonials);
     }
 
@@ -33,6 +33,7 @@ class TestimonialController extends Controller
         $data = $request->validate([
             'author_name'  => 'required|string|max:255',
             'author_title' => 'nullable|string|max:255',
+            'position'     => 'nullable|string|max:150',
             'content'      => 'required|string',
             'image'        => 'nullable|image|max:2048',
         ]);
@@ -56,6 +57,7 @@ class TestimonialController extends Controller
         $data = $request->validate([
             'author_name'  => 'required|string|max:255',
             'author_title' => 'nullable|string|max:255',
+            'position'     => 'nullable|string|max:150',
             'content'      => 'required|string',
             'image'        => 'nullable|image|max:2048',
         ]);

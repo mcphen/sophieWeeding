@@ -486,7 +486,7 @@ watch(() => form.schedule_id, (newVal) => {
                                             </div>
                                             <div class="ml-3">
                                                 <h3 class="text-sm font-medium text-gray-900">{{ service.title }}</h3>
-                                                <p v-if="service.min_price" class="text-sm text-gray-500">À partir de {{ service.min_price }}€</p>
+                                                <p v-if="service.min_price" class="text-sm text-gray-500">À partir de {{ service.min_price }} CFA</p>
                                                 <p v-if="service.description" class="text-sm text-gray-500 mt-1" v-html="service.description"></p>
                                             </div>
                                         </div>

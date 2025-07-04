@@ -36,9 +36,9 @@
                         <h3 class="text-xl font-semibold text-gray-900">{{ service.title }}</h3>
                         <p class="mt-4 text-gray-600" v-html="truncateHtml(service.description)">
                         </p>
-                        <div v-if="service.min_price" class="mt-4 text-[#d1922f] font-medium">
-                            À partir de {{ service.min_price }} €
-                        </div>
+<!--                        <div v-if="service.min_price" class="mt-4 text-[#d1922f] font-medium">-->
+<!--                            À partir de {{ service.min_price }} CFA-->
+<!--                        </div>-->
                     </div>
                 </div>
             </div>

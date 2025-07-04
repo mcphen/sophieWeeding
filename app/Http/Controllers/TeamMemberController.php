@@ -11,7 +11,7 @@ class TeamMemberController extends Controller
 {
     public function index()
     {
-        $members = TeamMember::orderBy('created_at', 'desc')->paginate(10);
+        $members = TeamMember::orderBy('ordre')->paginate(10);
         return Inertia::render('Admin/TeamMembers/TeamMembersIndex', [
             'members' => $members,
         ]);
@@ -19,7 +19,7 @@ class TeamMemberController extends Controller
 
     public function getListeDatas(){
 
-        $members = TeamMember::query()->get();
+        $members = TeamMember::query()->orderBy('ordre')->get();
 
         return response()->json($members);
     }
@@ -35,8 +35,9 @@ class TeamMemberController extends Controller
             'firstname' => 'required|string|max:100',
             'lastname'  => 'required|string|max:100',
             'position'  => 'required|string|max:150',
+            'ordre'     => 'nullable|integer|min:0',
             'bio'       => 'nullable|string',
-            'image'     => 'nullable|image|max:2048',
+            'image'     => 'nullable|mimes:jpeg,jpg,png,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -62,8 +63,9 @@ class TeamMemberController extends Controller
             'firstname' => 'required|string|max:100',
             'lastname'  => 'required|string|max:100',
             'position'  => 'required|string|max:150',
+            'ordre'     => 'nullable|integer|min:0',
             'bio'       => 'nullable|string',
-            'image'     => 'nullable|image|max:2048',
+            'image'     => 'nullable|mimes:jpeg,jpg,png,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
