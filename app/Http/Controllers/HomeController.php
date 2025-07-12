@@ -7,7 +7,9 @@ use App\Models\Actualite;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Product;
+use App\Models\TrainingSession;
 use App\Services\ContactService;
+use App\Services\CtaService;
 use App\Helpers\StorageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -23,14 +25,23 @@ class HomeController extends Controller
     protected $contactService;
 
     /**
+     * The CTA service instance.
+     *
+     * @var \App\Services\CtaService
+     */
+    protected $ctaService;
+
+    /**
      * Create a new controller instance.
      *
      * @param \App\Services\ContactService $contactService
+     * @param \App\Services\CtaService $ctaService
      * @return void
      */
-    public function __construct(ContactService $contactService)
+    public function __construct(ContactService $contactService, CtaService $ctaService)
     {
         $this->contactService = $contactService;
+        $this->ctaService = $ctaService;
     }
     /**
      * Display the homepage
@@ -51,7 +62,8 @@ class HomeController extends Controller
 
         return Inertia::render('Welcome', [
             'bannerPhotos' => $bannerPhotos,
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -72,7 +84,8 @@ class HomeController extends Controller
 
         return Inertia::render('Front/About',[
             'about' => $about,
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -83,7 +96,8 @@ class HomeController extends Controller
      */
     public function services(){
         return Inertia::render('Front/ServiceFront', [
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -151,7 +165,8 @@ class HomeController extends Controller
         return Inertia::render('Front/ProductsFront', [
             'products' => $products,
             'filters' => $request->only(['search', 'min_price', 'max_price', 'sort']),
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -201,7 +216,8 @@ class HomeController extends Controller
         return Inertia::render('Front/Portfolio', [
             'albums' => $albums,
             'filters' => $request->only(['theme', 'search', 'year']),
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -266,20 +282,21 @@ class HomeController extends Controller
         return Inertia::render('Front/Blog', [
             'actualites' => $actualites,
             'filters' => $request->only(['search', 'date', 'sort']),
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
     /**
      * Display a single blog article
      *
-     * @param int $id
+     * @param string $slug
      * @return \Inertia\Response
      */
-    public function blogShow($id)
+    public function blogShow($slug)
     {
         // Select only necessary columns for better performance
-        $actualite = Actualite::query()->findOrFail($id);
+        $actualite = Actualite::query()->where('slug', $slug)->firstOrFail();
 
         // Get related articles (for example, the 3 most recent ones)
         // Optimize by selecting only needed columns
@@ -287,7 +304,7 @@ class HomeController extends Controller
             ->select(['id', 'title', 'description', 'image_path', 'published_at', 'slug'])
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
-            ->where('id', '!=', $id)
+            ->where('id', '!=', $actualite->id)
             ->orderBy('published_at', 'desc')
             ->take(3)
             ->get();
@@ -295,7 +312,8 @@ class HomeController extends Controller
         return Inertia::render('Front/BlogArticle', [
             'actualite' => $actualite,
             'relatedArticles' => $relatedActualites,
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -305,7 +323,8 @@ class HomeController extends Controller
     public function availability()
     {
         return Inertia::render('Front/Availability', [
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 
@@ -341,7 +360,87 @@ class HomeController extends Controller
         return Inertia::render('Front/ProductDetailFront', [
             'product' => $product,
             'relatedProducts' => $relatedProducts,
-            'contactSettings' => $this->contactService->getContactSettings()
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
+        ]);
+    }
+
+    /**
+     * Display the trainings page with filtering and pagination
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
+    public function trainings(Request $request)
+    {
+        $query = TrainingSession::query()
+            ->active()
+            ->orderBy('start_date', 'asc');
+
+        // Apply search filter
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+
+        // Apply date filter
+        if ($request->has('date') && $request->date) {
+            $date = $request->date;
+
+            if ($date === 'upcoming') {
+                $query->upcoming();
+            } elseif ($date === 'past') {
+                $query->past();
+            } elseif (is_numeric($date)) {
+                // Specific year
+                $query->whereYear('start_date', $date);
+            }
+        } else {
+            // Default: show upcoming sessions
+            $query->upcoming();
+        }
+
+        // Paginate results
+        $trainingSessions = $query->paginate(9)->withQueryString();
+
+        return Inertia::render('Front/Trainings', [
+            'trainingSessions' => $trainingSessions,
+            'filters' => $request->only(['search', 'date']),
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
+        ]);
+    }
+
+    /**
+     * Display a single training session
+     *
+     * @param string $slug
+     * @return \Inertia\Response
+     */
+    public function trainingShow($slug)
+    {
+        // Find the training session by slug
+        $trainingSession = TrainingSession::where('slug', $slug)
+            ->active()
+            ->firstOrFail();
+
+        // Get related training sessions (for example, the 3 most recent other sessions)
+        $relatedSessions = TrainingSession::where('id', '!=', $trainingSession->id)
+            ->active()
+            ->upcoming()
+            ->orderBy('start_date', 'asc')
+            ->take(3)
+            ->get();
+
+        return Inertia::render('Front/TrainingDetail', [
+            'trainingSession' => $trainingSession,
+            'relatedSessions' => $relatedSessions,
+            'contactSettings' => $this->contactService->getContactSettings(),
+            'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
     }
 }

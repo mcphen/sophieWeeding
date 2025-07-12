@@ -31,7 +31,21 @@ onUnmounted(() => {
         document.head.removeChild(jsonLdScript);
     }
 });
+function stripAndTruncateHtml(html: string | null, maxLength: number = 100): string {
+    if (!html) return '';
 
+    // Créer un élément temporaire pour extraire le texte
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    const text = tempDiv.textContent || tempDiv.innerText || "";
+
+    // Tronquer si nécessaire
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+
+    return text;
+}
 // Computed properties for meta tags
 const metaTitle = computed(() => "Blog | Sophie Wedding Dreams - Conseils et Actualités Mariage");
 const metaDescription = computed(() => "Découvrez nos articles, conseils et actualités sur l'organisation de mariage à Dakar, Sénégal. Tendances, idées et inspiration pour votre mariage parfait.");
@@ -72,6 +86,7 @@ const blogJsonLd = computed(() => {
 interface Actualite {
     id: number;
     title: string;
+    slug: string;
     description: string;
     image_path: string;
     image_url: string;
@@ -464,11 +479,13 @@ watch([selectedDate, sortBy], () => {
                                 {{ actualite.title }}
                             </h2>
                             <p class="mb-4 flex-grow text-gray-600">
-                                <span v-html="truncateHtml(actualite.description)"></span>
+                                 <span>
+                                       {{ stripAndTruncateHtml(actualite.description, 120) }}
+                                   </span>
 
                             </p>
                             <Link
-                                :href="route('blog.show', actualite.id)"
+                                :href="route('blog.show', actualite.slug)"
                                 class="text-primary group-hover:text-primary-dark mt-auto inline-flex items-center self-start font-medium"
                             >
                                 Lire l'article

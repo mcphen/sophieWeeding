@@ -16,7 +16,7 @@
             <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Service cards dynamically generated -->
                 <div
-                    v-for="service in services"
+                    v-for="service in services.slice(0, 3)"
                     :key="service.id"
                     class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100"
                 >

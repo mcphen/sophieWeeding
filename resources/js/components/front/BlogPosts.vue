@@ -46,7 +46,9 @@
             </div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ post.title }}</h3>
             <p class="text-gray-600 mb-4">
-              <span v-html="truncateHtml(post.content)"></span>
+               <span>
+                   {{ stripAndTruncateHtml(post.content, 120) }}
+               </span>
             </p>
             <Link
               :href="post.url"
@@ -76,6 +78,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { Link } from '@inertiajs/vue3';
 
 // Définir l'interface pour les actualités
 interface Actualite {
@@ -84,6 +87,24 @@ interface Actualite {
   published_at: string;
   image_path?: string;
   description?: string;
+  slug?: string;
+}
+
+// Extraire le texte brut du HTML et le tronquer
+function stripAndTruncateHtml(html: string | null, maxLength: number = 100): string {
+    if (!html) return '';
+
+    // Créer un élément temporaire pour extraire le texte
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    const text = tempDiv.textContent || tempDiv.innerText || "";
+
+    // Tronquer si nécessaire
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+
+    return text;
 }
 
 // État des articles de blog
@@ -112,7 +133,7 @@ const fetchLatestActualites = async () => {
       category: 'Actualité', // Catégorie par défaut
       date: new Date(actualite.published_at),
       imageUrl: actualite.image_path ? `${actualite.image_path}` : '/images/blog-default.jpg',
-      url: `/${actualite.id}/blog`,
+      url: `/blog/${actualite.slug || actualite.id}`,
       content: actualite.description || ''
     }));
   } catch (err) {
@@ -127,7 +148,7 @@ const fetchLatestActualites = async () => {
         category: "Info",
         date: new Date(),
         imageUrl: "/images/blog-default.jpg",
-        url: "#",
+        url: "/blog/erreur-de-chargement",
         content: "<p>Les actualités ne peuvent pas être chargées pour le moment. Veuillez réessayer plus tard.</p>"
       }
     ];
@@ -145,74 +166,6 @@ const formatDate = (date: Date) => {
   return date.toLocaleDateString('fr-FR', options);
 };
 
-// Fonction pour tronquer le HTML tout en conservant la structure
-const truncateHtml = (html: string, maxLength = 120) => {
-  // Retirer les balises HTML pour compter les caractères
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  const textContent = tempDiv.textContent || tempDiv.innerText || '';
-
-  if (textContent.length <= maxLength) {
-    return html;
-  }
-
-  // Chercher où couper tout en gardant les balises intactes
-  let truncated = '';
-  let charCount = 0;
-  let inTag = false;
-
-  for (let i = 0; i < html.length; i++) {
-    const char = html[i];
-
-    if (char === '<') {
-      inTag = true;
-      truncated += char;
-    } else if (char === '>') {
-      inTag = false;
-      truncated += char;
-    } else if (!inTag) {
-      // On compte seulement les caractères hors des balises
-      if (charCount < maxLength) {
-        truncated += char;
-        charCount++;
-      } else if (charCount === maxLength) {
-        truncated += '...';
-        charCount++;
-      }
-    } else {
-      // Caractère à l'intérieur d'une balise
-      truncated += char;
-    }
-  }
-
-  // Assurer que toutes les balises sont fermées correctement
-  const openTags = [];
-  const regex = /<([^\/\s>]+)([^>]*)>/g;
-  const closeRegex = /<\/([^>]+)>/g;
-  let match;
-
-  while ((match = regex.exec(truncated)) !== null) {
-    // Ignorer les balises auto-fermantes comme <img/>
-    if (!/\/>$/.test(match[0])) {
-      openTags.push(match[1]);
-    }
-  }
-
-  while ((match = closeRegex.exec(truncated)) !== null) {
-    // Retirer la dernière occurrence de cette balise
-    const tagIndex = openTags.lastIndexOf(match[1]);
-    if (tagIndex !== -1) {
-      openTags.splice(tagIndex, 1);
-    }
-  }
-
-  // Fermer les balises restantes dans l'ordre inverse
-  while (openTags.length) {
-    truncated += `</${openTags.pop()}>`;
-  }
-
-  return truncated;
-};
 </script>
 
 <style scoped>

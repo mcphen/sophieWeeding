@@ -214,4 +214,54 @@ class SettingController extends Controller
 
         return redirect()->back()->with('success', 'Color settings updated successfully.');
     }
+
+    /**
+     * Display CTA settings form.
+     */
+    public function ctaSettings()
+    {
+        // Get all settings that are used in the CTA settings form
+        $ctaSettings = collect([
+            'cta_from_color' => Setting::get('cta_from_color', '#d1922f'),
+            'cta_to_color' => Setting::get('cta_to_color', '#bf8529'),
+            'cta_title' => Setting::get('cta_title', 'Prêts à planifier le mariage de vos rêves ?'),
+            'cta_description' => Setting::get('cta_description', 'Contactez-nous dès aujourd\'hui pour une consultation gratuite et commencez à transformer votre vision en réalité.'),
+            'cta_paragraph_color' => Setting::get('cta_paragraph_color', '#faecd2'),
+            'cta_link_route' => Setting::get('cta_link_route', 'appointment.create'),
+            'cta_button_text' => Setting::get('cta_button_text', 'Prendre rendez-vous'),
+            'cta_button_text_color' => Setting::get('cta_button_text_color', '#d1922f'),
+        ])->map(function ($value, $key) {
+            return [
+                'id' => $key,
+                'key' => $key,
+                'value' => $value,
+                'group' => 'cta',
+                'type' => strpos($key, 'color') !== false ? 'color' : 'text',
+                'label' => ucfirst(str_replace(['cta_', '_'], ['', ' '], $key)),
+            ];
+        })->values()->all();
+
+        return Inertia::render('Admin/Settings/Cta', [
+            'settings' => $ctaSettings
+        ]);
+    }
+
+    /**
+     * Update CTA settings.
+     */
+    public function updateCtaSettings(Request $request)
+    {
+        // Process CTA settings
+        foreach ($request->all() as $key => $value) {
+            Setting::set($key, $value);
+        }
+
+        // Clear the cache to ensure new settings are used
+        Setting::clearCache();
+
+        // Clear the CTA settings cache
+        app(\App\Services\CtaService::class)->clearCtaSettingsCache();
+
+        return redirect()->back()->with('success', 'CTA settings updated successfully.');
+    }
 }

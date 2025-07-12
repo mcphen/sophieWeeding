@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\VisitorTrackerController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\TrainingSessionController;
+use App\Http\Controllers\TrainingRegistrationController;
 
 
 Route::get('/', [HomeController::class,'index'])->name('home');
@@ -29,7 +31,13 @@ Route::get('/team-members/listes', [TeamMemberController::class,'getListeDatas']
 Route::get('/partners/listes', [PartnerController::class,'getListeDatas'])->name('api.team-members.listes');
 Route::get('/testimonials/listes', [TestimonialController::class,'getListeDatas'])->name('api.team-members.listes');
 Route::get('/blog', [HomeController::class, 'blog'])->name('blog');
-Route::get('/{id}/blog', [HomeController::class, 'blogShow'])->name('blog.show');
+Route::get('/blog/{slug}', [HomeController::class, 'blogShow'])->name('blog.show');
+
+// Training routes
+Route::get('/formations', [HomeController::class, 'trainings'])->name('trainings');
+Route::get('/formations/{slug}', [HomeController::class, 'trainingShow'])->name('training.show');
+Route::post('/formations/{trainingSession}/register', [TrainingRegistrationController::class, 'store'])->name('training.register');
+Route::get('/formations/registration/{registration}/confirmation', [TrainingRegistrationController::class, 'confirmation'])->name('training.registration.confirmation');
 
 // Contact routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -150,6 +158,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('color-settings', [SettingController::class, 'colorSettings'])->name('admin.color-settings');
         Route::post('color-settings', [SettingController::class, 'updateColorSettings'])->name('admin.color-settings.update');
 
+        // CTA settings
+        Route::get('cta-settings', [SettingController::class, 'ctaSettings'])->name('admin.cta-settings');
+        Route::post('cta-settings', [SettingController::class, 'updateCtaSettings'])->name('admin.cta-settings.update');
+
         // Schedules management routes
         Route::resource('schedules', ScheduleController::class)
             ->only(['index', 'store', 'update', 'destroy'])
@@ -193,6 +205,21 @@ Route::middleware(['auth'])->group(function () {
                 'update' => 'admin.users.update',
                 'destroy' => 'admin.users.destroy',
             ]);
+
+        // Training sessions management routes
+        Route::resource('training-sessions', TrainingSessionController::class)
+            ->except(['show'])
+            ->names([
+                'index' => 'admin.training-sessions.index',
+                'create' => 'admin.training-sessions.create',
+                'store' => 'admin.training-sessions.store',
+                'edit' => 'admin.training-sessions.edit',
+                'update' => 'admin.training-sessions.update',
+                'destroy' => 'admin.training-sessions.destroy',
+            ]);
+        Route::get('training-sessions/{trainingSession}', [TrainingSessionController::class, 'show'])->name('admin.training-sessions.show');
+        Route::post('training-registrations/{registration}/confirm', [TrainingRegistrationController::class, 'confirm'])->name('admin.training-registrations.confirm');
+        Route::delete('training-registrations/{registration}', [TrainingRegistrationController::class, 'destroy'])->name('admin.training-registrations.destroy');
     });
 
     // API routes for authenticated users

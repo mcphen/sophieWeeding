@@ -108,8 +108,22 @@ interface ContactSettings {
     opening_hours: string;
 }
 
-// Get contact settings from page props
+// Define CtaSettings interface
+interface CtaSettings {
+    fromColor: string;
+    toColor: string;
+    title: string;
+    description: string;
+    paragraphColor: string;
+    linkRoute: string;
+    buttonText: string;
+    buttonTextColor: string;
+}
+
+// Get page props
 const page = usePage();
+
+// Get contact settings from page props
 const contactSettings = computed(() => page.props.contactSettings as ContactSettings || {
     contact_phone: '(+221) 78 538 30 69',
     contact_phone_fixed: '(+221) 33 865 27 11',
@@ -122,6 +136,18 @@ const contactSettings = computed(() => page.props.contactSettings as ContactSett
     social_instagram: 'https://www.instagram.com/sophie_weddings_dreams/',
     contact_address: 'Rue NG-70, 91 Ngor Almadies, Dakar 12000',
     opening_hours: 'Lundi - Vendredi: 8am - 6pm'
+});
+
+// Get CTA settings from page props
+const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
+    fromColor: '#d1922f',
+    toColor: '#bf8529',
+    title: 'Prêts à planifier le mariage de vos rêves ?',
+    description: 'Contactez-nous dès aujourd\'hui pour une consultation gratuite et commencez à transformer votre vision en réalité.',
+    paragraphColor: '#faecd2',
+    linkRoute: 'appointment.create',
+    buttonText: 'Prendre rendez-vous',
+    buttonTextColor: '#d1922f'
 });
 
 // Contact form data
@@ -330,6 +356,27 @@ const submitForm = async () => {
         <Partners :bg-color="'bg-gray-50'"
                   :class-names="'text-3xl font-serif font-bold text-gray-900'" />
 
+        <!-- Training Sessions Preview -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-serif font-bold text-gray-900">Nos formations et séminaires</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+                        Développez vos compétences avec nos sessions de formation et séminaires professionnels
+                    </p>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <Link
+                        :href="route('trainings')"
+                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#d1922f] hover:bg-[#c08529] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d1922f]"
+                    >
+                        Voir toutes nos formations
+                    </Link>
+                </div>
+            </div>
+        </section>
+
         <!-- Blog Preview -->
 
         <BlogPosts />
@@ -492,7 +539,16 @@ const submitForm = async () => {
         </section>
         <!-- CTA Section -->
 
-        <CtaSection />
+        <CtaSection
+            :from-color="ctaSettings.fromColor"
+            :to-color="ctaSettings.toColor"
+            :title="ctaSettings.title"
+            :description="ctaSettings.description"
+            :paragraph-color="ctaSettings.paragraphColor"
+            :link-route="ctaSettings.linkRoute"
+            :button-text="ctaSettings.buttonText"
+            :button-text-color="ctaSettings.buttonTextColor"
+        />
     </LayoutFront>
 
 </template>

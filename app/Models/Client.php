@@ -58,4 +58,12 @@ class Client extends Model
     {
         return $this->hasMany(Contact::class);
     }
+
+    /**
+     * Get the training registrations for the client.
+     */
+    public function trainingRegistrations(): HasMany
+    {
+        return $this->hasMany(TrainingRegistration::class);
+    }
 }

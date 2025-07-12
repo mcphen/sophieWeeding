@@ -647,7 +647,7 @@ const subscribeToNewsletter = async () => {
 
                 <div class="mt-12 pt-8 border-t border-gray-700">
                     <p class="text-gray-400 text-center">
-                        &copy; {{ new Date().getFullYear() }} Sophie Weddings Dreams. Tous droits réservés.
+                        &copy; 2021 Sophie Weddings Dreams. Tous droits réservés.
                     </p>
                 </div>
             </div>

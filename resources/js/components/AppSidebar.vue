@@ -20,7 +20,8 @@ import {
     Mail,
     FileText,
     Settings,
-    Send
+    Send,
+    GraduationCap
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
@@ -96,6 +97,11 @@ const mainNavItems: NavItem[] = [
         href: route('admin.newsletter.index'),
         icon: Send,
     },
+    // {
+    //     title: 'Formations',
+    //     href: route('admin.training-sessions.index'),
+    //     icon: GraduationCap,
+    // },
     {
         title: 'Paramètres de contact',
         href: route('admin.contact-settings'),
@@ -104,6 +110,11 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Paramètres de couleur',
         href: route('admin.color-settings'),
+        icon: Settings,
+    },
+    {
+        title: 'Paramètres CTA',
+        href: route('admin.cta-settings'),
         icon: Settings,
     },
     {

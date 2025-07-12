@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Head,Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Partners from '@/components/front/Partners.vue';
 import Temoignages from '@/components/front/Temoignages.vue';
 import CtaSection from '@/components/front/CtaSection.vue';
@@ -70,6 +70,31 @@ const breadcrumbItems = [
     { name: 'Accueil', href: '/', current: false },
     { name: 'À Propos', href: '/about', current: true }
 ];
+
+// Define CtaSettings interface
+interface CtaSettings {
+    fromColor: string;
+    toColor: string;
+    title: string;
+    description: string;
+    paragraphColor: string;
+    linkRoute: string;
+    buttonText: string;
+    buttonTextColor: string;
+}
+
+// Get CTA settings from page props
+const page = usePage();
+const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
+    fromColor: '#d1922f',
+    toColor: '#bf8529',
+    title: 'Prêts à planifier le mariage de vos rêves ?',
+    description: 'Contactez-nous dès aujourd\'hui pour une consultation gratuite et commencez à transformer votre vision en réalité.',
+    paragraphColor: '#faecd2',
+    linkRoute: 'appointment.create',
+    buttonText: 'Prendre rendez-vous',
+    buttonTextColor: '#d1922f'
+});
 
 </script>
 
@@ -178,7 +203,16 @@ const breadcrumbItems = [
                 :is-horizontal-div="true"
             />
 
-            <CtaSection />
+            <CtaSection
+                :from-color="ctaSettings.fromColor"
+                :to-color="ctaSettings.toColor"
+                :title="ctaSettings.title"
+                :description="ctaSettings.description"
+                :paragraph-color="ctaSettings.paragraphColor"
+                :link-route="ctaSettings.linkRoute"
+                :button-text="ctaSettings.buttonText"
+                :button-text-color="ctaSettings.buttonTextColor"
+            />
         </div>
     </LayoutFront>
 
