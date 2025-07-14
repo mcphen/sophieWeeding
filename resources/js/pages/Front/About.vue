@@ -57,9 +57,20 @@ const fetchTeamMembers = async () => {
     }
 };
 
+// Partners section visibility
+const partnersRef = ref(null);
+const showPartnersSection = ref(false);
+
 // Charger les données au montage du composant
 onMounted(() => {
     fetchTeamMembers();
+
+    // Check if partners exist when component is mounted
+    setTimeout(() => {
+        if (partnersRef.value && partnersRef.value.hasPartners) {
+            showPartnersSection.value = partnersRef.value.hasPartners.value;
+        }
+    }, 0);
 });
 
 
@@ -192,8 +203,12 @@ const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
                 </div>
             </section>
 
-            <!-- Section Nos Partenaires -->
-            <Partners :class-names="'text-3xl font-serif font-bold text-center text-primary mb-3'" />
+            <!-- Section Nos Partenaires - Only shown if partners exist -->
+            <Partners
+                v-show="showPartnersSection"
+                ref="partnersRef"
+                :class-names="'text-3xl font-serif font-bold text-center text-primary mb-3'"
+            />
 
 
 

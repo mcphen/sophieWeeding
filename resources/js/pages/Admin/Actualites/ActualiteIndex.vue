@@ -8,11 +8,16 @@ import { ref, computed } from 'vue';
 interface Actualite {
     id: number;
     title: string;
-    description: string | null;
     image_path: string | null;
     published_at: string;
     created_at: string;
     updated_at: string;
+    blocks?: Array<{
+        id: number;
+        type: string;
+        content: any;
+        position: number;
+    }>;
 }
 
 // Type pour pagination
@@ -101,6 +106,18 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
 
     return text;
 }
+
+// Fonction pour obtenir le texte d'un bloc
+function getBlockText(actualite: Actualite, maxLength = 100): string {
+    if (actualite.blocks && actualite.blocks.length > 0) {
+        // Trouver le premier bloc de type texte
+        const textBlock = actualite.blocks.find(block => block.type === 'text');
+        if (textBlock && textBlock.content && textBlock.content.html) {
+            return stripAndTruncateHtml(textBlock.content.html, maxLength);
+        }
+    }
+    return 'Aucun contenu disponible';
+}
 </script>
 
 <template>
@@ -150,15 +167,18 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                         </button>
                     </div>
 
-                    <Link
-                        :href="route('admin.actualites.create')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center gap-2"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        Ajouter une actualité
-                    </Link>
+                    <div class="flex gap-2">
+                        <Link
+                            :href="route('admin.actualites.create-new')"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center gap-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Ajouter article
+                        </Link>
+
+                    </div>
                 </div>
             </div>
 
@@ -195,7 +215,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                         <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ actualite.title }}</h3>
                         <p class="text-gray-600 text-sm mb-4 flex-1">
                             <span>
-                                {{ stripAndTruncateHtml(actualite.description, 120) }}
+                                {{ getBlockText(actualite, 120) }}
                             </span>
                         </p>
                         <div class="flex justify-between items-center mb-3">
@@ -227,15 +247,26 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                     </svg>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune actualité trouvée</h3>
                     <p class="text-gray-500 mb-4">Commencez par ajouter une nouvelle actualité.</p>
-                    <Link
-                        :href="route('admin.actualites.create')"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        Ajouter une actualité
-                    </Link>
+                    <div class="flex gap-3 justify-center">
+                        <Link
+                            :href="route('admin.actualites.create')"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Ajouter (simple)
+                        </Link>
+                        <Link
+                            :href="route('admin.actualites.create-new')"
+                            class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Ajouter (blocs)
+                        </Link>
+                    </div>
                 </div>
             </div>
 
@@ -271,7 +302,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-600 max-w-xs">
-                                    {{ stripAndTruncateHtml(actualite.description) }}
+                                    {{ getBlockText(actualite) }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -305,7 +336,27 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V8a2 2 0 00-2-2h-5M8 12h8M8 16h4" />
                                 </svg>
-                                <p class="text-gray-500">Aucune actualité trouvée. Commencez par en ajouter une !</p>
+                                <p class="text-gray-500 mb-4">Aucune actualité trouvée. Commencez par en ajouter une !</p>
+                                <div class="flex gap-3 justify-center">
+                                    <Link
+                                        :href="route('admin.actualites.create')"
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        Ajouter (simple)
+                                    </Link>
+                                    <Link
+                                        :href="route('admin.actualites.create-new')"
+                                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        Ajouter (blocs)
+                                    </Link>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

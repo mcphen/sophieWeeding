@@ -238,8 +238,8 @@ class HomeController extends Controller
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                $q->where('title', 'like', "%{$search}%");
+                    //->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -296,12 +296,12 @@ class HomeController extends Controller
     public function blogShow($slug)
     {
         // Select only necessary columns for better performance
-        $actualite = Actualite::query()->where('slug', $slug)->firstOrFail();
+        $actualite = Actualite::query()->where('slug', $slug)->with('blocks')->firstOrFail();
 
         // Get related articles (for example, the 3 most recent ones)
         // Optimize by selecting only needed columns
         $relatedActualites = Actualite::query()
-            ->select(['id', 'title', 'description', 'image_path', 'published_at', 'slug'])
+            ->select(['id', 'title',  'image_path', 'published_at', 'slug'])
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->where('id', '!=', $actualite->id)
@@ -342,7 +342,7 @@ class HomeController extends Controller
         // Get related products (for example, the 4 most recent other products)
         // Optimize by selecting only needed columns and limiting the query
         $relatedProducts = Product::where('id', '!=', $product->id)
-            ->select(['id', 'title', 'description', 'image_path', 'price', 'slug'])
+            ->select(['id', 'title',  'image_path', 'price', 'slug'])
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get()
@@ -350,7 +350,7 @@ class HomeController extends Controller
                 return [
                     'id' => $product->id,
                     'title' => $product->title,
-                    'description' => $product->description,
+                   // 'description' => $product->description,
                     'image_url' => $product->image_path ? StorageHelper::url($product->image_path) : null,
                     'price' => $product->price,
                     'slug' => $product->slug,

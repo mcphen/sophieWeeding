@@ -23,6 +23,11 @@ class ActualiteController extends Controller
         return Inertia::render('Admin/Actualites/ActualitesCreate');
     }
 
+    public function createNew()
+    {
+        return Inertia::render('Admin/Actualites/ActualitesCreateWithBlocks');
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -30,18 +35,40 @@ class ActualiteController extends Controller
             'description'  => 'nullable|string',
             'image'        => 'nullable|image|max:2048',
             'published_at' => 'required|date',
+            'blocks'       => 'nullable|array',
+            'blocks.*.type' => 'required|in:text,timeline,gallery,image,video,quote,faq,embed,file,alert',
+            'blocks.*.content' => 'required',
+            'blocks.*.position' => 'required|integer',
         ]);
+
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('actualites', 'public');
         }
-        Actualite::create($data);
+
+        // Create the article
+        $actualite = Actualite::create($data);
+
+        // Create blocks if they exist
+        if ($request->has('blocks') && is_array($request->blocks)) {
+            foreach ($request->blocks as $block) {
+                $actualite->blocks()->create([
+                    'type' => $block['type'],
+                    'content' => $block['content'],
+                    'position' => $block['position'],
+                ]);
+            }
+        }
+
         return redirect()->route('admin.actualites.index')
             ->with('success', 'Actualité créée.');
     }
 
     public function edit(Actualite $actualite)
     {
-        return Inertia::render('Admin/Actualites/ActualitesEdit', [
+        // Load the blocks relationship
+        $actualite->load('blocks');
+
+        return Inertia::render('Admin/Actualites/ActualitesEditWithBlocks', [
             'actualite' => $actualite,
         ]);
     }
@@ -53,12 +80,34 @@ class ActualiteController extends Controller
             'description'  => 'nullable|string',
             'image'        => 'nullable|image|max:2048',
             'published_at' => 'required|date',
+            'blocks'       => 'nullable|array',
+            'blocks.*.type' => 'required|in:text,timeline,gallery,image,video,quote,faq,embed,file,alert',
+            'blocks.*.content' => 'required',
+            'blocks.*.position' => 'required|integer',
         ]);
+
         if ($request->hasFile('image')) {
             Storage::disk('public')->delete($actualite->image_path);
             $data['image_path'] = $request->file('image')->store('actualites', 'public');
         }
+
         $actualite->update($data);
+
+        // Update blocks
+        if ($request->has('blocks')) {
+            // Delete existing blocks
+            $actualite->blocks()->delete();
+
+            // Create new blocks
+            foreach ($request->blocks as $block) {
+                $actualite->blocks()->create([
+                    'type' => $block['type'],
+                    'content' => $block['content'],
+                    'position' => $block['position'],
+                ]);
+            }
+        }
+
         return redirect()->route('admin.actualites.index')
             ->with('success', 'Actualité mise à jour.');
     }

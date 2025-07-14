@@ -99,7 +99,6 @@ const partners = ref<Partner[]>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
-
 // Fonction pour charger les partenaires depuis l'API
 const fetchPartners = async () => {
     try {
@@ -121,6 +120,15 @@ const fetchPartners = async () => {
         isLoading.value = false;
     }
 };
+
+// Expose if partners exist for parent components
+const hasPartners = computed(() => partners.value && partners.value.length > 0);
+
+// Expose properties for parent components
+defineExpose({
+    hasPartners,
+    fetchPartners
+});
 
 
 const currentIndex = ref(0);
@@ -211,4 +219,3 @@ onBeforeUnmount(() => {
     }
 }
 </style>
-

@@ -150,6 +150,20 @@ const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
     buttonTextColor: '#d1922f'
 });
 
+// Partners section visibility
+const partnersRef = ref(null);
+const showPartnersSection = ref(false);
+
+// Check if partners exist when component is mounted
+onMounted(() => {
+    // We'll check the hasPartners property after the Partners component is mounted
+    setTimeout(() => {
+        if (partnersRef.value && partnersRef.value.hasPartners) {
+            showPartnersSection.value = partnersRef.value.hasPartners.value;
+        }
+    }, 0);
+});
+
 // Contact form data
 const contactForm = reactive({
     first_name: '',
@@ -351,31 +365,34 @@ const submitForm = async () => {
             :class-names-title="'text-3xl font-serif font-bold text-gray-900'"
         />
 
-        <!-- Partners Section -->
-
-        <Partners :bg-color="'bg-gray-50'"
-                  :class-names="'text-3xl font-serif font-bold text-gray-900'" />
+        <!-- Partners Section - Only shown if partners exist -->
+        <Partners
+            v-show="showPartnersSection"
+            ref="partnersRef"
+            :bg-color="'bg-gray-50'"
+            :class-names="'text-3xl font-serif font-bold text-gray-900'"
+        />
 
         <!-- Training Sessions Preview -->
-        <section class="py-16 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h2 class="text-3xl font-serif font-bold text-gray-900">Nos formations et séminaires</h2>
-                    <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
-                        Développez vos compétences avec nos sessions de formation et séminaires professionnels
-                    </p>
-                </div>
+<!--        <section class="py-16 bg-white">-->
+<!--            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">-->
+<!--                <div class="text-center">-->
+<!--                    <h2 class="text-3xl font-serif font-bold text-gray-900">Nos formations et séminaires</h2>-->
+<!--                    <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">-->
+<!--                        Développez vos compétences avec nos sessions de formation et séminaires professionnels-->
+<!--                    </p>-->
+<!--                </div>-->
 
-                <div class="mt-12 text-center">
-                    <Link
-                        :href="route('trainings')"
-                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#d1922f] hover:bg-[#c08529] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d1922f]"
-                    >
-                        Voir toutes nos formations
-                    </Link>
-                </div>
-            </div>
-        </section>
+<!--                <div class="mt-12 text-center">-->
+<!--                    <Link-->
+<!--                        :href="route('trainings')"-->
+<!--                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#d1922f] hover:bg-[#c08529] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d1922f]"-->
+<!--                    >-->
+<!--                        Voir toutes nos formations-->
+<!--                    </Link>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </section>-->
 
         <!-- Blog Preview -->
 

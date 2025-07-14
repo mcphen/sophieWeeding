@@ -1,0 +1,254 @@
+<script setup lang="ts">
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItemType } from '@/types';
+import { ref } from 'vue';
+import BlockManager from '@/components/blocks/BlockManager.vue';
+
+// Props
+const props = defineProps<{
+  actualite: {
+    id: number;
+    title: string;
+    description: string | null;
+    image_path: string | null;
+    image_url: string | null;
+    published_at: string;
+    blocks: Array<{
+      id: number;
+      type: 'text' | 'timeline' | 'gallery';
+      content: any;
+      position: number;
+    }>;
+  }
+}>();
+
+// Définition des fils d'Ariane
+const breadcrumbs: BreadcrumbItemType[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Actualités', href: route('admin.actualites.index') },
+    { title: 'Modifier l\'actualité', href: route('admin.actualites.edit', props.actualite.id) }
+];
+
+// Interface pour les blocs
+interface Block {
+  id: string;
+  type: 'text' | 'timeline' | 'gallery';
+  content: any;
+  position: number;
+}
+
+// Formulaire Inertia
+const form = useForm({
+    title: props.actualite.title,
+    description: props.actualite.description || '',
+    image: null as File | null,
+    published_at: props.actualite.published_at,
+    blocks: props.actualite.blocks as unknown as Block[] || [],
+    _method: 'PUT'
+});
+
+// Prévisualisation de l'image
+const imagePreview = ref<string | null>(props.actualite.image_url);
+const fileInput = ref<HTMLInputElement | null>(null);
+
+// Fonctions
+function handleImageUpload(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0] || null;
+
+    if (file) {
+        form.image = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        form.image = null;
+        imagePreview.value = props.actualite.image_url;
+    }
+}
+
+function removeImage() {
+    form.image = null;
+    imagePreview.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = '';
+    }
+}
+
+function submit() {
+    form.post(route('admin.actualites.update', props.actualite.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Redirection gérée par le contrôleur
+        }
+    });
+}
+</script>
+
+<template>
+    <Head title="Modifier une actualité" />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6 bg-white shadow-sm">
+            <!-- En-tête avec style amélioré -->
+            <div class="flex justify-between items-center border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Modifier une actualité</h2>
+                <Link
+                    :href="route('admin.actualites.index')"
+                    class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Retour à la liste
+                </Link>
+            </div>
+
+            <!-- Formulaire de création avec style amélioré -->
+            <form @submit.prevent="submit" class="space-y-6">
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-md">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">Modifiez les informations de l'article et ses blocs de contenu.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations de base -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Informations de base</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Titre de l'actualité -->
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Titre de l'actualité <span class="text-red-600">*</span></label>
+                            <input
+                                id="title"
+                                v-model="form.title"
+                                type="text"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                placeholder="Titre de l'actualité"
+                                required
+                            >
+                            <p v-if="form.errors.title" class="mt-2 text-sm text-red-600">{{ form.errors.title }}</p>
+                        </div>
+
+                        <!-- Date de publication -->
+                        <div>
+                            <label for="published_at" class="block text-sm font-medium text-gray-700 mb-2">Date de publication <span class="text-red-600">*</span></label>
+                            <input
+                                id="published_at"
+                                v-model="form.published_at"
+                                type="date"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                required
+                            >
+                            <p v-if="form.errors.published_at" class="mt-2 text-sm text-red-600">{{ form.errors.published_at }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="mt-6">
+                        <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image principale de l'actualité</label>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            <!-- Prévisualisation -->
+                            <div
+                                v-if="imagePreview"
+                                class="relative w-40 h-40 border rounded-lg overflow-hidden"
+                            >
+                                <img :src="imagePreview" alt="Prévisualisation" class="w-full h-full object-cover">
+                                <button
+                                    @click.prevent="removeImage"
+                                    type="button"
+                                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Upload -->
+                            <div v-if="!imagePreview" class="flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-500">Ajouter une image</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <input
+                                    id="image"
+                                    ref="fileInput"
+                                    type="file"
+                                    accept="image/*"
+                                    class="hidden"
+                                    @change="handleImageUpload"
+                                >
+                                <button
+                                    type="button"
+                                    @click="fileInput?.click()"
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition flex items-center justify-center gap-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ imagePreview ? 'Changer l\'image' : 'Sélectionner une image' }}
+                                </button>
+                                <p class="text-xs text-gray-500">Format recommandé : JPG, PNG (max 2Mo)</p>
+                            </div>
+                        </div>
+
+                        <p v-if="form.errors.image" class="mt-2 text-sm text-red-600">{{ form.errors.image }}</p>
+                    </div>
+                </div>
+
+                <!-- Blocs de contenu -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Contenu de l'article</h3>
+                    <BlockManager v-model="form.blocks" />
+                    <p v-if="form.errors.blocks" class="mt-2 text-sm text-red-600">{{ form.errors.blocks }}</p>
+                </div>
+
+                <!-- Boutons -->
+                <div class="flex gap-3 pt-6 border-t">
+                    <button
+                        type="submit"
+                        class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center gap-2 shadow-sm"
+                        :disabled="form.processing"
+                    >
+                        <svg v-if="form.processing" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        {{ form.processing ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+                    </button>
+
+                    <Link
+                        :href="route('admin.actualites.index')"
+                        class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition flex items-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Annuler
+                    </Link>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
+</template>

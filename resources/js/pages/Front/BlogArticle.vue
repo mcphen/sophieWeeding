@@ -2,17 +2,23 @@
 import { Head, Link } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { ref, computed, onMounted } from 'vue';
+import ArticleBlock from '@/components/front/ArticleBlock.vue';
 
 // Interface pour le modèle Actualite
 interface Actualite {
   id: number;
   title: string;
-  description: string;
   image_path: string;
   image_url: string;
   published_at: string;
   created_at: string;
   updated_at: string;
+  blocks?: Array<{
+    id: number;
+    type: string;
+    content: any;
+    position: number;
+  }>;
 }
 
 // Définition des props
@@ -37,14 +43,43 @@ const formatDate = (dateString: string) => {
 };
 
 // Extraire un extrait de la description pour les articles connexes
-const getExcerpt = (text: string, maxLength: number = 100) => {
+const getExcerpt = (text: string | null | undefined, maxLength: number = 100) => {
+  if (!text) return '';
   if (text.length <= maxLength) return text;
   return text.substr(0, maxLength) + '...';
 };
 
+    // Fonction pour obtenir le texte d'un bloc
+const getBlockText = (actualite: Actualite, maxLength = 150): string => {
+  if (actualite.blocks && actualite.blocks.length > 0) {
+    // Trouver le premier bloc de type texte
+    const textBlock = actualite.blocks.find(block => block.type === 'text');
+    if (textBlock && textBlock.content) {
+      // Handle both formats: with html key and direct content
+      const htmlContent = typeof textBlock.content === 'object' && textBlock.content.html
+        ? textBlock.content.html
+        : textBlock.content;
+
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = htmlContent;
+      const text = tempDiv.textContent || tempDiv.innerText || "";
+      return getExcerpt(text, maxLength);
+    }
+  }
+  return '';
+};
+
 // Méta données pour le partage social
 const metaTitle = computed(() => `${props.actualite.title} | Amour Éternel`);
-const metaDescription = computed(() => getExcerpt(props.actualite.description, 150));
+const metaDescription = computed(() => getBlockText(props.actualite, 150));
+
+// Sorted blocks for display
+const sortedBlocks = computed(() => {
+  if (props.actualite.blocks && props.actualite.blocks.length > 0) {
+    return [...props.actualite.blocks].sort((a, b) => a.position - b.position);
+  }
+  return [];
+});
 
 // Options de partage
 const shareOptions = computed(() => {
@@ -247,8 +282,17 @@ onMounted(() => {
         </header>
 
         <!-- Contenu de l'article -->
-        <div class="prose prose-lg max-w-none">
-          <p v-html="actualite.description "></p>
+        <div v-if="sortedBlocks.length > 0" class="article-blocks">
+          <!-- Render blocks in order of position -->
+          <ArticleBlock
+            v-for="block in sortedBlocks"
+            :key="block.id"
+            :block="block"
+          />
+        </div>
+        <!-- Message if no blocks -->
+        <div v-else class="prose prose-lg max-w-none">
+          <p class="text-gray-500 italic">Aucun contenu disponible pour cet article.</p>
         </div>
 
         <!-- Pied de l'article (tags, auteur, etc.) -->
@@ -301,7 +345,7 @@ onMounted(() => {
                 {{ article.title }}
               </h3>
               <p class="text-sm text-gray-600 mb-4">
-                {{ getExcerpt(article.description) }}
+                {{ getBlockText(article) }}
               </p>
               <Link
                 :href="route('blog.show', article.id)"

@@ -66,19 +66,30 @@ const blogJsonLd = computed(() => {
                 url: `${window.location.origin}/images/logo.png`
             }
         },
-        blogPost: props.actualites.data.map(post => ({
-            '@type': 'BlogPosting',
-            headline: post.title,
-            description: getExcerpt(post.description, 150),
-            datePublished: post.published_at,
-            dateModified: post.updated_at,
-            image: post.image_path ? `${window.location.origin}/storage/${post.image_path}` : '',
-            url: `${window.location.origin}/blog/${post.id}`,
-            author: {
-                '@type': 'Organization',
-                name: 'Sophie Wedding Dreams'
+        blogPost: props.actualites.data.map(post => {
+            // Get excerpt from first text block if available
+            let description = '';
+            if (post.blocks && post.blocks.length > 0) {
+                const textBlock = post.blocks.find(block => block.type === 'text');
+                if (textBlock && textBlock.content && textBlock.content.html) {
+                    description = getExcerpt(stripAndTruncateHtml(textBlock.content.html, 150));
+                }
             }
-        }))
+
+            return {
+                '@type': 'BlogPosting',
+                headline: post.title,
+                description: description,
+                datePublished: post.published_at,
+                dateModified: post.updated_at,
+                image: post.image_path ? `${window.location.origin}/storage/${post.image_path}` : '',
+                url: `${window.location.origin}/blog/${post.id}`,
+                author: {
+                    '@type': 'Organization',
+                    name: 'Sophie Wedding Dreams'
+                }
+            };
+        })
     };
 });
 
@@ -87,12 +98,17 @@ interface Actualite {
     id: number;
     title: string;
     slug: string;
-    description: string;
     image_path: string;
     image_url: string;
     published_at: string;
     created_at: string;
     updated_at: string;
+    blocks?: Array<{
+        id: number;
+        type: string;
+        content: any;
+        position: number;
+    }>;
 }
 
 // Interface pour les données paginées
@@ -208,73 +224,16 @@ const resetFilters = () => {
     applyFilters();
 };
 
-// Fonction pour tronquer le HTML tout en conservant la structure
-const truncateHtml = (html: string, maxLength = 120) => {
-    // Retirer les balises HTML pour compter les caractères
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    const textContent = tempDiv.textContent || tempDiv.innerText || '';
-
-    if (textContent.length <= maxLength) {
-        return html;
-    }
-
-    // Chercher où couper tout en gardant les balises intactes
-    let truncated = '';
-    let charCount = 0;
-    let inTag = false;
-
-    for (let i = 0; i < html.length; i++) {
-        const char = html[i];
-
-        if (char === '<') {
-            inTag = true;
-            truncated += char;
-        } else if (char === '>') {
-            inTag = false;
-            truncated += char;
-        } else if (!inTag) {
-            // On compte seulement les caractères hors des balises
-            if (charCount < maxLength) {
-                truncated += char;
-                charCount++;
-            } else if (charCount === maxLength) {
-                truncated += '...';
-                charCount++;
-            }
-        } else {
-            // Caractère à l'intérieur d'une balise
-            truncated += char;
+// Fonction pour obtenir le texte d'un bloc
+const getBlockText = (actualite: Actualite, maxLength = 120): string => {
+    if (actualite.blocks && actualite.blocks.length > 0) {
+        // Trouver le premier bloc de type texte
+        const textBlock = actualite.blocks.find(block => block.type === 'text');
+        if (textBlock && textBlock.content && textBlock.content.html) {
+            return stripAndTruncateHtml(textBlock.content.html, maxLength);
         }
     }
-
-    // Assurer que toutes les balises sont fermées correctement
-    const openTags = [];
-    const regex = /<([^\/\s>]+)([^>]*)>/g;
-    const closeRegex = /<\/([^>]+)>/g;
-    let match;
-
-    while ((match = regex.exec(truncated)) !== null) {
-        // Ignorer les balises auto-fermantes comme <img/>
-        if (!/\/>$/.test(match[0])) {
-            openTags.push(match[1]);
-        }
-    }
-
-    while ((match = closeRegex.exec(truncated)) !== null) {
-        // Retirer la dernière occurrence de cette balise
-        const tagIndex = openTags.lastIndexOf(match[1]);
-        if (tagIndex !== -1) {
-            openTags.splice(tagIndex, 1);
-        }
-    }
-
-    // Fermer les balises restantes dans l'ordre inverse
-    while (openTags.length) {
-        truncated += `</${openTags.pop()}>`;
-    }
-
-    return truncated;
+    return '';
 };
 const breadcrumbItems = [
     { name: 'Accueil', href: '/', current: false },
@@ -480,7 +439,7 @@ watch([selectedDate, sortBy], () => {
                             </h2>
                             <p class="mb-4 flex-grow text-gray-600">
                                  <span>
-                                       {{ stripAndTruncateHtml(actualite.description, 120) }}
+                                       {{ getBlockText(actualite, 120) }}
                                    </span>
 
                             </p>

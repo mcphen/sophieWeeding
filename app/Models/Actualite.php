@@ -11,13 +11,20 @@ class Actualite extends Model
 {
     protected $fillable = [
         'title',
-        'description',
         'image_path',
         'published_at',
         'slug',
     ];
 
     protected $appends = ['image_url'];
+
+    /**
+     * Get the blocks for the article.
+     */
+    public function blocks()
+    {
+        return $this->hasMany(ArticleBlock::class, 'article_id')->orderBy('position');
+    }
 
     public function getImagePathAttribute($value)
     {

@@ -112,6 +112,9 @@ Route::middleware(['auth'])->group(function () {
                 'destroy' => 'admin.testimonials.destroy',
             ]);
 
+        // New WordPress-like editor route
+        Route::get('actualites/create-new', [ActualiteController::class, 'createNew'])->name('admin.actualites.create-new');
+
         Route::resource('actualites', ActualiteController::class)
             ->except(['show'])
             ->names([
