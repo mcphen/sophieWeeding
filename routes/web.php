@@ -238,6 +238,7 @@ Route::get('/api/products', [ProductController::class, 'getProducts'])->name('ap
 Route::get('/css/colors.css', [App\Http\Controllers\ColorController::class, 'css'])->name('css.colors');
 Route::get('/api/schedules/available', [App\Http\Controllers\Admin\ScheduleController::class, 'getAvailableSchedules'])->name('api.schedules.available');
 Route::get('/api/actualites/latest', [ActualiteController::class, 'latest'])->name('api.actualites.latest');
+Route::get('/api/actualites/paginated', [ActualiteController::class, 'paginated'])->name('api.actualites.paginated');
 Route::post('/api/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'store'])->name('api.newsletter.subscribe');
 Route::post('/api/cookie-consent', [App\Http\Controllers\CookieConsentController::class, 'store'])->name('api.cookie-consent.store');
 

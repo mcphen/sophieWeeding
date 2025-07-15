@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
+import axios from 'axios';
 
 // Current URL for canonical and sharing
 const currentUrl = ref('');
@@ -66,7 +67,7 @@ const blogJsonLd = computed(() => {
                 url: `${window.location.origin}/images/logo.png`
             }
         },
-        blogPost: props.actualites.data.map(post => {
+        blogPost: actualites.value.data.map(post => {
             // Get excerpt from first text block if available
             let description = '';
             if (post.blocks && post.blocks.length > 0) {
@@ -119,42 +120,77 @@ interface PaginatedData {
         label: string;
         active: boolean;
     }[];
-    meta: {
-        current_page: number;
-        from: number | null;
-        last_page: number;
-        links: {
-            url: string | null;
-            label: string;
-            active: boolean;
-        }[];
-        path: string;
-        per_page: number;
-        to: number | null;
-        total: number;
-    };
+    current_page: number;
+    from: number | null;
+    last_page: number;
+    path: string;
+    per_page: number;
+    to: number | null;
+    total: number;
 }
 
-// Interface pour les filtres
-interface Filters {
-    search: string | null;
-    date: string | null;
-    sort: string | null;
-}
+// Filter types are now handled directly in the component
 
-// Définition des props
-const props = defineProps<{
-    actualites: PaginatedData;
-    filters: Filters;
-    categories?: string[];
-}>();
+// No props needed as we're fetching data directly with axios
 
 // États
-const searchQuery = ref(props.filters.search || '');
-const selectedDate = ref(props.filters.date || 'all');
-const sortBy = ref(props.filters.sort || 'newest');
-const isLoading = ref(false);
+const searchQuery = ref('');
+const selectedDate = ref('all');
+const sortBy = ref('newest');
+const isLoading = ref(true);
 const showFilters = ref(false);
+
+// États pour les articles et la pagination
+const actualites = ref<PaginatedData>({
+    data: [],
+    links: [],
+    current_page: 1,
+    from: null,
+    last_page: 1,
+    path: '',
+    per_page: 10,
+    to: null,
+    total: 0
+});
+const allArticles = ref<Actualite[]>([]);
+const currentPage = ref(1);
+const hasMoreArticles = ref(false);
+const loadingMore = ref(false);
+
+// Fonction pour charger les articles depuis l'API
+const fetchArticles = async (page = 1, resetList = true) => {
+    isLoading.value = resetList;
+    loadingMore.value = !resetList;
+
+    try {
+        const params: Record<string, string | null> = {
+            page: page.toString(),
+            search: searchQuery.value || null,
+            date: selectedDate.value === 'all' ? null : selectedDate.value,
+            sort: sortBy.value === 'newest' ? null : sortBy.value,
+        };
+
+        // Nettoyer les paramètres null
+        Object.keys(params).forEach((key) => params[key] === null && delete params[key]);
+
+        const response = await axios.get('/api/actualites/paginated', { params });
+        actualites.value = response.data;
+
+        if (resetList) {
+            allArticles.value = [...response.data.data];
+        } else {
+            allArticles.value = [...allArticles.value, ...response.data.data];
+        }
+
+        currentPage.value = response.data.current_page;
+        hasMoreArticles.value = response.data.current_page < response.data.last_page;
+    } catch (error) {
+        console.error('Error fetching articles:', error);
+    } finally {
+        isLoading.value = false;
+        loadingMore.value = false;
+    }
+};
 
 // Format de date français
 const formatDate = (dateString: string) => {
@@ -194,26 +230,8 @@ const sortOptions = [
 
 // Appliquer les filtres
 const applyFilters = () => {
-    isLoading.value = true;
-
-    const params: Record<string, string | null> = {
-        page: '1', // Retour à la première page pour les nouveaux filtres
-        search: searchQuery.value || null,
-        date: selectedDate.value === 'all' ? null : selectedDate.value,
-        sort: sortBy.value === 'newest' ? null : sortBy.value,
-    };
-
-    // Nettoyer les paramètres null
-    Object.keys(params).forEach((key) => params[key] === null && delete params[key]);
-
-    // Redirection avec les nouveaux filtres
-    router.get(route('blog'), params, {
-        preserveState: true,
-        preserveScroll: false,
-        onSuccess: () => {
-            isLoading.value = false;
-        },
-    });
+    // Fetch articles with current filters, reset to page 1
+    fetchArticles(1, true);
 };
 
 // Réinitialiser les filtres
@@ -239,9 +257,28 @@ const breadcrumbItems = [
     { name: 'Accueil', href: '/', current: false },
     { name: 'Blog', href: '/blog', current: true }
 ];
+// Fonction pour charger plus d'articles
+const loadMoreArticles = () => {
+    if (!hasMoreArticles.value || loadingMore.value) return;
+
+    const nextPage = currentPage.value + 1;
+    fetchArticles(nextPage, false);
+};
+
+// Note: resetArticles function is no longer needed as this is handled in fetchArticles
+
 // Surveiller les changements de filtre
 watch([selectedDate, sortBy], () => {
     applyFilters();
+});
+
+// Charger les articles au montage du composant
+onMounted(() => {
+    currentUrl.value = window.location.href;
+    // Inject JSON-LD after component is mounted
+    injectJsonLdScript();
+    // Fetch articles on component mount
+    fetchArticles();
 });
 </script>
 
@@ -415,14 +452,14 @@ watch([selectedDate, sortBy], () => {
                 <!-- Grille d'articles -->
                 <div v-else class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                     <div
-                        v-for="actualite in actualites.data"
+                        v-for="actualite in allArticles"
                         :key="actualite.id"
                         class="group flex flex-col overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-xl"
                     >
                         <!-- Image de l'article -->
                         <div class="relative h-56 overflow-hidden">
                             <img
-                                :src="`${actualite.image_path}`"
+                                :src="actualite.image_url"
                                 :alt="actualite.title"
                                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 loading="lazy"
@@ -462,25 +499,22 @@ watch([selectedDate, sortBy], () => {
                     </div>
                 </div>
 
-                <!-- Pagination -->
-                <div v-if="actualites.meta && actualites.meta.last_page > 1" class="mt-12 flex justify-center">
-                    <nav class="flex items-center space-x-1">
-                        <Link
-                            v-for="link in actualites.links"
-                            :key="link.label"
-                            :href="link.url || '#'"
-                            :class="[
-                                'rounded-md border px-4 py-2 transition-colors',
-                                link.active
-                                    ? 'bg-primary border-primary text-white'
-                                    : link.url
-                                      ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                                      : 'cursor-not-allowed border-gray-200 text-gray-400',
-                            ]"
-                        >
-                            <span v-html="link.label"></span>
-                        </Link>
-                    </nav>
+                <!-- Bouton "Voir plus" -->
+                <div v-if="hasMoreArticles || loadingMore" class="mt-12 flex justify-center">
+                    <button
+                        @click="loadMoreArticles"
+                        class="bg-primary hover:bg-primary-dark rounded-full px-8 py-3 text-white transition-colors flex items-center space-x-2"
+                        :disabled="loadingMore"
+                    >
+                        <span v-if="!loadingMore">Voir plus d'articles</span>
+                        <span v-else class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Chargement...
+                        </span>
+                    </button>
                 </div>
             </div>
         </section>

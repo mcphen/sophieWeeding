@@ -136,4 +136,72 @@ class ActualiteController extends Controller
 
         return response()->json($actualites);
     }
+
+    /**
+     * Get paginated published actualites with filters
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function paginated(Request $request)
+    {
+        $query = Actualite::query()
+            ->with('blocks')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
+
+        // Search filter
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%");
+            });
+        }
+
+        // Date filter
+        if ($request->has('date') && $request->date) {
+            $date = $request->date;
+
+            if ($date === 'this-month') {
+                $query->whereMonth('published_at', now()->month)
+                    ->whereYear('published_at', now()->year);
+            } elseif ($date === 'last-month') {
+                $lastMonth = now()->subMonth();
+                $query->whereMonth('published_at', $lastMonth->month)
+                    ->whereYear('published_at', $lastMonth->year);
+            } elseif (is_numeric($date)) {
+                // Specific year
+                $query->whereYear('published_at', $date);
+            }
+        }
+
+        // Sorting
+        if ($request->has('sort') && $request->sort) {
+            $sort = $request->sort;
+
+            if ($sort === 'oldest') {
+                $query->orderBy('published_at', 'asc');
+            } elseif ($sort === 'title-asc') {
+                $query->orderBy('title', 'asc');
+            } elseif ($sort === 'title-desc') {
+                $query->orderBy('title', 'desc');
+            }
+        } else {
+            // Default: newest first
+            $query->orderBy('published_at', 'desc');
+        }
+
+        // Pagination
+        $actualites = $query->paginate(10)->withQueryString();
+
+        // Add image_url to each actualite
+        $actualites->getCollection()->transform(function ($actualite) {
+            if ($actualite->image_path) {
+                $actualite->image_url = url('storage/' . $actualite->image_path);
+            }
+            return $actualite;
+        });
+
+        return response()->json($actualites);
+    }
 }

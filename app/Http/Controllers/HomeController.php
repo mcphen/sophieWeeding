@@ -223,65 +223,13 @@ class HomeController extends Controller
 
 
     /**
-     * Display the blog page with filtering and pagination
+     * Display the blog page
      *
-     * @param Request $request
      * @return \Inertia\Response
      */
-    public function blog(Request $request)
+    public function blog()
     {
-        $query = Actualite::query()
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
-
-        // Search filter
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%");
-                    //->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Date filter
-        if ($request->has('date') && $request->date) {
-            $date = $request->date;
-
-            if ($date === 'this-month') {
-                $query->whereMonth('published_at', Carbon::now()->month)
-                    ->whereYear('published_at', Carbon::now()->year);
-            } elseif ($date === 'last-month') {
-                $lastMonth = Carbon::now()->subMonth();
-                $query->whereMonth('published_at', $lastMonth->month)
-                    ->whereYear('published_at', $lastMonth->year);
-            } elseif (is_numeric($date)) {
-                // Specific year
-                $query->whereYear('published_at', $date);
-            }
-        }
-
-        // Sorting
-        if ($request->has('sort') && $request->sort) {
-            $sort = $request->sort;
-
-            if ($sort === 'oldest') {
-                $query->orderBy('published_at', 'asc');
-            } elseif ($sort === 'title-asc') {
-                $query->orderBy('title', 'asc');
-            } elseif ($sort === 'title-desc') {
-                $query->orderBy('title', 'desc');
-            }
-        } else {
-            // Default: newest first
-            $query->orderBy('published_at', 'desc');
-        }
-
-        // Pagination
-        $actualites = $query->paginate(9)->withQueryString();
-
         return Inertia::render('Front/Blog', [
-            'actualites' => $actualites,
-            'filters' => $request->only(['search', 'date', 'sort']),
             'contactSettings' => $this->contactService->getContactSettings(),
             'ctaSettings' => $this->ctaService->getCtaSettings()
         ]);
