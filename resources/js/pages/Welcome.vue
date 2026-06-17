@@ -8,6 +8,7 @@ import BlogPosts from '@/components/front/BlogPosts.vue';
 import CtaSection from '@/components/front/CtaSection.vue';
 import GalleryPreview from '@/components/front/GalleryPreview.vue';
 import ServiceSection from '@/components/front/ServiceSection.vue';
+import MasterclassSection from '@/components/front/MasterclassSection.vue';
 import axios from 'axios';
 
 // Define props for banner photos
@@ -18,8 +19,19 @@ interface BannerPhoto {
     image_url?: string;
 }
 
+interface UpcomingSession {
+    id: number;
+    start_date: string;
+    start_time: string;
+    location_label: string;
+    formatted_price: string;
+    available_spots: number | null;
+    masterclass: { title: string; niveau: string; slug: string; image_url: string | null };
+}
+
 interface Props {
     bannerPhotos: BannerPhoto[];
+    upcomingSessions: UpcomingSession[];
 }
 
 const props = defineProps<Props>();
@@ -373,26 +385,8 @@ const submitForm = async () => {
             :class-names="'text-3xl font-serif font-bold text-gray-900'"
         />
 
-        <!-- Training Sessions Preview -->
-<!--        <section class="py-16 bg-white">-->
-<!--            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">-->
-<!--                <div class="text-center">-->
-<!--                    <h2 class="text-3xl font-serif font-bold text-gray-900">Nos formations et séminaires</h2>-->
-<!--                    <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">-->
-<!--                        Développez vos compétences avec nos sessions de formation et séminaires professionnels-->
-<!--                    </p>-->
-<!--                </div>-->
-
-<!--                <div class="mt-12 text-center">-->
-<!--                    <Link-->
-<!--                        :href="route('trainings')"-->
-<!--                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#d1922f] hover:bg-[#c08529] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d1922f]"-->
-<!--                    >-->
-<!--                        Voir toutes nos formations-->
-<!--                    </Link>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </section>-->
+        <!-- Masterclasses Section -->
+        <MasterclassSection :sessions="upcomingSessions" />
 
         <!-- Blog Preview -->
 

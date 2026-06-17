@@ -2,25 +2,24 @@
 
 namespace App\Models;
 
-use App\Helpers\StorageHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TrainingSession extends Model
 {
     protected $fillable = [
-        'title',
-        'description',
-        'content',
-        'image_path',
-        'document_path',
+        'masterclass_id',
         'start_date',
         'end_date',
-        'location',
+        'adresse',
+        'location_type',
+        'google_maps_url',
+        'online_link',
+        'replay_url',
         'max_participants',
         'price',
         'is_active',
-        'slug',
     ];
 
     protected $casts = [
@@ -32,98 +31,72 @@ class TrainingSession extends Model
     ];
 
     protected $appends = [
-        'image_url',
-        'document_url',
         'formatted_price',
         'registration_count',
         'available_spots',
+        'location_label',
     ];
 
-    /**
-     * Get the registrations for the training session.
-     */
+    public function masterclass(): BelongsTo
+    {
+        return $this->belongsTo(Masterclass::class);
+    }
+
     public function registrations(): HasMany
     {
         return $this->hasMany(TrainingRegistration::class);
     }
 
-    /**
-     * Get the image URL attribute.
-     */
-    public function getImageUrlAttribute(): ?string
-    {
-        return $this->image_path ? StorageHelper::url($this->image_path) : null;
-    }
-
-    /**
-     * Get the document URL attribute.
-     */
-    public function getDocumentUrlAttribute(): ?string
-    {
-        return $this->document_path ? StorageHelper::url($this->document_path) : null;
-    }
-
-    /**
-     * Get the formatted price attribute.
-     */
     public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->price, 2) . ' €';
+        if ($this->price === null || $this->price == 0) {
+            return 'Gratuit';
+        }
+        return number_format((int) $this->price, 0, ',', ' ') . ' F CFA';
     }
 
-    /**
-     * Get the registration count attribute.
-     */
     public function getRegistrationCountAttribute(): int
     {
         return $this->registrations()->count();
     }
 
-    /**
-     * Get the available spots attribute.
-     */
-    public function getAvailableSpotsAttribute(): int
+    public function getAvailableSpotsAttribute(): ?int
     {
-        if ($this->max_participants <= 0) {
-            return PHP_INT_MAX; // Unlimited spots
+        if ($this->max_participants === null || $this->max_participants <= 0) {
+            return null; // Illimité
         }
-
         return max(0, $this->max_participants - $this->registration_count);
     }
 
-    /**
-     * Scope a query to only include active training sessions.
-     */
+    public function getLocationLabelAttribute(): string
+    {
+        return match ($this->location_type) {
+            'online' => 'En ligne',
+            'both' => 'Présentiel & En ligne',
+            default => 'Présentiel',
+        };
+    }
+
+    public function isFull(): bool
+    {
+        if ($this->max_participants === null || $this->max_participants <= 0) {
+            return false;
+        }
+        return $this->registration_count >= $this->max_participants;
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * Scope a query to only include upcoming training sessions.
-     */
     public function scopeUpcoming($query)
     {
         return $query->where('start_date', '>=', now());
     }
 
-    /**
-     * Scope a query to only include past training sessions.
-     */
     public function scopePast($query)
     {
         return $query->where('start_date', '<', now());
-    }
-
-    /**
-     * Check if the training session is full.
-     */
-    public function isFull(): bool
-    {
-        if ($this->max_participants <= 0) {
-            return false; // Unlimited spots
-        }
-
-        return $this->registration_count >= $this->max_participants;
     }
 }

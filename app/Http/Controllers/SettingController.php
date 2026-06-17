@@ -264,4 +264,47 @@ class SettingController extends Controller
 
         return redirect()->back()->with('success', 'CTA settings updated successfully.');
     }
+
+    /**
+     * Display attestation settings form.
+     */
+    public function attestationSettings()
+    {
+        $signaturePath = Setting::get('attestation_signature');
+        $signatureUrl = $signaturePath && Storage::disk('public')->exists($signaturePath)
+            ? Storage::disk('public')->url($signaturePath)
+            : null;
+
+        return Inertia::render('Admin/Settings/Attestation', [
+            'signature_url' => $signatureUrl,
+        ]);
+    }
+
+    /**
+     * Update attestation settings.
+     */
+    public function updateAttestationSettings(Request $request)
+    {
+        $request->validate([
+            'signature' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'remove_signature' => 'nullable|boolean',
+        ]);
+
+        if ($request->boolean('remove_signature')) {
+            $old = Setting::get('attestation_signature');
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
+            Setting::set('attestation_signature', null);
+        } elseif ($request->hasFile('signature')) {
+            $old = Setting::get('attestation_signature');
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
+            $path = $request->file('signature')->store('signatures', 'public');
+            Setting::set('attestation_signature', $path);
+        }
+
+        return redirect()->back()->with('success', 'Paramètres attestation mis à jour.');
+    }
 }

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
@@ -17,8 +16,13 @@ use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\VisitorTrackerController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MasterclassController;
 use App\Http\Controllers\TrainingSessionController;
 use App\Http\Controllers\TrainingRegistrationController;
+use App\Http\Controllers\ProspectPortalController;
+use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\WaitlistController;
+use App\Http\Controllers\AnalyticsController;
 
 
 Route::get('/', [HomeController::class,'index'])->name('home');
@@ -33,11 +37,24 @@ Route::get('/testimonials/listes', [TestimonialController::class,'getListeDatas'
 Route::get('/blog', [HomeController::class, 'blog'])->name('blog');
 Route::get('/blog/{slug}', [HomeController::class, 'blogShow'])->name('blog.show');
 
-// Training routes
-Route::get('/formations', [HomeController::class, 'trainings'])->name('trainings');
-Route::get('/formations/{slug}', [HomeController::class, 'trainingShow'])->name('training.show');
-Route::post('/formations/{trainingSession}/register', [TrainingRegistrationController::class, 'store'])->name('training.register');
-Route::get('/formations/registration/{registration}/confirmation', [TrainingRegistrationController::class, 'confirmation'])->name('training.registration.confirmation');
+// Masterclass routes (front)
+Route::get('/masterclasses', [HomeController::class, 'masterclasses'])->name('masterclasses');
+Route::get('/masterclasses/inscription/{registration}/confirmation', [TrainingRegistrationController::class, 'confirmation'])->name('masterclass.registration.confirmation');
+Route::get('/masterclasses/{slug}', [HomeController::class, 'masterclassShow'])->name('masterclass.show');
+Route::post('/masterclasses/{masterclass}/sessions/{session}/inscription', [TrainingRegistrationController::class, 'store'])->name('masterclass.register');
+Route::post('/masterclasses/{masterclass}/sessions/{session}/liste-attente', [WaitlistController::class, 'store'])->name('masterclass.waitlist');
+
+// Espace inscrit (portail prospect)
+Route::prefix('mon-espace')->name('prospect.portal.')->group(function () {
+    Route::get('/', [ProspectPortalController::class, 'showLogin'])->name('login');
+    Route::post('/connexion', [ProspectPortalController::class, 'sendLink'])->name('send-link');
+    Route::get('/auth/{token}', [ProspectPortalController::class, 'verify'])->name('verify');
+    Route::middleware('prospect.auth')->group(function () {
+        Route::get('/tableau-de-bord', [ProspectPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/inscriptions/{registration}/attestation', [ProspectPortalController::class, 'attestation'])->name('attestation');
+        Route::post('/deconnexion', [ProspectPortalController::class, 'logout'])->name('logout');
+    });
+});
 
 // Contact routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -59,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('admin')->group(function () {
 
+        Route::get('analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
 
         Route::resource('services', ServiceController::class)
             ->except(['show'])
@@ -165,6 +183,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('cta-settings', [SettingController::class, 'ctaSettings'])->name('admin.cta-settings');
         Route::post('cta-settings', [SettingController::class, 'updateCtaSettings'])->name('admin.cta-settings.update');
 
+        // Attestation settings
+        Route::get('attestation-settings', [SettingController::class, 'attestationSettings'])->name('admin.attestation-settings');
+        Route::post('attestation-settings', [SettingController::class, 'updateAttestationSettings'])->name('admin.attestation-settings.update');
+
         // Schedules management routes
         Route::resource('schedules', ScheduleController::class)
             ->only(['index', 'store', 'update', 'destroy'])
@@ -209,19 +231,39 @@ Route::middleware(['auth'])->group(function () {
                 'destroy' => 'admin.users.destroy',
             ]);
 
-        // Training sessions management routes
-        Route::resource('training-sessions', TrainingSessionController::class)
-            ->except(['show'])
+        // Participants (liste unique)
+        Route::get('participants', [ParticipantController::class, 'index'])->name('admin.participants.index');
+
+        // Masterclasses management routes (admin)
+        Route::resource('masterclasses', MasterclassController::class)
             ->names([
-                'index' => 'admin.training-sessions.index',
-                'create' => 'admin.training-sessions.create',
-                'store' => 'admin.training-sessions.store',
-                'edit' => 'admin.training-sessions.edit',
-                'update' => 'admin.training-sessions.update',
-                'destroy' => 'admin.training-sessions.destroy',
+                'index'   => 'admin.masterclasses.index',
+                'create'  => 'admin.masterclasses.create',
+                'store'   => 'admin.masterclasses.store',
+                'show'    => 'admin.masterclasses.show',
+                'edit'    => 'admin.masterclasses.edit',
+                'update'  => 'admin.masterclasses.update',
+                'destroy' => 'admin.masterclasses.destroy',
             ]);
-        Route::get('training-sessions/{trainingSession}', [TrainingSessionController::class, 'show'])->name('admin.training-sessions.show');
+
+        // Annonce email masterclass
+        Route::post('masterclasses/{masterclass}/announce', [MasterclassController::class, 'announce'])->name('admin.masterclasses.announce');
+
+        // Sessions d'une masterclass
+        Route::get('masterclasses/{masterclass}/sessions/create', [TrainingSessionController::class, 'create'])->name('admin.masterclass-sessions.create');
+        Route::post('masterclasses/{masterclass}/sessions', [TrainingSessionController::class, 'store'])->name('admin.masterclass-sessions.store');
+        Route::get('masterclasses/{masterclass}/sessions/{session}/edit', [TrainingSessionController::class, 'edit'])->name('admin.masterclass-sessions.edit');
+        Route::put('masterclasses/{masterclass}/sessions/{session}', [TrainingSessionController::class, 'update'])->name('admin.masterclass-sessions.update');
+        Route::delete('masterclasses/{masterclass}/sessions/{session}', [TrainingSessionController::class, 'destroy'])->name('admin.masterclass-sessions.destroy');
+        Route::get('masterclasses/{masterclass}/sessions/{session}/inscriptions', [TrainingSessionController::class, 'showRegistrations'])->name('admin.masterclass-sessions.registrations');
+        Route::get('masterclasses/{masterclass}/sessions/{session}/inscriptions/export', [TrainingSessionController::class, 'exportRegistrations'])->name('admin.masterclass-sessions.export');
+        Route::post('masterclasses/{masterclass}/sessions/{session}/rappel', [TrainingSessionController::class, 'sendReminder'])->name('admin.masterclass-sessions.reminder');
+
+        // Gestion des inscriptions
+        Route::post('masterclasses/{masterclass}/sessions/{session}/inscriptions/ajouter', [TrainingRegistrationController::class, 'adminStore'])->name('admin.training-registrations.admin-store');
+        Route::post('masterclasses/{masterclass}/sessions/{session}/inscriptions/confirmer-tous', [TrainingRegistrationController::class, 'confirmAll'])->name('admin.training-registrations.confirm-all');
         Route::post('training-registrations/{registration}/confirm', [TrainingRegistrationController::class, 'confirm'])->name('admin.training-registrations.confirm');
+        Route::get('training-registrations/{registration}/attestation', [TrainingRegistrationController::class, 'adminAttestation'])->name('admin.training-registrations.attestation');
         Route::delete('training-registrations/{registration}', [TrainingRegistrationController::class, 'destroy'])->name('admin.training-registrations.destroy');
     });
 

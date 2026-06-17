@@ -2,256 +2,186 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\StorageHelper;
+use App\Exports\SessionRegistrationsExport;
+use App\Mail\MasterclassReminderMail;
+use App\Models\Masterclass;
 use App\Models\TrainingSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TrainingSessionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function create(Masterclass $masterclass)
     {
-        $trainingSessions = TrainingSession::orderBy('start_date', 'desc')
-            ->get()
-            ->map(function ($session) {
-                return [
-                    'id' => $session->id,
-                    'title' => $session->title,
-                    'start_date' => $session->start_date->format('d/m/Y H:i'),
-                    'end_date' => $session->end_date->format('d/m/Y H:i'),
-                    'location' => $session->location,
-                    'price' => $session->formatted_price,
-                    'is_active' => $session->is_active,
-                    'registration_count' => $session->registration_count,
-                    'max_participants' => $session->max_participants,
-                    'is_full' => $session->isFull(),
-                ];
-            });
-
-        return Inertia::render('Admin/TrainingSessions/Index', [
-            'trainingSessions' => $trainingSessions,
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return Inertia::render('Admin/TrainingSessions/Create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'document' => 'nullable|file|mimes:pdf|max:10240',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'location' => 'nullable|string|max:255',
-            'max_participants' => 'nullable|integer|min:0',
-            'price' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        // Generate slug from title
-        $slug = Str::slug($validated['title']);
-        $originalSlug = $slug;
-        $count = 1;
-
-        // Ensure slug is unique
-        while (TrainingSession::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count++;
-        }
-
-        // Handle image upload
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('training-sessions', 'public');
-        }
-
-        // Handle document upload
-        $documentPath = null;
-        if ($request->hasFile('document')) {
-            $documentPath = $request->file('document')->store('training-sessions/documents', 'public');
-        }
-
-        // Create training session
-        TrainingSession::create([
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'content' => $validated['content'] ?? null,
-            'image_path' => $imagePath,
-            'document_path' => $documentPath,
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
-            'location' => $validated['location'] ?? null,
-            'max_participants' => $validated['max_participants'] ?? 0,
-            'price' => $validated['price'],
-            'is_active' => $validated['is_active'] ?? true,
-            'slug' => $slug,
-        ]);
-
-        return redirect()->route('admin.training-sessions.index')
-            ->with('success', 'Session de formation créée avec succès.');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TrainingSession $trainingSession)
-    {
-        return Inertia::render('Admin/TrainingSessions/Edit', [
-            'trainingSession' => [
-                'id' => $trainingSession->id,
-                'title' => $trainingSession->title,
-                'description' => $trainingSession->description,
-                'content' => $trainingSession->content,
-                'image_url' => $trainingSession->image_url,
-                'document_url' => $trainingSession->document_url,
-                'start_date' => $trainingSession->start_date->format('Y-m-d\TH:i'),
-                'end_date' => $trainingSession->end_date->format('Y-m-d\TH:i'),
-                'location' => $trainingSession->location,
-                'max_participants' => $trainingSession->max_participants,
-                'price' => $trainingSession->price,
-                'is_active' => $trainingSession->is_active,
-                'slug' => $trainingSession->slug,
+        return Inertia::render('Admin/MasterclassSessions/Create', [
+            'masterclass' => [
+                'id'    => $masterclass->id,
+                'title' => $masterclass->title,
+                'slug'  => $masterclass->slug,
             ],
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, TrainingSession $trainingSession)
+    public function store(Request $request, Masterclass $masterclass)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'document' => 'nullable|file|mimes:pdf|max:10240',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'location' => 'nullable|string|max:255',
-            'max_participants' => 'nullable|integer|min:0',
-            'price' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
+            'start_date'      => 'required|date',
+            'end_date'        => 'nullable|date|after_or_equal:start_date',
+            'location_type'   => 'required|in:presentiel,online,both',
+            'adresse'         => 'nullable|string|max:500',
+            'google_maps_url' => 'nullable|url|max:1000',
+            'online_link'     => 'nullable|url|max:1000',
+            'price'           => 'nullable|numeric|min:0',
+            'max_participants' => 'nullable|integer|min:1',
+            'is_active'       => 'boolean',
         ]);
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image if it exists
-            if ($trainingSession->image_path && Storage::disk('public')->exists($trainingSession->image_path)) {
-                Storage::disk('public')->delete($trainingSession->image_path);
-            }
-
-            // Store the new image
-            $imagePath = $request->file('image')->store('training-sessions', 'public');
-            $trainingSession->image_path = $imagePath;
-        }
-
-        // Handle document upload
-        if ($request->hasFile('document')) {
-            // Delete old document if it exists
-            if ($trainingSession->document_path && Storage::disk('public')->exists($trainingSession->document_path)) {
-                Storage::disk('public')->delete($trainingSession->document_path);
-            }
-
-            // Store the new document
-            $documentPath = $request->file('document')->store('training-sessions/documents', 'public');
-            $trainingSession->document_path = $documentPath;
-        }
-
-        // Update training session
-        $trainingSession->update([
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'content' => $validated['content'] ?? null,
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
-            'location' => $validated['location'] ?? null,
-            'max_participants' => $validated['max_participants'] ?? 0,
-            'price' => $validated['price'],
-            'is_active' => $validated['is_active'] ?? true,
+        $session = $masterclass->sessions()->create([
+            'start_date'       => $validated['start_date'],
+            'end_date'         => $validated['end_date'] ?? null,
+            'location_type'    => $validated['location_type'],
+            'adresse'          => $validated['adresse'] ?? null,
+            'google_maps_url'  => $validated['google_maps_url'] ?? null,
+            'online_link'      => $validated['online_link'] ?? null,
+            'price'            => $validated['price'] ?? null,
+            'max_participants' => $validated['max_participants'] ?? null,
+            'is_active'        => $validated['is_active'] ?? true,
         ]);
 
-        return redirect()->route('admin.training-sessions.index')
-            ->with('success', 'Session de formation mise à jour avec succès.');
+        // Notifie les personnes en liste d'attente pour cette masterclass
+        \App\Models\WaitlistEntry::notifyAllForMasterclass($masterclass, $session);
+
+        return redirect()->route('admin.masterclasses.show', $masterclass)
+            ->with('success', 'Session ajoutée avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TrainingSession $trainingSession)
+    public function edit(Masterclass $masterclass, TrainingSession $session)
     {
-        // Delete image if it exists
-        if ($trainingSession->image_path && Storage::disk('public')->exists($trainingSession->image_path)) {
-            Storage::disk('public')->delete($trainingSession->image_path);
-        }
-
-        // Delete document if it exists
-        if ($trainingSession->document_path && Storage::disk('public')->exists($trainingSession->document_path)) {
-            Storage::disk('public')->delete($trainingSession->document_path);
-        }
-
-        $trainingSession->delete();
-
-        return redirect()->route('admin.training-sessions.index')
-            ->with('success', 'Session de formation supprimée avec succès.');
+        return Inertia::render('Admin/MasterclassSessions/Edit', [
+            'masterclass' => [
+                'id'    => $masterclass->id,
+                'title' => $masterclass->title,
+                'slug'  => $masterclass->slug,
+            ],
+            'session' => [
+                'id'               => $session->id,
+                'start_date'       => $session->start_date->format('Y-m-d\TH:i'),
+                'end_date'         => $session->end_date ? $session->end_date->format('Y-m-d\TH:i') : null,
+                'location_type'    => $session->location_type,
+                'adresse'          => $session->adresse,
+                'google_maps_url'  => $session->google_maps_url,
+                'online_link'      => $session->online_link,
+                'replay_url'       => $session->replay_url,
+                'price'            => $session->price,
+                'max_participants' => $session->max_participants,
+                'is_active'        => $session->is_active,
+            ],
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TrainingSession $trainingSession)
+    public function update(Request $request, Masterclass $masterclass, TrainingSession $session)
     {
-        $registrations = $trainingSession->registrations()
+        $validated = $request->validate([
+            'start_date'       => 'required|date',
+            'end_date'         => 'nullable|date|after_or_equal:start_date',
+            'location_type'    => 'required|in:presentiel,online,both',
+            'adresse'          => 'nullable|string|max:500',
+            'google_maps_url'  => 'nullable|url|max:1000',
+            'online_link'      => 'nullable|url|max:1000',
+            'replay_url'       => 'nullable|url|max:1000',
+            'price'            => 'nullable|numeric|min:0',
+            'max_participants' => 'nullable|integer|min:1',
+            'is_active'        => 'boolean',
+        ]);
+
+        $session->update([
+            'start_date'       => $validated['start_date'],
+            'end_date'         => $validated['end_date'] ?? null,
+            'location_type'    => $validated['location_type'],
+            'adresse'          => $validated['adresse'] ?? null,
+            'google_maps_url'  => $validated['google_maps_url'] ?? null,
+            'online_link'      => $validated['online_link'] ?? null,
+            'replay_url'       => $validated['replay_url'] ?? null,
+            'price'            => $validated['price'] ?? null,
+            'max_participants' => $validated['max_participants'] ?? null,
+            'is_active'        => $validated['is_active'] ?? true,
+        ]);
+
+        return redirect()->route('admin.masterclasses.show', $masterclass)
+            ->with('success', 'Session mise à jour avec succès.');
+    }
+
+    public function destroy(Masterclass $masterclass, TrainingSession $session)
+    {
+        $session->delete();
+
+        return redirect()->route('admin.masterclasses.show', $masterclass)
+            ->with('success', 'Session supprimée avec succès.');
+    }
+
+    public function showRegistrations(Masterclass $masterclass, TrainingSession $session)
+    {
+        $registrations = $session->registrations()
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($registration) {
-                return [
-                    'id' => $registration->id,
-                    'name' => $registration->name,
-                    'email' => $registration->email,
-                    'phone' => $registration->phone,
-                    'message' => $registration->message,
-                    'is_confirmed' => $registration->is_confirmed,
-                    'confirmed_at' => $registration->confirmed_at ? $registration->confirmed_at->format('d/m/Y H:i') : null,
-                    'created_at' => $registration->created_at->format('d/m/Y H:i'),
-                ];
-            });
+            ->map(fn($r) => [
+                'id'           => $r->id,
+                'name'         => $r->name,
+                'email'        => $r->email,
+                'phone'        => $r->phone,
+                'message'      => $r->message,
+                'is_confirmed' => $r->is_confirmed,
+                'confirmed_at' => $r->confirmed_at?->format('d/m/Y H:i'),
+                'created_at'   => $r->created_at->format('d/m/Y H:i'),
+            ]);
 
-        return Inertia::render('Admin/TrainingSessions/Show', [
-            'trainingSession' => [
-                'id' => $trainingSession->id,
-                'title' => $trainingSession->title,
-                'description' => $trainingSession->description,
-                'content' => $trainingSession->content,
-                'image_url' => $trainingSession->image_url,
-                'document_url' => $trainingSession->document_url,
-                'start_date' => $trainingSession->start_date->format('d/m/Y H:i'),
-                'end_date' => $trainingSession->end_date->format('d/m/Y H:i'),
-                'location' => $trainingSession->location,
-                'max_participants' => $trainingSession->max_participants,
-                'price' => $trainingSession->formatted_price,
-                'is_active' => $trainingSession->is_active,
-                'registration_count' => $trainingSession->registration_count,
-                'available_spots' => $trainingSession->available_spots,
-                'is_full' => $trainingSession->isFull(),
+        $waitlistCount = \App\Models\WaitlistEntry::where('training_session_id', $session->id)
+            ->whereNull('notified_at')
+            ->count();
+
+        return Inertia::render('Admin/MasterclassSessions/Registrations', [
+            'masterclass' => [
+                'id'    => $masterclass->id,
+                'title' => $masterclass->title,
             ],
-            'registrations' => $registrations,
+            'session' => [
+                'id'                 => $session->id,
+                'start_date'         => $session->start_date->format('d/m/Y H:i'),
+                'location_label'     => $session->location_label,
+                'registration_count' => $session->registration_count,
+                'max_participants'   => $session->max_participants,
+            ],
+            'registrations'  => $registrations,
+            'waitlist_count' => $waitlistCount,
         ]);
+    }
+
+    public function exportRegistrations(Masterclass $masterclass, TrainingSession $session)
+    {
+        $filename = 'inscriptions-' . $masterclass->slug . '-' . $session->start_date->format('Y-m-d') . '.xlsx';
+        return Excel::download(new SessionRegistrationsExport($session), $filename);
+    }
+
+    public function sendReminder(Masterclass $masterclass, TrainingSession $session)
+    {
+        $registrations = $session->registrations()->get();
+
+        if ($registrations->isEmpty()) {
+            return redirect()->back()->with('error', 'Aucun inscrit pour cette session.');
+        }
+
+        $sent = 0;
+        foreach ($registrations as $registration) {
+            try {
+                Mail::to($registration->email)->send(new MasterclassReminderMail($registration, $masterclass, $session));
+                $sent++;
+            } catch (\Exception $e) {
+                // continue pour les autres
+            }
+        }
+
+        return redirect()->back()->with('success', "Email de rappel envoyé à {$sent} inscrit(s).");
     }
 }

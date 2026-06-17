@@ -5,28 +5,31 @@ import { Link, usePage } from '@inertiajs/vue3';
 
 defineProps<{
     items: NavItem[];
+    label?: string;
 }>();
 
 const page = usePage<SharedData>();
+
+function isActive(href: string): boolean {
+    try {
+        const path = new URL(href, window.location.origin).pathname;
+        return page.url === path || page.url.startsWith(path + '/');
+    } catch {
+        return page.url === href;
+    }
+}
 </script>
 
 <template>
     <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel v-if="label">{{ label }}</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton
-                    as-child :is-active="item.href === page.url"
-                    :tooltip="item.title"
-                >
-                    <Link v-if="!item.href.startsWith('http')" :href="item.href">
+                <SidebarMenuButton as-child :is-active="isActive(item.href)" :tooltip="item.title">
+                    <Link :href="item.href">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
                     </Link>
-                    <a v-else :href="item.href" rel="noopener noreferrer">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </a>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>

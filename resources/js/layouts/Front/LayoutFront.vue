@@ -338,6 +338,12 @@ const subscribeToNewsletter = async () => {
                             Portfolio
                         </Link>
                         <Link
+                            :href="route('masterclasses')"
+                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
+                        >
+                            Masterclasses
+                        </Link>
+                        <Link
                             :href="route('blog')"
                             class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
                         >
@@ -348,6 +354,16 @@ const subscribeToNewsletter = async () => {
                             class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
                         >
                             Contact
+                        </Link>
+                        <Link
+                            :href="route('prospect.portal.login')"
+                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors flex items-center gap-1"
+                        >
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            Mon espace
                         </Link>
                         <Link
                             :href="route('appointment.create')"
@@ -473,6 +489,13 @@ const subscribeToNewsletter = async () => {
                         Portfolio
                     </Link>
                     <Link
+                        :href="route('masterclasses')"
+                        class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
+                        @click="closeMobileMenu"
+                    >
+                        Masterclasses
+                    </Link>
+                    <Link
                         :href="route('blog')"
                         class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
                         @click="closeMobileMenu"
@@ -485,6 +508,13 @@ const subscribeToNewsletter = async () => {
                         @click="closeMobileMenu"
                     >
                         Contact
+                    </Link>
+                    <Link
+                        :href="route('prospect.portal.login')"
+                        class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
+                        @click="closeMobileMenu"
+                    >
+                        Mon espace
                     </Link>
                     <Link
                         :href="route('appointment.create')"
@@ -589,6 +619,11 @@ const subscribeToNewsletter = async () => {
                             <li>
                                 <Link :href="route('portfolio')" class="text-gray-300 hover:text-primary transition-colors">
                                     Portfolio
+                                </Link>
+                            </li>
+                            <li>
+                                <Link :href="route('masterclasses')" class="text-gray-300 hover:text-primary transition-colors">
+                                    Masterclasses
                                 </Link>
                             </li>
                             <li>
