@@ -24,7 +24,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="{{ asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
+        <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
         <div class="check-icon">✓</div>
         <h1>Votre participation est confirmée !</h1>
     </div>

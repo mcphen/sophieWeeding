@@ -61,6 +61,9 @@
                 </tr>
             </table>
 
+            {{-- Logo --}}
+            <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width:160px;display:block;margin:0 auto 16px;">
+
             {{-- Brand name --}}
             <p style="margin:0 0 6px;font-family:'Georgia',serif;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.7);">
                 Sophie Weddings Dream
@@ -116,6 +119,15 @@
                 <tr>
                     <td style="height:4px;background:linear-gradient(90deg,#aa6808,#d1922f);"></td>
                 </tr>
+
+                {{-- Masterclass image --}}
+                @if($masterclass->image_url)
+                <tr>
+                    <td style="padding:0;">
+                        <img src="{{ url($masterclass->image_url) }}" alt="{{ $masterclass->title }}" style="width:100%;max-height:220px;object-fit:cover;display:block;">
+                    </td>
+                </tr>
+                @endif
 
                 {{-- Card content --}}
                 <tr>

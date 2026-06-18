@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Helpers\StorageHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Masterclass extends Model
 {
@@ -34,14 +34,48 @@ class Masterclass extends Model
         return $this->hasMany(TrainingSession::class);
     }
 
+    public function getImagePathAttribute($value)
+    {
+        if (app()->environment('production') && $value && !str_starts_with($value, '/sophieWeeding/public/storage/')) {
+            return '/sophieWeeding/public/storage/' . ltrim($value, '/');
+        }
+
+        return $value;
+    }
+
+    public function getDocumentPathAttribute($value)
+    {
+        if (app()->environment('production') && $value && !str_starts_with($value, '/sophieWeeding/public/storage/')) {
+            return '/sophieWeeding/public/storage/' . ltrim($value, '/');
+        }
+
+        return $value;
+    }
+
     public function getImageUrlAttribute(): ?string
     {
-        return $this->image_path ? StorageHelper::url($this->image_path) : null;
+        if (!$this->getRawOriginal('image_path')) {
+            return null;
+        }
+
+        if (app()->environment('production')) {
+            return $this->image_path;
+        }
+
+        return Storage::url($this->getRawOriginal('image_path'));
     }
 
     public function getDocumentUrlAttribute(): ?string
     {
-        return $this->document_path ? StorageHelper::url($this->document_path) : null;
+        if (!$this->getRawOriginal('document_path')) {
+            return null;
+        }
+
+        if (app()->environment('production')) {
+            return $this->document_path;
+        }
+
+        return Storage::url($this->getRawOriginal('document_path'));
     }
 
     public function getUpcomingSessionsCountAttribute(): int

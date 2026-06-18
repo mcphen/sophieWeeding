@@ -25,6 +25,7 @@
     {{-- HERO --}}
     <tr>
         <td class="hero-pad" align="center" style="background:linear-gradient(145deg,#7a4a05 0%,#aa6808 45%,#d1922f 100%);padding:48px 40px 40px;">
+            <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width:150px;display:block;margin:0 auto 20px;">
             <div style="width:64px;height:64px;background:rgba(255,255,255,0.15);border-radius:50%;margin:0 auto 16px;line-height:64px;text-align:center;font-size:28px;">⏳</div>
             <h1 style="margin:0 0 8px;font-family:'Georgia',serif;font-size:26px;font-weight:700;color:#fff;line-height:1.2;">
                 Vous êtes sur liste d'attente
@@ -52,6 +53,13 @@
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
                 style="background:#fdf6ec;border-radius:12px;border:1px solid #f0dfc0;margin-bottom:24px;overflow:hidden;">
                 <tr><td style="height:4px;background:linear-gradient(90deg,#aa6808,#d1922f);"></td></tr>
+                @if($masterclass->image_url)
+                <tr>
+                    <td style="padding:0;">
+                        <img src="{{ url($masterclass->image_url) }}" alt="{{ $masterclass->title }}" style="width:100%;max-height:200px;object-fit:cover;display:block;">
+                    </td>
+                </tr>
+                @endif
                 <tr>
                     <td style="padding:22px 24px;">
                         <p style="margin:0 0 4px;font-size:11px;font-family:Arial,sans-serif;color:#aa6808;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">

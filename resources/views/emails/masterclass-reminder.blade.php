@@ -23,9 +23,13 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="{{ asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
+        <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
         <h1>⏰ Rappel — Votre masterclass approche !</h1>
     </div>
+
+    @if($masterclass->image_url)
+    <img src="{{ url($masterclass->image_url) }}" alt="{{ $masterclass->title }}" style="width:100%;max-height:220px;object-fit:cover;display:block;">
+    @endif
 
     <div class="content">
         <p>Bonjour <strong>{{ $registration->name }}</strong>,</p>
