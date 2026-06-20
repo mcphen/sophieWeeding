@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -18,12 +18,12 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="{{ asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
+        <img src="{{ asset('images/logo.png') }}" alt="Sophie Weddings Dreams" style="max-width: 180px; margin-bottom: 12px;">
         <h1>Accès à votre espace inscrit</h1>
     </div>
     <div class="content">
         <p>Bonjour,</p>
-        <p>Vous avez demandé un lien de connexion à votre espace inscrit sur <strong>Sophie Weddings Dream</strong>.</p>
+        <p>Vous avez demandé un lien de connexion à votre espace inscrit sur <strong>Sophie Weddings Dreams</strong>.</p>
         <p>Cliquez sur le bouton ci-dessous pour accéder à vos inscriptions, télécharger vos attestations et consulter vos replays.</p>
         <p style="text-align: center;">
             <a href="{{ $loginUrl }}" class="btn">Accéder à mon espace</a>
@@ -32,10 +32,14 @@
             <strong>Ce lien est valable 1 heure et ne peut être utilisé qu'une seule fois.</strong><br>
             Si vous n'avez pas demandé cet email, ignorez-le simplement.
         </div>
-        <p style="margin-top: 20px;">À très bientôt,<br><strong>Sophie Weddings Dream</strong></p>
+        <p style="margin-top: 20px;">À très bientôt,<br><strong>Sophie Weddings Dreams</strong></p>
     </div>
     <div class="footer">
-        <p>© {{ date('Y') }} Sophie Weddings Dream. Tous droits réservés.</p>
+        <p><strong>Sophie Weddings Dreams</strong>
+        @php $phone = \App\Models\Setting::get('contact_phone'); $phoneFixed = \App\Models\Setting::get('contact_phone_fixed'); @endphp
+        @if($phone || $phoneFixed) — {{ implode(' · ', array_filter([$phone, $phoneFixed])) }} @endif
+        </p>
+        <p>© {{ date('Y') }} Sophie Weddings Dreams. Tous droits réservés.</p>
         <p>Si le bouton ne fonctionne pas, copiez ce lien : {{ $loginUrl }}</p>
     </div>
 </div>

@@ -6,6 +6,8 @@ use App\Mail\ProspectMagicLinkMail;
 use App\Models\ProspectToken;
 use App\Models\TrainingRegistration;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -124,12 +126,47 @@ class ProspectPortalController extends Controller
         $session = $registration->trainingSession;
         $masterclass = $session->masterclass;
 
-        $pdf = Pdf::loadView('pdf.attestation', compact('registration', 'session', 'masterclass'));
-        $pdf->setPaper('A3', 'landscape');
+        $qrCodeUri = $this->generateQrCode($registration);
 
-        $filename = 'attestation-' . \Str::slug($masterclass->title) . '-' . $session->start_date->format('Y-m-d') . '.pdf';
+        $pdf = Pdf::loadView('pdf.attestation', compact('registration', 'session', 'masterclass', 'qrCodeUri'));
+        $pdf->setPaper('A4', 'landscape');
+
+        $filename = 'certificat-' . \Str::slug($registration->name) . '-' . $session->start_date->format('Y-m-d') . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    public function verifyCertificate(int $id, string $token)
+    {
+        $registration = TrainingRegistration::with('trainingSession.masterclass')->find($id);
+
+        $valid = $registration
+            && $registration->is_confirmed
+            && hash_equals(
+                substr(hash_hmac('sha256', $id . '|' . $registration->email, config('app.key')), 0, 32),
+                $token
+            );
+
+        if (!$valid) {
+            return Inertia::render('Front/CertificateVerify', ['valid' => false]);
+        }
+
+        $session = $registration->trainingSession;
+        $masterclass = $session->masterclass;
+
+        $daysFr    = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        $monthsFr  = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+        $date      = $session->start_date;
+        $dateLabel = $daysFr[$date->dayOfWeek] . ' ' . $date->day . ' ' . $monthsFr[$date->month - 1] . ' ' . $date->year;
+
+        return Inertia::render('Front/CertificateVerify', [
+            'valid'      => true,
+            'name'       => $registration->name,
+            'training'   => $masterclass->title,
+            'niveau'     => $masterclass->niveau,
+            'date'       => $dateLabel,
+            'issued_at'  => $registration->confirmed_at?->format('d/m/Y') ?? $registration->updated_at->format('d/m/Y'),
+        ]);
     }
 
     public function logout(Request $request)
@@ -138,5 +175,15 @@ class ProspectPortalController extends Controller
 
         return redirect()->route('prospect.portal.login')
             ->with('success', 'Vous avez été déconnecté.');
+    }
+
+    private function generateQrCode(TrainingRegistration $registration): string
+    {
+        $token = substr(hash_hmac('sha256', $registration->id . '|' . $registration->email, config('app.key')), 0, 32);
+        $url   = route('certificate.verify', ['id' => $registration->id, 'token' => $token]);
+
+        $result = (new PngWriter())->write(new QrCode(data: $url, size: 200, margin: 4));
+
+        return $result->getDataUri();
     }
 }

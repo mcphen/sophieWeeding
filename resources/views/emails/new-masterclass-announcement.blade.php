@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="x-apple-disable-message-reformatting">
-    <title>Nouvelle masterclass — Sophie Weddings Dream</title>
+    <title>Nouvelle masterclass — Sophie Weddings Dreams</title>
     <!--[if mso]>
     <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
     <![endif]-->
@@ -62,11 +62,11 @@
             </table>
 
             {{-- Logo --}}
-            <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width:160px;display:block;margin:0 auto 16px;">
+            <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dreams" style="max-width:160px;display:block;margin:0 auto 16px;">
 
             {{-- Brand name --}}
             <p style="margin:0 0 6px;font-family:'Georgia',serif;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.7);">
-                Sophie Weddings Dream
+                Sophie Weddings Dreams
             </p>
 
             {{-- Main headline --}}
@@ -108,7 +108,7 @@
             {{-- Intro text --}}
             <p style="margin:0 0 28px;font-size:15px;line-height:1.8;color:#555;font-family:Arial,sans-serif;">
                 Nous avons le plaisir de vous annoncer l'ouverture d'une <strong style="color:#1a1a1a;">nouvelle masterclass</strong>
-                sur la plateforme Sophie Weddings Dream. Une opportunité exclusive pour développer votre expertise dans le wedding planning.
+                sur la plateforme Sophie Weddings Dreams. Une opportunité exclusive pour développer votre expertise dans le wedding planning.
             </p>
 
             {{-- Masterclass card --}}
@@ -244,8 +244,14 @@
     <tr>
         <td style="background:#3d2200;padding:28px 44px;text-align:center;">
             <p style="margin:0 0 8px;font-family:'Georgia',serif;font-size:15px;color:#e8c98a;letter-spacing:1px;">
-                Sophie Weddings Dream
+                Sophie Weddings Dreams
             </p>
+            @php $phone = \App\Models\Setting::get('contact_phone'); $phoneFixed = \App\Models\Setting::get('contact_phone_fixed'); @endphp
+            @if($phone || $phoneFixed)
+            <p style="margin:0 0 6px;font-size:11px;color:rgba(255,255,255,0.65);font-family:Arial,sans-serif;">
+                {{ implode(' · ', array_filter([$phone, $phoneFixed])) }}
+            </p>
+            @endif
             <p style="margin:0 0 14px;font-size:11px;color:rgba(255,255,255,0.45);font-family:Arial,sans-serif;letter-spacing:0.5px;">
                 Dakar, Sénégal
             </p>
@@ -266,7 +272,7 @@
             </table>
             <p style="margin:0;font-size:10px;color:rgba(255,255,255,0.25);font-family:Arial,sans-serif;line-height:1.6;">
                 Vous recevez cet email car vous êtes inscrit(e) à l'une de nos formations.<br>
-                © {{ date('Y') }} Sophie Weddings Dream. Tous droits réservés.
+                © {{ date('Y') }} Sophie Weddings Dreams. Tous droits réservés.
             </p>
         </td>
     </tr>

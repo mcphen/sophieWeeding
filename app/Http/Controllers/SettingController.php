@@ -276,7 +276,10 @@ class SettingController extends Controller
             : null;
 
         return Inertia::render('Admin/Settings/Attestation', [
-            'signature_url' => $signatureUrl,
+            'signature_url'    => $signatureUrl,
+            'director_name'    => Setting::get('attestation_director_name') ?? 'Sophie Manca',
+            'director_title'   => Setting::get('attestation_director_title') ?? 'Directrice',
+            'city'             => Setting::get('attestation_city') ?? 'Dakar (Sénégal)',
         ]);
     }
 
@@ -286,8 +289,11 @@ class SettingController extends Controller
     public function updateAttestationSettings(Request $request)
     {
         $request->validate([
-            'signature' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'signature'        => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
             'remove_signature' => 'nullable|boolean',
+            'director_name'    => 'nullable|string|max:100',
+            'director_title'   => 'nullable|string|max:100',
+            'city'             => 'nullable|string|max:100',
         ]);
 
         if ($request->boolean('remove_signature')) {
@@ -303,6 +309,16 @@ class SettingController extends Controller
             }
             $path = $request->file('signature')->store('signatures', 'public');
             Setting::set('attestation_signature', $path);
+        }
+
+        if ($request->filled('director_name')) {
+            Setting::set('attestation_director_name', $request->director_name);
+        }
+        if ($request->filled('director_title')) {
+            Setting::set('attestation_director_title', $request->director_title);
+        }
+        if ($request->filled('city')) {
+            Setting::set('attestation_city', $request->city);
         }
 
         return redirect()->back()->with('success', 'Paramètres attestation mis à jour.');

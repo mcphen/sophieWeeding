@@ -23,6 +23,7 @@ use App\Http\Controllers\ProspectPortalController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\EmailListController;
 
 
 Route::get('/', [HomeController::class,'index'])->name('home');
@@ -55,6 +56,9 @@ Route::prefix('mon-espace')->name('prospect.portal.')->group(function () {
         Route::post('/deconnexion', [ProspectPortalController::class, 'logout'])->name('logout');
     });
 });
+
+// Certificate verification (public)
+Route::get('/certificat/{id}/verifier/{token}', [ProspectPortalController::class, 'verifyCertificate'])->name('certificate.verify');
 
 // Contact routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -264,7 +268,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('masterclasses/{masterclass}/sessions/{session}/inscriptions/confirmer-tous', [TrainingRegistrationController::class, 'confirmAll'])->name('admin.training-registrations.confirm-all');
         Route::post('training-registrations/{registration}/confirm', [TrainingRegistrationController::class, 'confirm'])->name('admin.training-registrations.confirm');
         Route::get('training-registrations/{registration}/attestation', [TrainingRegistrationController::class, 'adminAttestation'])->name('admin.training-registrations.attestation');
+        Route::post('training-registrations/{registration}/notifier-attestation', [TrainingRegistrationController::class, 'notifyAttestation'])->name('admin.training-registrations.notify-attestation');
+        Route::post('training-registrations/bulk-notifier-attestation', [TrainingRegistrationController::class, 'bulkNotifyAttestation'])->name('admin.training-registrations.bulk-notify-attestation');
         Route::delete('training-registrations/{registration}', [TrainingRegistrationController::class, 'destroy'])->name('admin.training-registrations.destroy');
+
+        // Listes de diffusion
+        Route::get('email-lists', [EmailListController::class, 'index'])->name('admin.email-lists.index');
+        Route::post('email-lists', [EmailListController::class, 'store'])->name('admin.email-lists.store');
+        Route::put('email-lists/{emailList}', [EmailListController::class, 'update'])->name('admin.email-lists.update');
+        Route::delete('email-lists/{emailList}', [EmailListController::class, 'destroy'])->name('admin.email-lists.destroy');
+        Route::post('email-lists/{emailList}/entries', [EmailListController::class, 'addEntries'])->name('admin.email-lists.entries.store');
+        Route::delete('email-lists/{emailList}/entries/{entry}', [EmailListController::class, 'removeEntry'])->name('admin.email-lists.entries.destroy');
     });
 
     // API routes for authenticated users

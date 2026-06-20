@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { computed } from 'vue';
@@ -16,7 +16,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Mon espace inscrit — Sophie Weddings Dream" />
+    <Head title="Mon espace inscrit — Sophie Weddings Dreams" />
     <LayoutFront>
         <section class="min-h-screen bg-gray-50 flex items-center justify-center py-20 px-4">
             <div class="w-full max-w-md">

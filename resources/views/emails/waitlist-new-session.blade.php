@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
@@ -121,10 +121,16 @@
     {{-- FOOTER --}}
     <tr>
         <td style="background:#3d2200;padding:24px 40px;text-align:center;">
-            <p style="margin:0 0 6px;font-family:'Georgia',serif;font-size:14px;color:#e8c98a;">Sophie Weddings Dream</p>
+            <p style="margin:0 0 6px;font-family:'Georgia',serif;font-size:14px;color:#e8c98a;">Sophie Weddings Dreams</p>
+            @php $phone = \App\Models\Setting::get('contact_phone'); $phoneFixed = \App\Models\Setting::get('contact_phone_fixed'); @endphp
+            @if($phone || $phoneFixed)
+            <p style="margin:0 0 4px;font-size:11px;color:rgba(255,255,255,0.65);font-family:Arial,sans-serif;">
+                {{ implode(' · ', array_filter([$phone, $phoneFixed])) }}
+            </p>
+            @endif
             <p style="margin:0 0 12px;font-size:11px;color:rgba(255,255,255,0.40);font-family:Arial,sans-serif;">Dakar, Sénégal</p>
             <p style="margin:0;font-size:10px;color:rgba(255,255,255,0.25);font-family:Arial,sans-serif;">
-                © {{ date('Y') }} Sophie Weddings Dream. Tous droits réservés.
+                © {{ date('Y') }} Sophie Weddings Dreams. Tous droits réservés.
             </p>
         </td>
     </tr>

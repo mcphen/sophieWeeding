@@ -23,7 +23,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
+        <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dreams" style="max-width: 180px; margin-bottom: 12px;">
         <h1>Nouvelle inscription Masterclass</h1>
     </div>
 
@@ -107,7 +107,11 @@
     </div>
 
     <div class="footer">
-        <p>© {{ date('Y') }} Sophie Weddings Dream. Tous droits réservés.</p>
+        <p><strong>Sophie Weddings Dreams</strong>
+        @php $phone = \App\Models\Setting::get('contact_phone'); $phoneFixed = \App\Models\Setting::get('contact_phone_fixed'); @endphp
+        @if($phone || $phoneFixed) — {{ implode(' · ', array_filter([$phone, $phoneFixed])) }} @endif
+        </p>
+        <p>© {{ date('Y') }} Sophie Weddings Dreams. Tous droits réservés.</p>
         <p>Ce message a été envoyé automatiquement depuis votre site web.</p>
     </div>
 </div>

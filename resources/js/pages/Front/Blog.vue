@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
@@ -48,7 +48,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
     return text;
 }
 // Computed properties for meta tags
-const metaTitle = computed(() => "Blog | Sophie Wedding Dreams - Conseils et Actualités Mariage");
+const metaTitle = computed(() => "Blog | Sophie Weddings Dreams - Conseils et Actualités Mariage");
 const metaDescription = computed(() => "Découvrez nos articles, conseils et actualités sur l'organisation de mariage à Dakar, Sénégal. Tendances, idées et inspiration pour votre mariage parfait.");
 
 // JSON-LD structured data for blog listing
@@ -56,12 +56,12 @@ const blogJsonLd = computed(() => {
     return {
         '@context': 'https://schema.org',
         '@type': 'Blog',
-        headline: 'Blog Sophie Wedding Dreams',
+        headline: 'Blog Sophie Weddings Dreams',
         description: metaDescription.value,
         url: currentUrl.value,
         publisher: {
             '@type': 'Organization',
-            name: 'Sophie Wedding Dreams',
+            name: 'Sophie Weddings Dreams',
             logo: {
                 '@type': 'ImageObject',
                 url: `${window.location.origin}/images/logo.png`
@@ -87,7 +87,7 @@ const blogJsonLd = computed(() => {
                 url: `${window.location.origin}/blog/${post.id}`,
                 author: {
                     '@type': 'Organization',
-                    name: 'Sophie Wedding Dreams'
+                    name: 'Sophie Weddings Dreams'
                 }
             };
         })

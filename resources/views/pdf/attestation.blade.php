@@ -2,266 +2,268 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Attestation de participation</title>
+    <title>Certificat — {{ $registration->name }}</title>
     <style>
-        @page { size: A3 landscape; margin: 0; }
+        @font-face {
+            font-family: 'GreatVibes';
+            src: url('{{ str_replace("\\", "/", public_path("fonts/GreatVibes-Regular.ttf")) }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @page { size: A4 landscape; margin: 0; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
             font-family: 'DejaVu Serif', Georgia, serif;
             color: #1a1a1a;
-            background: #fff;
-            width: 420mm;
-            height: 297mm;
+            background: #ffffff;
+            width: 297mm;
+            height: 210mm;
         }
 
-        .frame-outer {
-            position: absolute;
-            top: 7mm; left: 7mm; right: 7mm; bottom: 7mm;
-            border: 5px solid #aa6808;
-        }
-        .frame-inner {
-            position: absolute;
-            top: 11mm; left: 11mm; right: 11mm; bottom: 11mm;
-            border: 1px solid #e5c87a;
-        }
+        /* Filigrane */
         .watermark {
             position: absolute;
-            top: 108mm; left: 55mm;
-            font-size: 100px;
-            color: rgba(170, 104, 8, 0.04);
+            top: 85mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 72px;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
             font-weight: bold;
+            color: rgba(201, 168, 76, 0.05);
+            letter-spacing: 18px;
             text-transform: uppercase;
-            letter-spacing: 10px;
             white-space: nowrap;
         }
 
-        /* Centrage vertical via table — réservé pour le contenu sans les signatures */
-        .page-table {
-            position: absolute;
-            top: 16mm; left: 16mm; right: 16mm; bottom: 55mm;
-            display: table;
-            width: calc(100% - 32mm);
-        }
-        .page-cell {
-            display: table-cell;
-            vertical-align: middle;
-        }
+        /* Contenu principal */
         .page {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            padding: 10mm 28mm 8mm;
             text-align: center;
         }
 
         /* Logo */
-        .logo { margin-bottom: 5mm; }
-        .logo img { height: 150px; }
-
-        /* Séparateur */
-        .divider {
-            border: none;
-            border-top: 1.5px solid #aa6808;
-            margin: 3mm 0;
+        .logo {
+            margin-bottom: 5mm;
         }
-        .divider-thin {
-            border: none;
-            border-top: 1px solid #e5c87a;
-            margin: 2mm 20mm;
+        .logo img {
+            height: 150px;
         }
 
-        /* Titre */
-        .title {
-            font-size: 40px;
+        /* Titre CERTIFICAT */
+        .title-certificat {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 46px;
             font-weight: bold;
-            color: #aa6808;
+            letter-spacing: 14px;
+            color: #1a1a1a;
+            margin-bottom: 5mm;
             text-transform: uppercase;
-            letter-spacing: 6px;
-            margin: 4mm 0 1mm;
         }
-        .issued {
-            font-size: 9px;
-            color: #aaa;
+
+        /* Sous-titre formation */
+        .subtitle {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 10.5px;
+            letter-spacing: 4px;
+            color: #555;
+            text-transform: uppercase;
+            line-height: 1.6;
+            margin-bottom: 7mm;
+        }
+
+        /* "Ce présent document atteste que :" */
+        .intro-text {
+            font-size: 11px;
+            color: #999;
             font-style: italic;
+            letter-spacing: 1px;
+            margin-bottom: 3mm;
+        }
+
+        /* Nom du participant en cursive dorée */
+        .participant-name {
+            font-family: 'GreatVibes', cursive;
+            font-size: 62px;
+            color: #c9a84c;
+            line-height: 1.15;
             margin-bottom: 5mm;
         }
 
-        /* Corps */
+        /* Texte de participation */
         .body-text {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #444;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.9;
         }
-        .participant-name {
-            font-size: 38px;
+        .training-bold {
             font-weight: bold;
-            color: #1a1a1a;
-            display: inline-block;
-            border-bottom: 2px solid #aa6808;
-            padding: 0 15mm;
-            margin: 3mm 0 2mm;
-            letter-spacing: 1px;
-        }
-        .masterclass-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #aa6808;
             font-style: italic;
         }
-        .niveau-badge {
-            display: inline-block;
-            background: #aa6808;
-            color: #fff;
-            font-size: 12px;
-            padding: 2px 11px;
-            border-radius: 10px;
-            margin-top: 1mm;
-        }
 
-        /* Détails en ligne */
-        .details-row {
-            margin: 5mm 10mm 0;
-            border-top: 1px solid #f0e8d5;
-            border-bottom: 1px solid #f0e8d5;
-            padding: 3mm 0;
-        }
-        .detail-cell {
-            display: inline-block;
-            width: 22%;
-            text-align: center;
-            vertical-align: top;
-            padding: 0 2mm;
-        }
-        .detail-label {
-            font-size: 8px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .detail-value {
-            font-size: 11px;
+        /* Date et lieu */
+        .date-location {
+            font-size: 13px;
             font-weight: bold;
-            color: #333;
-            margin-top: 1mm;
+            color: #1a1a1a;
+            margin-top: 4mm;
         }
 
-        /* Signatures — épinglées en bas de page */
+        /* Zone signature — centrée en bas */
         .sig-section {
             position: absolute;
-            bottom: 24mm;
-            left: 25mm;
-            right: 25mm;
-        }
-        .sig-left  { float: left;  width: 35%; }
-        .sig-right { float: right; width: 35%; }
-        .clearfix::after { content: ''; display: block; clear: both; }
-        .sig-space { height: 12mm; }
-        .sig-line {
-            border-top: 1px solid #777;
-            padding-top: 2mm;
-            font-size: 9px;
-            color: #555;
-        }
-
-        /* Pied */
-        .footer {
-            position: absolute;
-            bottom: 13mm;
+            bottom: 14mm;
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 8px;
+        }
+        .sig-inner {
+            display: inline-block;
+            text-align: center;
+            min-width: 55mm;
+        }
+        .sig-img {
+            height: 18mm;
+            max-width: 55mm;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 2mm;
+        }
+        .sig-line {
+            border-top: 1px solid #666;
+            padding-top: 2.5mm;
+        }
+        .sig-name {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+        }
+        .sig-role {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 8.5px;
+            color: #888;
+            letter-spacing: 1px;
+            margin-top: 1mm;
+        }
+
+        /* QR Code — bas droit */
+        .qr-section {
+            position: absolute;
+            bottom: 10mm;
+            right: 18mm;
+            text-align: center;
+        }
+        .qr-section img {
+            width: 22mm;
+            height: 22mm;
+            display: block;
+        }
+        .qr-label {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 5.5px;
+            color: #bbb;
+            letter-spacing: 0.5px;
+            margin-top: 1mm;
+            text-transform: uppercase;
+        }
+
+        /* Pied de page discret */
+        .footer {
+            position: absolute;
+            bottom: 4mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 6.5px;
             color: #ccc;
-            border-top: 1px solid #f5f5f5;
-            padding-top: 2mm;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
-<div class="frame-outer"></div>
-<div class="frame-inner"></div>
-<div class="watermark">Sophie Weddings</div>
 
-<div class="page-table">
-<div class="page-cell">
+{{-- Filigrane --}}
+<div class="watermark">Sophie Weddings Dreams</div>
+
 <div class="page">
 
-    <!-- Logo -->
+    {{-- Logo --}}
     <div class="logo">
-        <img src="{{ public_path('images/logo.png') }}" alt="Sophie Weddings Dream">
+        <img src="{{ public_path('images/logo.png') }}" alt="Sophie Weddings Dreams">
     </div>
 
-    <hr class="divider">
+    {{-- Titre --}}
+    <div class="title-certificat">Certificat</div>
 
-    <!-- Titre -->
-    <div class="title">Attestation de Participation</div>
-    <div class="issued">Émise le {{ now()->format('d/m/Y') }}</div>
+    {{-- Sous-titre : formation et niveau --}}
+    <div class="subtitle">
+        {{ strtoupper($masterclass->title) }}<br>
+        ( Niveau {{ $masterclass->niveau }} )
+    </div>
 
-    <hr class="divider-thin">
+    {{-- Intro --}}
+    <div class="intro-text">Ce présent document atteste que :</div>
 
-    <!-- Corps -->
+    {{-- Nom en cursive --}}
+    <div class="participant-name">{{ $registration->name }}</div>
+
+    {{-- Corps --}}
+    @php
+        $daysFr   = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        $monthsFr = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+        $d        = $session->start_date;
+        $dateStr  = $daysFr[$d->dayOfWeek] . ' ' . $d->day . ' ' . $monthsFr[$d->month - 1] . ' ' . $d->year;
+        $city     = \App\Models\Setting::get('attestation_city') ?? 'Dakar (Sénégal)';
+    @endphp
+
     <div class="body-text">
-        <p>Nous attestons par la présente que</p>
-        <p><span class="participant-name">{{ $registration->name }}</span></p>
-        <p>a participé à la masterclass</p>
-        <p style="margin-top: 2mm;"><span class="masterclass-title">« {{ $masterclass->title }} »</span></p>
-        <p style="margin-top: 1mm;"><span class="niveau-badge">Niveau : {{ $masterclass->niveau }}</span></p>
-        <p style="margin-top: 3mm;">organisée par <strong>Sophie Weddings Dream</strong>.</p>
+        A participé à la formation
+        <span class="training-bold">{{ strtoupper($masterclass->title) }}</span><br>
+        organisée par <strong>Sophie Weddings Dreams</strong> / S.W.D. Academy
     </div>
 
-    <!-- Détails de la session -->
-    <div class="details-row">
-        <span class="detail-cell">
-            <div class="detail-label">Date</div>
-            <div class="detail-value">{{ $session->start_date->format('d/m/Y') }}</div>
-        </span>
-        <span class="detail-cell">
-            <div class="detail-label">Horaire</div>
-            <div class="detail-value">
-                {{ $session->start_date->format('H:i') }}@if($session->end_date) – {{ $session->end_date->format('H:i') }}@endif
-            </div>
-        </span>
-        <span class="detail-cell">
-            <div class="detail-label">Format</div>
-            <div class="detail-value">{{ $session->location_label }}</div>
-        </span>
-        @if($session->adresse)
-        <span class="detail-cell">
-            <div class="detail-label">Lieu</div>
-            <div class="detail-value">{{ $session->adresse }}</div>
-        </span>
-        @endif
-    </div>
+    <div class="date-location">{{ $city }}, {{ $dateStr }}</div>
 
 </div>
-</div>
-</div>
 
-<!-- Signatures épinglées en bas -->
-<div class="sig-section clearfix">
-    <div class="sig-left">
-        <div class="sig-space"></div>
-        <div class="sig-line">
-            Date d'émission<br><strong>{{ now()->format('d/m/Y') }}</strong>
-        </div>
-    </div>
-    <div class="sig-right">
-        @php
-            $signaturePath = \App\Models\Setting::get('attestation_signature');
-            $signatureFile = $signaturePath ? storage_path('app/public/' . $signaturePath) : null;
-        @endphp
+{{-- Signature --}}
+<div class="sig-section">
+    @php
+        $signaturePath = \App\Models\Setting::get('attestation_signature');
+        $signatureFile = $signaturePath ? storage_path('app/public/' . $signaturePath) : null;
+        $directorName  = \App\Models\Setting::get('attestation_director_name') ?? 'Sophie Manca';
+        $directorTitle = \App\Models\Setting::get('attestation_director_title') ?? 'Directrice';
+    @endphp
+    <div class="sig-inner">
         @if($signatureFile && file_exists($signatureFile))
-            <img src="{{ $signatureFile }}" style="height: 12mm; max-width: 80%; object-fit: contain; display: block; margin: 0 auto;">
+            <img src="{{ $signatureFile }}" class="sig-img">
         @else
-            <div class="sig-space"></div>
+            <div style="height: 20mm;"></div>
         @endif
         <div class="sig-line">
-            Signature &amp; Cachet<br><strong>Sophie Weddings Dream</strong>
+            <div class="sig-name">{{ $directorName }}</div>
+            <div class="sig-role">{{ $directorTitle }}</div>
         </div>
     </div>
 </div>
 
-<!-- Pied de page -->
+{{-- QR Code d'authenticité --}}
+<div class="qr-section">
+    <img src="{{ $qrCodeUri }}">
+    <div class="qr-label">Vérifier l'authenticité</div>
+</div>
+
+{{-- Pied de page --}}
 <div class="footer">
-    Document officiel — N° d'inscription #{{ str_pad($registration->id, 5, '0', STR_PAD_LEFT) }} — Sophie Weddings Dream, Dakar, Sénégal
+    Certificat N° {{ str_pad($registration->id, 5, '0', STR_PAD_LEFT) }} &mdash; Sophie Weddings Dreams, Dakar, Sénégal
 </div>
 
 </body>

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
@@ -20,8 +20,8 @@ const currentUrl = ref('');
 let jsonLdScript: HTMLScriptElement | null = null;
 
 // Computed properties for meta tags
-const metaTitle = computed(() => "Nos Services de Mariage | Sophie Wedding Dreams");
-const metaDescription = computed(() => "Découvrez les services professionnels d'organisation et de planification de mariage proposés par Sophie Wedding Dreams à Dakar, Sénégal. Faites de votre mariage un événement inoubliable.");
+const metaTitle = computed(() => "Nos Services de Mariage | Sophie Weddings Dreams");
+const metaDescription = computed(() => "Découvrez les services professionnels d'organisation et de planification de mariage proposés par Sophie Weddings Dreams à Dakar, Sénégal. Faites de votre mariage un événement inoubliable.");
 
 // JSON-LD structured data for services
 const servicesJsonLd = computed(() => {
@@ -37,7 +37,7 @@ const servicesJsonLd = computed(() => {
         description: service.description,
         provider: {
           '@type': 'Organization',
-          name: 'Sophie Wedding Dreams',
+          name: 'Sophie Weddings Dreams',
           image: '/images/logo.png',
           address: {
             '@type': 'PostalAddress',
@@ -72,7 +72,7 @@ onMounted(async () => {
     const response = await axios.get('/api/services');
     services.value = response.data.map((service: Service) => ({
       ...service,
-      alt: `${service.title} - Sophie Wedding`
+      alt: `${service.title} - Sophie Weddings`
     }));
     // Inject JSON-LD after services are loaded
     injectJsonLdScript();

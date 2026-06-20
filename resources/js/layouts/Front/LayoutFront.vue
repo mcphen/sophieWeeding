@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -212,7 +212,7 @@ const subscribeToNewsletter = async () => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="Sophie Weddings Dreams - Votre agence de mariage pour un événement inoubliable à Dakar, Sénégal. Organisation de mariages, décoration, traiteur et plus." />
-        <meta name="keywords" content="mariage, wedding planner, organisation mariage, décoration mariage, Dakar, Sénégal, Sophie Wedding, événementiel" />
+        <meta name="keywords" content="mariage, wedding planner, organisation mariage, décoration mariage, Dakar, Sénégal, Sophie Weddings, événementiel" />
         <meta name="author" content="Sophie Weddings Dreams" />
         <meta name="robots" content="index, follow" />
 

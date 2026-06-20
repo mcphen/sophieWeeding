@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { computed } from 'vue';
@@ -46,7 +46,7 @@ const attestationUrl = (reg: Registration) => route('prospect.portal.attestation
 </script>
 
 <template>
-    <Head title="Mon espace — Sophie Weddings Dream" />
+    <Head title="Mon espace — Sophie Weddings Dreams" />
     <LayoutFront>
         <section class="min-h-screen bg-gray-50 py-12 px-4">
             <div class="max-w-4xl mx-auto">

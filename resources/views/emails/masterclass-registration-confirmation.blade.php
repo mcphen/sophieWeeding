@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dream" style="max-width: 180px; margin-bottom: 12px;">
+        <img src="{{ app()->environment('production') ? url('/sophieWeeding/public/images/logo.png') : asset('images/logo.png') }}" alt="Sophie Weddings Dreams" style="max-width: 180px; margin-bottom: 12px;">
         <h1>Inscription confirmée ✓</h1>
     </div>
 
@@ -75,11 +75,15 @@
         </div>
 
         <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-        <p>À très bientôt,<br><strong>Sophie Weddings Dream</strong></p>
+        <p>À très bientôt,<br><strong>Sophie Weddings Dreams</strong></p>
     </div>
 
     <div class="footer">
-        <p>© {{ date('Y') }} Sophie Weddings Dream. Tous droits réservés.</p>
+        <p><strong>Sophie Weddings Dreams</strong>
+        @php $phone = \App\Models\Setting::get('contact_phone'); $phoneFixed = \App\Models\Setting::get('contact_phone_fixed'); @endphp
+        @if($phone || $phoneFixed) — {{ implode(' · ', array_filter([$phone, $phoneFixed])) }} @endif
+        </p>
+        <p>© {{ date('Y') }} Sophie Weddings Dreams. Tous droits réservés.</p>
         <p>Ce message a été envoyé automatiquement suite à votre inscription sur notre site.</p>
     </div>
 </div>

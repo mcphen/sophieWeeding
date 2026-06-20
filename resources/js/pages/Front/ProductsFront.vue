@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
@@ -26,7 +26,7 @@ let jsonLdScript: HTMLScriptElement | null = null;
 
 // WhatsApp sharing
 const whatsappShareUrl = computed(() => {
-    const message = `Découvrez les produits chez Sophie Wedding - ${currentUrl.value}`;
+    const message = `Découvrez les produits chez Sophie Weddings - ${currentUrl.value}`;
     // Default WhatsApp number if not provided in settings
     const whatsappNumber = props.contactSettings?.whatsapp_number || '+221785383069';
     // Format number: remove spaces, +, and ensure it starts with country code
@@ -47,7 +47,7 @@ const injectJsonLdScript = () => {
 };
 
 // Computed properties for meta tags
-const metaTitle = computed(() => "Produits de Mariage | Sophie Wedding Dreams");
+const metaTitle = computed(() => "Produits de Mariage | Sophie Weddings Dreams");
 const metaDescription = computed(() => "Découvrez notre collection de produits de mariage de haute qualité. Accessoires, décorations et plus pour rendre votre mariage parfait à Dakar, Sénégal.");
 
 // JSON-LD structured data for product listing

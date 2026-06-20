@@ -7,6 +7,8 @@ use App\Models\Setting;
 use App\Models\TrainingRegistration;
 use App\Models\TrainingSession;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -27,7 +29,7 @@ class AttestationAvailableMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Votre attestation de participation est disponible — Sophie Weddings Dream',
+            subject: 'Votre attestation de participation est disponible — Sophie Weddings Dreams',
         );
     }
 
@@ -45,13 +47,17 @@ class AttestationAvailableMail extends Mailable
 
         if ($signatureFile && file_exists($signatureFile)) {
             $registration = $this->registration;
-            $session = $this->session;
-            $masterclass = $this->masterclass;
+            $session      = $this->session;
+            $masterclass  = $this->masterclass;
 
-            $pdf = Pdf::loadView('pdf.attestation', compact('registration', 'session', 'masterclass'));
-            $pdf->setPaper('A3', 'landscape');
+            $token     = substr(hash_hmac('sha256', $registration->id . '|' . $registration->email, config('app.key')), 0, 32);
+            $url       = route('certificate.verify', ['id' => $registration->id, 'token' => $token]);
+            $qrCodeUri = (new PngWriter())->write(new QrCode(data: $url, size: 200, margin: 4))->getDataUri();
 
-            $filename = 'attestation-' . str_pad($this->registration->id, 5, '0', STR_PAD_LEFT) . '.pdf';
+            $pdf = Pdf::loadView('pdf.attestation', compact('registration', 'session', 'masterclass', 'qrCodeUri'));
+            $pdf->setPaper('A4', 'landscape');
+
+            $filename = 'certificat-' . str_pad($this->registration->id, 5, '0', STR_PAD_LEFT) . '-' . \Str::slug($this->registration->name) . '.pdf';
 
             return [
                 Attachment::fromData(fn () => $pdf->output(), $filename)

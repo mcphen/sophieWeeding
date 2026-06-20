@@ -26,6 +26,8 @@ import {
     Megaphone,
     UsersRound,
     BarChart3,
+    PenLine,
+    ListChecks,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
@@ -51,9 +53,10 @@ const contenuItems: NavItem[] = [
 ];
 
 const formationItems: NavItem[] = [
-    { title: 'Masterclasses', href: route('admin.masterclasses.index'), icon: GraduationCap },
-    { title: 'Participants',  href: route('admin.participants.index'),  icon: UsersRound },
-    { title: 'Analytiques',   href: route('admin.analytics'),           icon: BarChart3 },
+    { title: 'Masterclasses',       href: route('admin.masterclasses.index'), icon: GraduationCap },
+    { title: 'Participants',        href: route('admin.participants.index'),  icon: UsersRound },
+    { title: 'Listes de diffusion', href: route('admin.email-lists.index'),  icon: ListChecks },
+    { title: 'Analytiques',         href: route('admin.analytics'),           icon: BarChart3 },
 ];
 
 const agendaItems: NavItem[] = [
@@ -67,10 +70,11 @@ const communicationItems: NavItem[] = [
 ];
 
 const parametresItems: NavItem[] = [
-    { title: 'Contact',      href: route('admin.contact-settings'), icon: Phone },
-    { title: 'Couleurs',     href: route('admin.color-settings'),   icon: Palette },
-    { title: 'CTA',          href: route('admin.cta-settings'),     icon: Megaphone },
-    { title: 'Utilisateurs', href: route('admin.users.index'),      icon: UserCog },
+    { title: 'Contact',      href: route('admin.contact-settings'),     icon: Phone },
+    { title: 'Couleurs',     href: route('admin.color-settings'),       icon: Palette },
+    { title: 'CTA',          href: route('admin.cta-settings'),         icon: Megaphone },
+    { title: 'Attestation',  href: route('admin.attestation-settings'), icon: PenLine },
+    { title: 'Utilisateurs', href: route('admin.users.index'),          icon: UserCog },
 ];
 </script>
 

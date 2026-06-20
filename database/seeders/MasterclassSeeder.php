@@ -29,7 +29,7 @@ class MasterclassSeeder extends Seeder
             'start_date'     => now()->subDays(40)->setTime(9, 0),
             'end_date'       => now()->subDays(40)->setTime(17, 0),
             'location_type'  => 'presentiel',
-            'adresse'        => 'Institut Sophie Weddings Dream, Ngor Almadies, Dakar',
+            'adresse'        => 'Institut Sophie Weddings Dreams, Ngor Almadies, Dakar',
             'price'          => 75000,
             'max_participants' => 15,
             'is_active'      => true,

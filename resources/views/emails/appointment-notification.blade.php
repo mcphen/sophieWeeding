@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -85,13 +85,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/logo.png') }}" alt="Sophie Weddings Dream Logo" style="max-width: 200px; margin-bottom: 15px;">
+            <img src="{{ asset('images/logo.png') }}" alt="Sophie Weddings Dreams Logo" style="max-width: 200px; margin-bottom: 15px;">
             <h1>Nouvelle demande de rendez-vous</h1>
         </div>
 
         <div class="content">
             <p>Bonjour,</p>
-            <p>Vous avez reçu une nouvelle demande de rendez-vous via le formulaire de votre site web Sophie Weddings Dream.</p>
+            <p>Vous avez reçu une nouvelle demande de rendez-vous via le formulaire de votre site web Sophie Weddings Dreams.</p>
 
             <div class="info-block">
                 <h2>Informations du client</h2>
@@ -163,7 +163,11 @@
         </div>
 
         <div class="footer">
-            <p>© {{ date('Y') }} Sophie Weddings Dream. Tous droits réservés.</p>
+            <p><strong>Sophie Weddings Dreams</strong>
+            @php $phone = \App\Models\Setting::get('contact_phone'); $phoneFixed = \App\Models\Setting::get('contact_phone_fixed'); @endphp
+            @if($phone || $phoneFixed) — {{ implode(' · ', array_filter([$phone, $phoneFixed])) }} @endif
+            </p>
+            <p>© {{ date('Y') }} Sophie Weddings Dreams. Tous droits réservés.</p>
             <p>Ce message a été envoyé automatiquement, merci de ne pas y répondre.</p>
         </div>
     </div>

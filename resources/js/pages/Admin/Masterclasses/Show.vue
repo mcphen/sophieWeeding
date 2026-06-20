@@ -282,6 +282,7 @@
                 </div>
 
                 <form @submit.prevent="submitAnnounce" class="space-y-4">
+                    <!-- Anciens participants -->
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200">
                         <input
                             id="include_past"
@@ -295,6 +296,41 @@
                         </label>
                     </div>
 
+                    <!-- Listes de diffusion -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-700">Listes de diffusion</label>
+                            <Link :href="route('admin.email-lists.index')" class="text-xs text-[#d1922f] hover:underline">
+                                Gérer les listes →
+                            </Link>
+                        </div>
+                        <div v-if="emailLists.length === 0" class="text-xs text-gray-400 py-2 px-3 rounded-lg border border-dashed border-gray-200 text-center">
+                            Aucune liste de diffusion. <Link :href="route('admin.email-lists.index')" class="text-[#d1922f] hover:underline">Créer une liste</Link>
+                        </div>
+                        <div v-else class="space-y-2">
+                            <label
+                                v-for="list in emailLists"
+                                :key="list.id"
+                                class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition"
+                                :class="announceForm.email_list_ids.includes(list.id)
+                                    ? 'border-[#d1922f] bg-[#d1922f]/5'
+                                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'"
+                            >
+                                <input
+                                    type="checkbox"
+                                    :value="list.id"
+                                    v-model="announceForm.email_list_ids"
+                                    class="rounded border-gray-300 text-[#d1922f] focus:ring-[#d1922f]"
+                                />
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm font-medium text-gray-800">{{ list.name }}</span>
+                                    <span class="ml-2 text-xs text-gray-400">{{ list.entries_count }} email{{ list.entries_count !== 1 ? 's' : '' }}</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Emails manuels -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             Adresses email supplémentaires
@@ -302,23 +338,23 @@
                         </label>
                         <textarea
                             v-model="announceForm.manual_emails"
-                            rows="4"
+                            rows="3"
                             placeholder="exemple@email.com, autre@email.com&#10;ou une adresse par ligne"
                             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f] text-sm font-mono"
                         ></textarea>
                         <p class="text-xs text-gray-400 mt-1">Virgule, point-virgule ou retour à la ligne comme séparateur.</p>
                     </div>
 
-                    <p v-if="!announceForm.include_past_participants && !announceForm.manual_emails.trim()"
+                    <p v-if="!hasAnyRecipient"
                         class="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                        Cochez l'option ci-dessus ou saisissez des emails pour envoyer l'annonce.
+                        Cochez au moins une option ci-dessus pour envoyer l'annonce.
                     </p>
 
                     <div class="flex justify-end gap-3 pt-2 border-t">
                         <SecondaryButton type="button" @click="closeAnnounceModal">Annuler</SecondaryButton>
                         <button
                             type="submit"
-                            :disabled="announceForm.processing || (!announceForm.include_past_participants && !announceForm.manual_emails.trim())"
+                            :disabled="announceForm.processing || !hasAnyRecipient"
                             class="inline-flex items-center gap-2 px-5 py-2 bg-[#d1922f] text-white rounded-lg hover:bg-[#c08529] disabled:opacity-50 font-medium text-sm transition"
                         >
                             <svg v-if="announceForm.processing" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -362,7 +398,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import Modal from '@/components/Modal.vue';
@@ -391,6 +427,8 @@ type Session = {
     is_past: boolean;
 };
 
+type EmailListItem = { id: number; name: string; entries_count: number };
+
 const props = defineProps<{
     masterclass: {
         id: number;
@@ -404,6 +442,7 @@ const props = defineProps<{
         slug: string;
     };
     sessions: Session[];
+    emailLists: EmailListItem[];
 }>();
 
 const breadcrumbs: BreadcrumbItemType[] = [
@@ -482,8 +521,15 @@ const submitSession = () => {
 const showAnnounceModal = ref(false);
 const announceForm = useForm({
     include_past_participants: true,
+    email_list_ids: [] as number[],
     manual_emails: '',
 });
+
+const hasAnyRecipient = computed(() =>
+    announceForm.include_past_participants ||
+    announceForm.email_list_ids.length > 0 ||
+    announceForm.manual_emails.trim() !== ''
+);
 
 const closeAnnounceModal = () => {
     showAnnounceModal.value = false;

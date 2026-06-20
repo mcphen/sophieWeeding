@@ -1,6 +1,6 @@
-<template>
+﻿<template>
     <Head>
-        <title>{{ og.title }} – Sophie Weddings Dream</title>
+        <title>{{ og.title }} – Sophie Weddings Dreams</title>
         <meta head-key="description" name="description" :content="og.description" />
 
         <!-- Open Graph -->
@@ -9,7 +9,7 @@
         <meta head-key="og:title"       property="og:title"       :content="og.title" />
         <meta head-key="og:description" property="og:description" :content="og.description" />
         <meta v-if="og.image" head-key="og:image" property="og:image" :content="og.image" />
-        <meta head-key="og:site_name"   property="og:site_name"   content="Sophie Weddings Dream" />
+        <meta head-key="og:site_name"   property="og:site_name"   content="Sophie Weddings Dreams" />
         <meta head-key="og:locale"      property="og:locale"      content="fr_FR" />
 
         <!-- Twitter Card -->
@@ -374,7 +374,7 @@ const schemaEvents = computed(() =>
             : { '@type': 'VirtualLocation', url: s.online_link ?? props.og.url },
         organizer: {
             '@type': 'Organization',
-            name: 'Sophie Weddings Dream',
+            name: 'Sophie Weddings Dreams',
             url: window.location.origin,
         },
         offers: {

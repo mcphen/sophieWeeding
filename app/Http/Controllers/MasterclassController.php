@@ -92,13 +92,16 @@ class MasterclassController extends Controller
     {
         $request->validate([
             'include_past_participants' => 'boolean',
-            'manual_emails'             => 'nullable|string',
+            'manual_emails'            => 'nullable|string',
+            'email_list_ids'           => 'nullable|array',
+            'email_list_ids.*'         => 'integer|exists:email_lists,id',
         ]);
 
         $sentCount = $this->sendAnnouncement(
             $masterclass,
             !empty($request->boolean('include_past_participants')),
-            $request->input('manual_emails', '')
+            $request->input('manual_emails', ''),
+            $request->input('email_list_ids', [])
         );
 
         return redirect()->back()->with('success', "Annonce envoyée à {$sentCount} destinataire(s).");
@@ -130,6 +133,15 @@ class MasterclassController extends Controller
                 'is_past'             => $s->start_date->isPast(),
             ]);
 
+        $emailLists = \App\Models\EmailList::withCount('entries')
+            ->orderBy('name')
+            ->get()
+            ->map(fn($l) => [
+                'id'            => $l->id,
+                'name'          => $l->name,
+                'entries_count' => $l->entries_count,
+            ]);
+
         return Inertia::render('Admin/Masterclasses/Show', [
             'masterclass' => [
                 'id'           => $masterclass->id,
@@ -142,7 +154,8 @@ class MasterclassController extends Controller
                 'is_active'    => $masterclass->is_active,
                 'slug'         => $masterclass->slug,
             ],
-            'sessions' => $sessions,
+            'sessions'    => $sessions,
+            'emailLists'  => $emailLists,
         ]);
     }
 
@@ -220,7 +233,7 @@ class MasterclassController extends Controller
             ->with('success', 'Masterclass supprimée avec succès.');
     }
 
-    private function sendAnnouncement(Masterclass $masterclass, bool $includePastParticipants, string $manualEmailsRaw): int
+    private function sendAnnouncement(Masterclass $masterclass, bool $includePastParticipants, string $manualEmailsRaw, array $emailListIds = []): int
     {
         $recipients = collect();
 
@@ -233,6 +246,14 @@ class MasterclassController extends Controller
                 ->mapWithKeys(fn($r) => [$r->email => $r->name]);
 
             $recipients = $recipients->union($past);
+        }
+
+        if (!empty($emailListIds)) {
+            $listEmails = \App\Models\EmailListEntry::whereIn('email_list_id', $emailListIds)
+                ->get()
+                ->mapWithKeys(fn($e) => [$e->email => $e->name ?? '']);
+
+            $recipients = $recipients->union($listEmails);
         }
 
         if ($manualEmailsRaw !== '') {

@@ -23,7 +23,7 @@ class ProspectMagicLinkMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Accès à votre espace inscrit — Sophie Weddings Dream',
+            subject: 'Accès à votre espace inscrit — Sophie Weddings Dreams',
         );
     }
 

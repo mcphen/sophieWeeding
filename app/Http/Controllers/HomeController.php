@@ -425,7 +425,7 @@ class HomeController extends Controller
             'og'                => [
                 'title'       => $masterclass->title . ' – Niveau ' . $masterclass->niveau,
                 'description' => $masterclass->description
-                    ?? 'Masterclass ' . $masterclass->niveau . ' organisée par Sophie Weddings Dream.',
+                    ?? 'Masterclass ' . $masterclass->niveau . ' organisée par Sophie Weddings Dreams.',
                 'image'       => $ogImage,
                 'url'         => request()->url(),
             ],

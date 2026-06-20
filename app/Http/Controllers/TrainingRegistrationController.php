@@ -10,6 +10,8 @@ use App\Models\TrainingRegistration;
 use App\Models\TrainingSession;
 use App\Services\ContactService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -164,18 +166,63 @@ class TrainingRegistrationController extends Controller
             ->with('success', "{$confirmed} inscription(s) confirmée(s) — emails envoyés aux participants.");
     }
 
-    public function adminAttestation(TrainingRegistration $registration)
+    public function adminAttestation(TrainingRegistration $registration, Request $request)
     {
         $registration->load('trainingSession.masterclass');
-        $session = $registration->trainingSession;
+        $session     = $registration->trainingSession;
         $masterclass = $session->masterclass;
 
-        $pdf = Pdf::loadView('pdf.attestation', compact('registration', 'session', 'masterclass'));
-        $pdf->setPaper('A3', 'landscape');
+        $token     = substr(hash_hmac('sha256', $registration->id . '|' . $registration->email, config('app.key')), 0, 32);
+        $url       = route('certificate.verify', ['id' => $registration->id, 'token' => $token]);
+        $qrCodeUri = (new PngWriter())->write(new QrCode(data: $url, size: 200, margin: 4))->getDataUri();
 
-        $filename = 'attestation-' . str_pad($registration->id, 5, '0', STR_PAD_LEFT) . '-' . \Str::slug($registration->name) . '.pdf';
+        $pdf      = Pdf::loadView('pdf.attestation', compact('registration', 'session', 'masterclass', 'qrCodeUri'));
+        $pdf->setPaper('A4', 'landscape');
+        $filename = 'certificat-' . str_pad($registration->id, 5, '0', STR_PAD_LEFT) . '-' . \Str::slug($registration->name) . '.pdf';
 
-        return $pdf->download($filename);
+        return $request->boolean('inline') ? $pdf->inline($filename) : $pdf->download($filename);
+    }
+
+    public function notifyAttestation(TrainingRegistration $registration)
+    {
+        if (!$registration->is_confirmed) {
+            return redirect()->back()->with('error', 'L\'inscription n\'est pas confirmée.');
+        }
+
+        $registration->load('trainingSession.masterclass');
+        $session     = $registration->trainingSession;
+        $masterclass = $session->masterclass;
+
+        try {
+            Mail::to($registration->email)->send(new AttestationAvailableMail($registration, $masterclass, $session));
+            return redirect()->back()->with('success', "Email d'attestation envoyé à {$registration->name}.");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de l\'envoi de l\'email.');
+        }
+    }
+
+    public function bulkNotifyAttestation(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        $registrations = TrainingRegistration::whereIn('id', $ids)
+            ->where('is_confirmed', true)
+            ->with('trainingSession.masterclass')
+            ->get();
+
+        $sent = 0;
+        foreach ($registrations as $registration) {
+            $session     = $registration->trainingSession;
+            $masterclass = $session->masterclass;
+            try {
+                Mail::to($registration->email)->send(new AttestationAvailableMail($registration, $masterclass, $session));
+                $sent++;
+            } catch (\Exception $e) {
+                //
+            }
+        }
+
+        return redirect()->back()->with('success', "{$sent} email(s) d'attestation envoyé(s).");
     }
 
     public function destroy(TrainingRegistration $registration)
