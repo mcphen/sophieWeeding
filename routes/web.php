@@ -275,10 +275,12 @@ Route::middleware(['auth'])->group(function () {
         // Listes de diffusion
         Route::get('email-lists', [EmailListController::class, 'index'])->name('admin.email-lists.index');
         Route::post('email-lists', [EmailListController::class, 'store'])->name('admin.email-lists.store');
+        Route::get('email-lists/template', [EmailListController::class, 'downloadTemplate'])->name('admin.email-lists.template');
         Route::put('email-lists/{emailList}', [EmailListController::class, 'update'])->name('admin.email-lists.update');
         Route::delete('email-lists/{emailList}', [EmailListController::class, 'destroy'])->name('admin.email-lists.destroy');
         Route::post('email-lists/{emailList}/entries', [EmailListController::class, 'addEntries'])->name('admin.email-lists.entries.store');
         Route::delete('email-lists/{emailList}/entries/{entry}', [EmailListController::class, 'removeEntry'])->name('admin.email-lists.entries.destroy');
+        Route::post('email-lists/{emailList}/import', [EmailListController::class, 'importEntries'])->name('admin.email-lists.import');
     });
 
     // API routes for authenticated users

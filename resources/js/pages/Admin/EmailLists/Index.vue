@@ -103,17 +103,55 @@
                                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f] text-sm font-mono"
                             ></textarea>
                             <p class="text-xs text-gray-400 mt-1 mb-3">Virgule, point-virgule ou retour à la ligne comme séparateur.</p>
-                            <button
-                                @click="submitAddEmails(list)"
-                                :disabled="!addEmailsForms[list.id]?.trim() || addingToList === list.id"
-                                class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#d1922f] text-white rounded-lg hover:bg-[#c08529] disabled:opacity-50 text-sm font-medium transition"
-                            >
-                                <svg v-if="addingToList === list.id" class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                </svg>
-                                Ajouter
-                            </button>
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <button
+                                    @click="submitAddEmails(list)"
+                                    :disabled="!addEmailsForms[list.id]?.trim() || addingToList === list.id"
+                                    class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#d1922f] text-white rounded-lg hover:bg-[#c08529] disabled:opacity-50 text-sm font-medium transition"
+                                >
+                                    <svg v-if="addingToList === list.id" class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    Ajouter
+                                </button>
+
+                                <div class="flex items-center gap-2 ml-auto">
+                                    <!-- Télécharger le modèle -->
+                                    <a
+                                        :href="route('admin.email-lists.template')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-600 text-xs font-medium hover:bg-gray-50 transition"
+                                    >
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Modèle Excel
+                                    </a>
+
+                                    <!-- Importer depuis Excel -->
+                                    <button
+                                        @click="triggerImport(list.id)"
+                                        :disabled="importingList === list.id"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-300 bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 disabled:opacity-50 transition"
+                                    >
+                                        <svg v-if="importingList === list.id" class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                        </svg>
+                                        <svg v-else class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                                        </svg>
+                                        Importer Excel
+                                    </button>
+                                    <input
+                                        :ref="el => importInputs[list.id] = el as HTMLInputElement"
+                                        type="file"
+                                        accept=".xlsx,.xls,.csv"
+                                        class="hidden"
+                                        @change="handleImportFile(list, $event)"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Liste des emails -->
@@ -325,6 +363,31 @@ const submitAddEmails = (list: EmailList) => {
         onFinish: () => {
             addingToList.value = null;
             addEmailsForms[list.id] = '';
+        },
+    });
+};
+
+// Import Excel
+const importingList = ref<number | null>(null);
+const importInputs = reactive<Record<number, HTMLInputElement | null>>({});
+
+const triggerImport = (listId: number) => {
+    importInputs[listId]?.click();
+};
+
+const handleImportFile = (list: EmailList, event: Event) => {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    importingList.value = list.id;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    router.post(route('admin.email-lists.import', list.id), formData, {
+        preserveScroll: true,
+        onFinish: () => {
+            importingList.value = null;
+            if (importInputs[list.id]) importInputs[list.id]!.value = '';
         },
     });
 };

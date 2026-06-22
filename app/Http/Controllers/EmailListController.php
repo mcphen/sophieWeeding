@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EmailListTemplateExport;
+use App\Imports\EmailListImport;
 use App\Models\EmailList;
 use App\Models\EmailListEntry;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmailListController extends Controller
 {
@@ -89,5 +92,28 @@ class EmailListController extends Controller
         $entry->delete();
 
         return redirect()->back()->with('success', 'Email retiré.');
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new EmailListTemplateExport(), 'modele_contacts.xlsx');
+    }
+
+    public function importEntries(Request $request, EmailList $emailList)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $import = new EmailListImport($emailList);
+        Excel::import($import, $request->file('file'));
+
+        $msg = "{$import->added} contact(s) importé(s)";
+        if ($import->skipped > 0) {
+            $msg .= ", {$import->skipped} ignoré(s) (déjà présents ou invalides)";
+        }
+        $msg .= '.';
+
+        return redirect()->back()->with('success', $msg);
     }
 }
