@@ -100,7 +100,7 @@ class MasterclassController extends Controller
         $sentCount = $this->sendAnnouncement(
             $masterclass,
             !empty($request->boolean('include_past_participants')),
-            $request->input('manual_emails', ''),
+            (string) $request->input('manual_emails', ''),
             $request->input('email_list_ids', [])
         );
 
