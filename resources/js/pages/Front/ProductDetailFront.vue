@@ -91,8 +91,8 @@ const productJsonLd = computed(() => {
         images = props.product.images.map(img => img.image_url);
     }
     // Fallback to single image
-    else if (props.product.image_path) {
-        images = [`${typeof window !== 'undefined' ? window.location.origin : ''}${props.product.image_path}`];
+    else if (props.product.image_url) {
+        images = [`${typeof window !== 'undefined' ? window.location.origin : ''}${props.product.image_url}`];
     }
 
     return {
@@ -126,14 +126,14 @@ const productJsonLd = computed(() => {
             <meta property="og:type" content="product" />
             <meta property="og:title" :content="metaTitle" />
             <meta property="og:description" :content="metaDescription" />
-            <meta property="og:image" :content="(props.product.images && props.product.images.length > 0) ? props.product.images[0].image_url : (props.product.image_path ? `${typeof window !== 'undefined' ? window.location.origin : ''}${props.product.image_path}` : '')" />
+            <meta property="og:image" :content="(props.product.images && props.product.images.length > 0) ? props.product.images[0].image_url : (props.product.image_url ? `${typeof window !== 'undefined' ? window.location.origin : ''}${props.product.image_url}` : '')" />
             <meta property="og:url" :content="currentUrl" />
 
             <!-- Twitter -->
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" :content="metaTitle" />
             <meta name="twitter:description" :content="metaDescription" />
-            <meta name="twitter:image" :content="(props.product.images && props.product.images.length > 0) ? props.product.images[0].image_url : (props.product.image_path ? `${typeof window !== 'undefined' ? window.location.origin : ''}${props.product.image_path}` : '')" />
+            <meta name="twitter:image" :content="(props.product.images && props.product.images.length > 0) ? props.product.images[0].image_url : (props.product.image_url ? `${typeof window !== 'undefined' ? window.location.origin : ''}${props.product.image_url}` : '')" />
 
             <!-- Structured Data is now injected programmatically -->
         </Head>
@@ -168,8 +168,8 @@ const productJsonLd = computed(() => {
                                     @click="showGalleryModal = true"
                                 />
                                 <img
-                                    v-else-if="props.product.image_path"
-                                    :src=" props.product.image_path"
+                                    v-else-if="props.product.image_url"
+                                    :src="props.product.image_url"
                                     :alt="props.product.title"
                                     class="w-full h-full object-cover object-center"
                                 />

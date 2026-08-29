@@ -29,6 +29,8 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'image'       => 'nullable|image|max:2048',
             'min_price'   => 'nullable|numeric|min:0',
+            'stat_value'  => 'nullable|string|max:20',
+            'stat_label'  => 'nullable|string|max:100',
         ]);
 
         if ($request->hasFile('image')) {
@@ -56,6 +58,8 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'image'       => 'nullable|image|max:2048',
             'min_price'   => 'nullable|numeric|min:0',
+            'stat_value'  => 'nullable|string|max:20',
+            'stat_label'  => 'nullable|string|max:100',
         ]);
 
         if ($request->hasFile('image')) {
@@ -93,7 +97,7 @@ class ServiceController extends Controller
      */
     public function getServices()
     {
-        $services = Service::select('id', 'title', 'description', 'image_path', 'min_price')
+        $services = Service::select('id', 'title', 'description', 'image_path', 'min_price', 'stat_value', 'stat_label')
             ->orderBy('created_at', 'desc')
             //->limit(3)
             ->get()
@@ -104,6 +108,8 @@ class ServiceController extends Controller
                     'description' => $service->description,
                     'image_url' => $service->image_path ,
                     'min_price' => $service->min_price,
+                    'stat_value' => $service->stat_value,
+                    'stat_label' => $service->stat_label,
                 ];
             });
 

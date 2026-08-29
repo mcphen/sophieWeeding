@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import LayoutFront from '@/layouts/Front/LayoutFront.vue';
-import Temoignages from '@/components/front/Temoignages.vue';
 import Partners from '@/components/front/Partners.vue';
 import BlogPosts from '@/components/front/BlogPosts.vue';
 import CtaSection from '@/components/front/CtaSection.vue';
 import GalleryPreview from '@/components/front/GalleryPreview.vue';
-import ServiceSection from '@/components/front/ServiceSection.vue';
-import MasterclassSection from '@/components/front/MasterclassSection.vue';
-import axios from 'axios';
+import { GraduationCap, HeartPulse, HandHeart, Users } from 'lucide-vue-next';
 
 // Define props for banner photos
 interface BannerPhoto {
@@ -36,26 +33,29 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Use default image if no banner photos are available
-const defaultBannerImage = '/images/banner/banner.jpg';
+// Local placeholder slides used until at least 3 real banner photos are uploaded from the admin
+const fallbackBannerImages = [
+    { id: -1, image_url: '/images/banner/banner-1.svg', caption: null },
+    { id: -2, image_url: '/images/banner/banner-2.svg', caption: null },
+    { id: -3, image_url: '/images/banner/banner-3.svg', caption: null },
+];
 
-// Process banner photos to ensure we have the image URL
+// Process banner photos to ensure we have the image URL; fall back to local slides so the
+// hero always rotates through at least 3 images even before real photos are uploaded.
 const bannerPhotos = computed(() => {
-    return props.bannerPhotos.map(photo => {
-        // Ensure image_path is properly formatted
-        let imagePath = photo.image_path;
-
-        // If image_path already starts with a slash, don't add another one
-        if (imagePath && !imagePath.startsWith('/')) {
-            imagePath = `/${imagePath}`;
-        }
-
-        return {
-            ...photo,
-            // If image_url is provided, use it; otherwise construct from image_path
-            image_url: photo.image_url || (imagePath ? `/storage${imagePath}` : defaultBannerImage)
-        };
-    });
+    if (props.bannerPhotos.length >= 3) {
+        return props.bannerPhotos.map(photo => {
+            let imagePath = photo.image_path;
+            if (imagePath && !imagePath.startsWith('/')) {
+                imagePath = `/${imagePath}`;
+            }
+            return {
+                ...photo,
+                image_url: photo.image_url || (imagePath ? `/storage${imagePath}` : fallbackBannerImages[0].image_url)
+            };
+        });
+    }
+    return fallbackBannerImages;
 });
 
 // Slideshow functionality
@@ -64,31 +64,24 @@ const slideInterval = ref<number | null>(null);
 
 // Get current image for slideshow
 const currentBannerImage = computed(() => {
-    if (bannerPhotos.value.length === 0) return defaultBannerImage;
-    const imageUrl = bannerPhotos.value[currentImageIndex.value].image_url;
-    console.log('Loading image:', imageUrl); // Debug image path
-    return imageUrl;
+    return bannerPhotos.value[currentImageIndex.value]?.image_url || fallbackBannerImages[0].image_url;
 });
 
 // Track image loading status
 const imageLoaded = ref(false);
 const handleImageLoad = () => {
-    console.log('Image loaded successfully');
     imageLoaded.value = true;
 };
 
 // Function to advance to the next image
 const nextImage = () => {
     if (bannerPhotos.value.length <= 1) return;
-    // Reset image loaded state when changing images
     imageLoaded.value = false;
     currentImageIndex.value = (currentImageIndex.value + 1) % bannerPhotos.value.length;
 };
 
 // Handle image loading error
 const handleImageError = () => {
-    console.error('Failed to load image:', currentBannerImage.value);
-    // If the image fails to load, we'll still show the content by setting imageLoaded to true
     imageLoaded.value = true;
 };
 
@@ -105,20 +98,14 @@ onBeforeUnmount(() => {
     }
 });
 
-// Define ContactSettings interface
-interface ContactSettings {
-    contact_phone: string;
-    contact_phone_fixed: string;
-    contact_email: string;
-    social_facebook: string;
-    social_twitter: string;
-    social_youtube: string;
-    social_linkedin: string;
-    social_tiktok: string;
-    social_instagram: string;
-    contact_address: string;
-    opening_hours: string;
-}
+// Extraction jour / mois abrégé à partir d'une date au format d/m/Y, pour l'affichage type agenda
+const monthAbbreviations = ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'];
+
+const eventDay = (dateStr: string) => dateStr.split('/')[0];
+const eventMonth = (dateStr: string) => {
+    const monthIndex = parseInt(dateStr.split('/')[1], 10) - 1;
+    return monthAbbreviations[monthIndex] ?? '';
+};
 
 // Define CtaSettings interface
 interface CtaSettings {
@@ -135,32 +122,52 @@ interface CtaSettings {
 // Get page props
 const page = usePage();
 
-// Get contact settings from page props
-const contactSettings = computed(() => page.props.contactSettings as ContactSettings || {
-    contact_phone: '(+221) 78 538 30 69',
-    contact_phone_fixed: '(+221) 33 865 27 11',
-    contact_email: 'sophieweddings5@gmail.com',
-    social_facebook: 'https://www.facebook.com/Sophieweddingsdreams22/',
-    social_twitter: '#',
-    social_youtube: '#',
-    social_linkedin: '#',
-    social_tiktok: '#',
-    social_instagram: 'https://www.instagram.com/sophie_weddings_dreams/',
-    contact_address: 'Rue NG-70, 91 Ngor Almadies, Dakar 12000',
-    opening_hours: 'Lundi - Vendredi: 8am - 6pm'
-});
-
 // Get CTA settings from page props
 const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
     fromColor: '#d1922f',
-    toColor: '#bf8529',
-    title: 'Prêts à planifier le mariage de vos rêves ?',
-    description: 'Contactez-nous dès aujourd\'hui pour une consultation gratuite et commencez à transformer votre vision en réalité.',
-    paragraphColor: '#faecd2',
-    linkRoute: 'appointment.create',
-    buttonText: 'Prendre rendez-vous',
-    buttonTextColor: '#d1922f'
+    toColor: '#8a5e12',
+    title: 'Ensemble, changeons des vies à Dakar',
+    description: 'Votre don, même modeste, nous permet d\'agir concrètement auprès des enfants et des familles qui en ont besoin. Rejoignez-nous.',
+    paragraphColor: '#FBF1E9',
+    linkRoute: 'donate',
+    buttonText: 'Faire un don',
+    buttonTextColor: '#1E2F52'
 });
+
+// Mission tiles: checkerboard mix of illustrated tiles and solid stat tiles (à la ChildFund),
+// placeholder figures editable later from a dedicated admin section.
+// Palette drawn from the logo (navy + gold), kept gold-heavy so it doesn't read as too blue.
+const missionTiles = [
+    { type: 'photo', gradient: 'linear-gradient(135deg, #8a5e12, #d1922f)', icon: GraduationCap, value: '500+', label: 'Enfants soutenus' },
+    { type: 'solid', bg: '#d1922f', icon: HandHeart, value: '120+', label: 'Familles accompagnées' },
+    { type: 'solid', bg: '#1E2F52', icon: Users, value: '30+', label: 'Bénévoles actifs' },
+    { type: 'photo', gradient: 'linear-gradient(135deg, #1A1512, #5B3A22)', icon: HeartPulse, value: '5', label: "Années d'engagement" },
+];
+
+// Our three pillars, shown in an alternating image/text layout
+const pillars = [
+    {
+        label: 'Éducation',
+        title: 'Des fournitures scolaires pour ne laisser aucun enfant de côté',
+        description: "Chaque rentrée, nous distribuons cahiers, manuels et kits scolaires aux enfants des familles les plus vulnérables de Dakar, pour que l'école reste un droit accessible à tous.",
+        icon: GraduationCap,
+        gradient: 'linear-gradient(135deg, #8a5e12, #d1922f)',
+    },
+    {
+        label: 'Santé maternelle',
+        title: "Un accompagnement aux côtés des futures mères",
+        description: "Suivi, kits de maternité et sensibilisation : nous soutenons les mères avant et après l'accouchement pour des débuts de vie plus sûrs.",
+        icon: HeartPulse,
+        gradient: 'linear-gradient(135deg, #10192E, #1E2F52)',
+    },
+    {
+        label: 'Actions solidaires',
+        title: 'Une présence de proximité auprès des familles',
+        description: "Distributions alimentaires, aide d'urgence et écoute : notre équipe est présente sur le terrain, au plus près des besoins réels des communautés.",
+        icon: HandHeart,
+        gradient: 'linear-gradient(135deg, #1A1512, #5B3A22)',
+    },
+];
 
 // Partners section visibility
 const partnersRef = ref(null);
@@ -176,181 +183,52 @@ onMounted(() => {
     }, 0);
 });
 
-// Contact form data
-const contactForm = reactive({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    description: ''
-});
-
-// Form validation state
-const errors = reactive({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    description: ''
-});
-
-// Form submission state
-const isSubmitting = ref(false);
-const isSuccess = ref(false);
-
-// Handle form submission
-const submitForm = async () => {
-    // Reset errors and set submitting state
-    isSubmitting.value = true;
-    Object.keys(errors).forEach(key => {
-        errors[key] = '';
-    });
-
-    try {
-        // Send form data to server
-        await axios.post('/contact', contactForm);
-
-        // Handle success
-        isSuccess.value = true;
-
-        // Reset form ONLY after successful submission
-        Object.keys(contactForm).forEach(key => {
-            contactForm[key] = '';
-        });
-
-        // Reset success message after 5 seconds
-        setTimeout(() => {
-            isSuccess.value = false;
-        }, 5000);
-    } catch (error) {
-        // Handle validation errors
-        if (error.response && error.response.status === 422) {
-            const validationErrors = error.response.data.errors;
-
-            // Set error messages
-            Object.keys(validationErrors).forEach(key => {
-                errors[key] = validationErrors[key][0];
-            });
-        }
-    } finally {
-        isSubmitting.value = false;
-    }
-};
-
-
-
 </script>
 
 <template>
-    <Head title="Sophie Weddings Dreams"  />
+    <Head title="Amaël Fondation — Donner espoir, agir pour demain" />
 
 
     <LayoutFront>
-        <!-- Hero Section - Slideshow with Text Overlay -->
-        <div class="md:hidden">
-            <!-- Mobile version with text outside image -->
-            <section class="relative h-[70vh] overflow-hidden">
-                <!-- Slideshow Background -->
-                <div class="w-full h-full">
-                    <!-- Slideshow Image -->
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden bg-[#1A1512] min-h-[85vh] flex items-center">
+            <div class="absolute inset-0">
+                <Transition name="fade" mode="out-in">
                     <img
+                        :key="currentImageIndex"
                         :src="currentBannerImage"
-                        :alt="bannerPhotos[currentImageIndex]?.caption || 'Mariage élégant'"
-                        class="w-full h-full object-cover transition-opacity duration-1000"
+                        :alt="bannerPhotos[currentImageIndex]?.caption || 'Amaël Fondation'"
+                        class="w-full h-full object-cover opacity-70"
                         @load="handleImageLoad"
                         @error="handleImageError"
                     />
-
-                    <!-- Overlay for better text readability - reduced opacity -->
-                    <div class="absolute inset-0" :class="{'bg-opacity-30': imageLoaded, 'bg-opacity-0': !imageLoaded}"></div>
-
-                    <!-- Slideshow Navigation Indicators -->
-                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
-                        <button
-                            v-for="(photo, index) in bannerPhotos"
-                            :key="index"
-                            @click="currentImageIndex = index"
-                            class="w-3 h-3 rounded-full transition-colors"
-                            :class="index === currentImageIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/70'"
-                            :aria-label="`View image ${index + 1}`"
-                        ></button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Mobile text content outside the image -->
-            <div class="w-full p-5 bg-gray-900/90 backdrop-blur-sm">
-                <div class="max-w-3xl">
-                    <h1 class="text-2xl font-serif font-bold tracking-tight text-white">
-                        <span class="block">la passion de l'élégance</span>
-                        <span class="block text-[#d1922f]">& l'exigence du raffinement</span>
-                    </h1>
-                    <p class="mt-6 text-lg text-white/90 max-w-3xl">
-                        Wedding Planner & Wedding Designer Depuis 2016
-                    </p>
-                    <div class="mt-10 flex flex-wrap gap-4">
-                        <Link
-                            :href="route('appointment.create')"
-                            class="px-8 py-3 rounded-full bg-primary hover:bg-primary-dark text-white font-medium transition-colors"
-                        >
-                            prendre rendez-vous
-                        </Link>
-                        <Link
-                            :href="'#'"
-                            class="px-8 py-3 rounded-full border border-white text-white hover:bg-white/10 font-medium transition-colors"
-                        >
-                            Découvrir nos services
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Desktop version with text overlay -->
-        <section class="relative hidden md:block h-screen overflow-hidden">
-            <!-- Slideshow Background -->
-            <div class="absolute inset-0 w-full h-full">
-                <!-- Slideshow Image -->
-                <img
-                    :src="currentBannerImage"
-                    :alt="bannerPhotos[currentImageIndex]?.caption || 'Mariage élégant'"
-                    class="w-full h-full object-cover transition-opacity duration-1000"
-                    @load="handleImageLoad"
-                    @error="handleImageError"
-                />
-
-                <!-- Overlay for better text readability - reduced opacity -->
-                <div class="absolute inset-0" :class="{'bg-opacity-30': imageLoaded, 'bg-opacity-0': !imageLoaded}"></div>
+                </Transition>
+                <div class="absolute inset-0 bg-gradient-to-b from-[#1A1512]/70 via-[#1A1512]/60 to-[#1A1512]/85"></div>
             </div>
 
-            <!-- Content Overlay -->
-            <div class="relative z-10 h-full flex items-start pt-32">
-                <div class="w-1/2 p-5 ml-12 px-8 bg-gray-900/70 backdrop-blur-sm">
-                    <div class="max-w-3xl">
-                        <h1 class="text-3xl font-serif font-bold tracking-tight text-white">
-                            <span class="block">la passion de l'élégance</span>
-                            <span class="block text-[#d1922f]">& l'exigence du raffinement</span>
-                        </h1>
-                        <p class="mt-6 text-lg text-white/90 max-w-3xl">
-                            Wedding Planner & Wedding Designer Depuis 2016
-                        </p>
-                        <div class="mt-10 flex flex-wrap gap-4">
-                            <Link
-                                :href="route('appointment.create')"
-                                class="px-8 py-3 rounded-full bg-primary hover:bg-primary-dark text-white font-medium transition-colors"
-                            >
-                                prendre rendez-vous
-                            </Link>
-                            <Link
-                                :href="'#'"
-                                class="px-8 py-3 rounded-full border border-white text-white hover:bg-white/10 font-medium transition-colors"
-                            >
-                                Découvrir nos services
-                            </Link>
-                        </div>
-                    </div>
+            <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-center">
+                
+                <h1 class="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-white">
+                    Donner espoir,
+                    <span class="block text-primary">agir pour demain</span>
+                </h1>
+                <p class="mt-6 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto">
+                    Amaël Fondation accompagne les enfants, les mères et les familles vulnérables de Dakar à travers
+                    des actions concrètes de solidarité, d'éducation et de santé.
+                </p>
+                <div class="mt-10 flex flex-wrap justify-center gap-4">
+                    <Link
+                        :href="route('donate')"
+                        class="px-8 py-3.5 rounded-full bg-primary hover:bg-primary-dark text-white font-semibold shadow-lg shadow-primary/30 transition-colors"
+                    >
+                        Faire un don
+                    </Link>
+                    <Link
+                        :href="route('volunteer')"
+                        class="px-8 py-3.5 rounded-full border border-white/40 text-white hover:bg-white/10 font-medium transition-colors"
+                    >
+                        Devenir bénévole
+                    </Link>
                 </div>
             </div>
 
@@ -366,16 +244,139 @@ const submitForm = async () => {
                 ></button>
             </div>
         </section>
-        <!-- Services Preview -->
-        <ServiceSection />
+
+        <!-- Notre mission - split panel with a mission statement and a checkerboard of impact tiles -->
+        <section class="bg-[#1A1512]">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                <!-- Left: mission statement on a solid dark panel -->
+                <div class="flex items-center px-4 sm:px-6 lg:px-16 py-16 lg:py-24" v-reveal>
+                    <div class="max-w-md">
+                        <span class="inline-block text-sm font-semibold tracking-wide uppercase text-primary">Notre mission</span>
+                        <h2 class="mt-3 font-display text-3xl sm:text-4xl font-semibold text-white leading-tight">
+                            Les enfants et les familles d'abord
+                        </h2>
+                        <p class="mt-6 text-white/75 leading-relaxed">
+                            Depuis sa création, Amaël Fondation porte des projets de solidarité, de fournitures scolaires,
+                            d'aide à la maternité et de soutien communautaire à Dakar. Chaque don, chaque bénévole,
+                            chaque partenaire nous permet d'aller plus loin.
+                        </p>
+                        <Link
+                            :href="route('services')"
+                            class="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
+                        >
+                            Découvrir nos actions
+                        </Link>
+                    </div>
+                </div>
+
+                <!-- Right: checkerboard of impact tiles -->
+                <div class="grid grid-cols-2 grid-rows-2">
+                    <div
+                        v-for="tile in missionTiles"
+                        :key="tile.label"
+                        v-reveal
+                        class="relative flex flex-col items-center justify-center text-center gap-2 p-6 min-h-[180px] sm:min-h-[220px]"
+                        :style="{ background: tile.type === 'photo' ? tile.gradient : tile.bg }"
+                    >
+                        <component :is="tile.icon" class="w-7 h-7 text-white/90" stroke-width="1.5" />
+                        <p class="font-display text-3xl sm:text-4xl font-semibold text-white">{{ tile.value }}</p>
+                        <p class="text-sm text-white/85 max-w-[14rem]">{{ tile.label }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nos piliers - alternating image/text layout -->
+        <section class="py-16 bg-white">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28">
+                <div
+                    v-for="(pillar, index) in pillars"
+                    :key="pillar.title"
+                    v-reveal:up
+                    class="flex flex-col md:flex-row items-center gap-10"
+                    :class="{ 'md:flex-row-reverse': index % 2 !== 0 }"
+                >
+                    <div class="w-full md:w-1/2">
+                        <div class="aspect-[4/3] rounded-3xl overflow-hidden shadow-lg" :style="{ background: pillar.gradient }">
+                            <div class="w-full h-full flex items-center justify-center">
+                                <component :is="pillar.icon" class="w-20 h-20 text-white/90" stroke-width="1.25" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <span class="inline-block text-sm font-semibold tracking-wide uppercase text-primary-dark">{{ pillar.label }}</span>
+                        <h3 class="mt-2 font-display text-2xl sm:text-3xl font-semibold text-gray-900">{{ pillar.title }}</h3>
+                        <p class="mt-4 text-gray-600 leading-relaxed">{{ pillar.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prochains événements -->
+        <section v-if="upcomingSessions.length > 0" class="py-24 bg-primary-bg-light">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <span class="inline-block text-sm font-semibold tracking-wide uppercase text-primary-dark">Agenda</span>
+                    <h2 class="mt-2 font-display text-3xl sm:text-4xl font-semibold text-gray-900">Prochains événements</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+                        Journées de sensibilisation, collectes solidaires et rencontres bénévoles à venir.
+                    </p>
+                </div>
+                <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
+                    <Link
+                        v-for="session in upcomingSessions"
+                        :key="session.id"
+                        v-reveal:up
+                        :href="route('masterclass.show', session.masterclass.slug)"
+                        class="group flex items-center gap-4 sm:gap-6 p-5 sm:p-6 hover:bg-primary-bg-light/50 transition-colors"
+                    >
+                        <!-- Feuillet de date, façon agenda -->
+                        <div class="flex-shrink-0 w-16 sm:w-20 text-center">
+                            <p class="font-display text-2xl sm:text-3xl font-bold text-primary leading-none">{{ eventDay(session.start_date) }}</p>
+                            <p class="mt-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-gray-500">{{ eventMonth(session.start_date) }}</p>
+                        </div>
+                        <div class="hidden sm:block w-px self-stretch bg-gray-100"></div>
+
+                        <!-- Détails de l'événement -->
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-semibold text-gray-900 text-base sm:text-lg group-hover:text-primary transition-colors truncate">
+                                {{ session.masterclass.title }}
+                            </h3>
+                            <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                                <span class="inline-flex items-center gap-1.5"><i class="bi bi-clock"></i>{{ session.start_time }}</span>
+                                <span class="inline-flex items-center gap-1.5"><i class="bi bi-geo-alt"></i>{{ session.location_label }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Vignette -->
+                        <div class="hidden md:block flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden">
+                            <img
+                                v-if="session.masterclass.image_url"
+                                :src="session.masterclass.image_url"
+                                :alt="session.masterclass.title"
+                                class="w-full h-full object-cover"
+                            />
+                            <div v-else class="w-full h-full bg-primary-bg-light flex items-center justify-center text-primary">
+                                <i class="bi bi-calendar-event text-lg"></i>
+                            </div>
+                        </div>
+
+                        <i class="bi bi-chevron-right text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0"></i>
+                    </Link>
+                </div>
+                <div class="text-center mt-12">
+                    <Link
+                        :href="route('masterclasses')"
+                        class="inline-block px-8 py-3 rounded-full border border-primary/30 text-primary hover:border-primary hover:bg-white font-medium transition-colors"
+                    >
+                        Voir tous les événements
+                    </Link>
+                </div>
+            </div>
+        </section>
 
         <!-- Portfolio Section -->
         <GalleryPreview bg-color="bg-gray-50" />
-        <!-- Testimonials -->
-        <Temoignages
-            :bg-color="'bg-white'"
-            :class-names-title="'text-3xl font-serif font-bold text-gray-900'"
-        />
 
         <!-- Partners Section - Only shown if partners exist -->
         <Partners
@@ -385,169 +386,9 @@ const submitForm = async () => {
             :class-names="'text-3xl font-serif font-bold text-gray-900'"
         />
 
-        <!-- Masterclasses Section -->
-        <MasterclassSection :sessions="upcomingSessions" />
-
         <!-- Blog Preview -->
 
         <BlogPosts />
-        <!-- Contact Section -->
-        <section class="py-20 bg-[#d1922f]/10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div>
-                        <h2 class="text-3xl font-serif font-bold text-gray-900">Contactez-nous</h2>
-                        <p class="mt-4 text-lg text-gray-600">
-                            Vous avez des questions ou vous souhaitez planifier une consultation ? N'hésitez pas à nous contacter.
-                        </p>
-
-                        <div class="mt-8 space-y-6">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-[#d1922f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3 text-gray-600">
-                                    <p>{{ contactSettings.contact_address }}</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-[#d1922f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3 text-gray-600">
-                                    <p>{{ contactSettings.contact_phone }}</p>
-                                    <p>{{ contactSettings.contact_phone_fixed }}</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-6 w-6 text-[#d1922f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3 text-gray-600">
-                                    <p>{{ contactSettings.contact_email }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-8">
-                            <h3 class="text-lg font-semibold text-gray-900">Heures d'ouverture</h3>
-                            <div class="mt-3 space-y-2 text-gray-600">
-                                <p>{{ contactSettings.opening_hours }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm p-8">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Envoyez-nous un message</h3>
-
-                        <!-- Success message -->
-                        <div v-if="isSuccess" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
-                            <p class="font-medium">Merci pour votre message !</p>
-                            <p>Nous vous contacterons dans les plus brefs délais.</p>
-                        </div>
-
-                        <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
-                                    <input
-                                        type="text"
-                                        id="first_name"
-                                        v-model="contactForm.first_name"
-                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1922f] focus:border-transparent"
-                                        :class="{'border-red-500': errors.first_name}"
-                                        required
-                                    />
-                                    <p v-if="errors.first_name" class="mt-1 text-sm text-red-600">{{ errors.first_name }}</p>
-                                </div>
-                                <div>
-                                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-                                    <input
-                                        type="text"
-                                        id="last_name"
-                                        v-model="contactForm.last_name"
-                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1922f] focus:border-transparent"
-                                        :class="{'border-red-500': errors.last_name}"
-                                        required
-                                    />
-                                    <p v-if="errors.last_name" class="mt-1 text-sm text-red-600">{{ errors.last_name }}</p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        v-model="contactForm.email"
-                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1922f] focus:border-transparent"
-                                        :class="{'border-red-500': errors.email}"
-                                        required
-                                    />
-                                    <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
-                                </div>
-                                <div>
-                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-                                    <input
-                                        type="tel"
-                                        id="phone"
-                                        v-model="contactForm.phone"
-                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1922f] focus:border-transparent"
-                                        :class="{'border-red-500': errors.phone}"
-                                    />
-                                    <p v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone }}</p>
-                                </div>
-                            </div>
-
-                            <div class="mb-6">
-                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Sujet *</label>
-                                <input
-                                    type="text"
-                                    id="subject"
-                                    v-model="contactForm.subject"
-                                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1922f] focus:border-transparent"
-                                    :class="{'border-red-500': errors.subject}"
-                                    required
-                                />
-                                <p v-if="errors.subject" class="mt-1 text-sm text-red-600">{{ errors.subject }}</p>
-                            </div>
-
-                            <div class="mb-6">
-                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
-                                <textarea
-                                    id="description"
-                                    v-model="contactForm.description"
-                                    rows="4"
-                                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1922f] focus:border-transparent"
-                                    :class="{'border-red-500': errors.description}"
-                                    required
-                                ></textarea>
-                                <p v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description }}</p>
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="w-full px-6 py-3 bg-[#d1922f] text-white font-medium rounded-md hover:bg-[#b87e28] transition-colors"
-                                :disabled="isSubmitting"
-                            >
-                                <span v-if="isSubmitting">Envoi en cours...</span>
-                                <span v-else>Envoyer le message</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
         <!-- CTA Section -->
 
         <CtaSection
@@ -563,3 +404,14 @@ const submitForm = async () => {
     </LayoutFront>
 
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.8s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

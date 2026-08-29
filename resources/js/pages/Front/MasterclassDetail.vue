@@ -1,6 +1,6 @@
 ﻿<template>
     <Head>
-        <title>{{ og.title }} – Sophie Weddings Dreams</title>
+        <title>{{ og.title }} – Amaël Fondation</title>
         <meta head-key="description" name="description" :content="og.description" />
 
         <!-- Open Graph -->
@@ -9,7 +9,7 @@
         <meta head-key="og:title"       property="og:title"       :content="og.title" />
         <meta head-key="og:description" property="og:description" :content="og.description" />
         <meta v-if="og.image" head-key="og:image" property="og:image" :content="og.image" />
-        <meta head-key="og:site_name"   property="og:site_name"   content="Sophie Weddings Dreams" />
+        <meta head-key="og:site_name"   property="og:site_name"   content="Amaël Fondation" />
         <meta head-key="og:locale"      property="og:locale"      content="fr_FR" />
 
         <!-- Twitter Card -->
@@ -27,7 +27,7 @@
                     <ol class="flex items-center space-x-2 text-sm">
                         <li><Link :href="route('home')" class="text-gray-400 hover:text-gray-600">Accueil</Link></li>
                         <li><span class="text-gray-300 mx-1">›</span></li>
-                        <li><Link :href="route('masterclasses')" class="text-gray-400 hover:text-gray-600">Masterclasses</Link></li>
+                        <li><Link :href="route('masterclasses')" class="text-gray-400 hover:text-gray-600">Événements</Link></li>
                         <li><span class="text-gray-300 mx-1">›</span></li>
                         <li><span class="text-gray-600 font-medium">{{ masterclass.title }}</span></li>
                     </ol>
@@ -43,17 +43,17 @@
                             <div v-if="masterclass.image_url" class="h-72 sm:h-80">
                                 <img :src="masterclass.image_url" :alt="masterclass.title" class="w-full h-full object-cover" />
                             </div>
-                            <div v-else class="h-48 bg-[#d1922f]/10 flex items-center justify-center">
-                                <svg class="h-20 w-20 text-[#d1922f]/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div v-else class="h-48 bg-primary/10 flex items-center justify-center">
+                                <svg class="h-20 w-20 text-primary/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
                             </div>
                             <div class="p-6 sm:p-8">
                                 <div class="flex items-center justify-between gap-3 flex-wrap mb-3">
-                                    <span class="inline-block bg-[#d1922f] text-white text-xs font-semibold px-3 py-1 rounded-full">{{ masterclass.niveau }}</span>
+                                    <span class="inline-block bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full">{{ masterclass.niveau }}</span>
                                     <!-- Bouton partager -->
                                     <div class="relative">
-                                        <button @click="toggleShare" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#d1922f] transition-colors">
+                                        <button @click="toggleShare" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-primary transition-colors">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                             Partager
                                         </button>
@@ -73,7 +73,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="text-3xl font-serif font-bold text-gray-900">{{ masterclass.title }}</h1>
+                                <h1 class="font-display text-3xl font-semibold text-gray-900">{{ masterclass.title }}</h1>
                                 <p v-if="masterclass.description" class="mt-4 text-gray-600 leading-relaxed">{{ masterclass.description }}</p>
 
                                 <div v-if="masterclass.programme" class="mt-6">
@@ -92,12 +92,12 @@
                             </div>
                         </div>
 
-                        <!-- Sessions disponibles -->
+                        <!-- Dates disponibles -->
                         <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8">
-                            <h2 class="text-xl font-semibold text-gray-900 mb-5">Sessions disponibles</h2>
+                            <h2 class="text-xl font-semibold text-gray-900 mb-5">Dates disponibles</h2>
 
                             <div v-if="sessions.length === 0" class="text-center py-8 text-gray-500">
-                                <p>Aucune session à venir pour le moment.</p>
+                                <p>Aucune date à venir pour le moment.</p>
                                 <p class="text-sm mt-1">Revenez prochainement ou contactez-nous.</p>
                             </div>
 
@@ -107,8 +107,8 @@
                                     :key="s.id"
                                     class="border rounded-lg p-4 cursor-pointer transition"
                                     :class="[
-                                        s.is_full ? 'opacity-60 cursor-not-allowed border-gray-200' : 'hover:border-[#d1922f] hover:bg-[#d1922f]/5',
-                                        selectedSession?.id === s.id ? 'border-[#d1922f] bg-[#d1922f]/5 ring-1 ring-[#d1922f]' : 'border-gray-200',
+                                        s.is_full ? 'opacity-60 cursor-not-allowed border-gray-200' : 'hover:border-primary hover:bg-primary/5',
+                                        selectedSession?.id === s.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200',
                                     ]"
                                     @click="!s.is_full && selectSession(s)"
                                 >
@@ -129,11 +129,11 @@
                                             <div v-if="s.adresse" class="mt-1 text-sm text-gray-500 flex items-center gap-1">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                                 {{ s.adresse }}
-                                                <a v-if="s.google_maps_url" :href="s.google_maps_url" target="_blank" @click.stop class="text-[#d1922f] hover:underline ml-1">Voir sur Maps</a>
+                                                <a v-if="s.google_maps_url" :href="s.google_maps_url" target="_blank" @click.stop class="text-primary hover:underline ml-1">Voir sur Maps</a>
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            <p class="font-semibold text-[#d1922f]">{{ s.formatted_price }}</p>
+                                            <p class="font-semibold text-primary">{{ s.formatted_price }}</p>
                                             <p class="text-xs text-gray-500 mt-0.5">
                                                 <span v-if="s.is_full" class="text-red-600 font-medium">Complet</span>
                                                 <span v-else-if="s.max_participants !== null">{{ s.available_spots }} place(s) restante(s)</span>
@@ -141,9 +141,9 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div v-if="selectedSession?.id === s.id" class="mt-2 flex items-center gap-1 text-xs text-[#d1922f] font-medium">
+                                    <div v-if="selectedSession?.id === s.id" class="mt-2 flex items-center gap-1 text-xs text-primary font-medium">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                        Session sélectionnée
+                                        Date sélectionnée
                                     </div>
                                 </div>
                             </div>
@@ -151,14 +151,14 @@
 
                         <!-- Autres masterclasses -->
                         <div v-if="otherMasterclasses.length > 0">
-                            <h2 class="text-xl font-serif font-bold text-gray-900 mb-4">Autres masterclasses</h2>
+                            <h2 class="font-display text-xl font-semibold text-gray-900 mb-4">Autres événements</h2>
                             <div class="grid gap-4 sm:grid-cols-3">
                                 <Link v-for="mc in otherMasterclasses" :key="mc.id" :href="route('masterclass.show', mc.slug)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
-                                    <div class="h-28 bg-[#d1922f]/10 relative">
+                                    <div class="h-28 bg-primary/10 relative">
                                         <img v-if="mc.image_url" :src="mc.image_url" class="w-full h-full object-cover" />
                                     </div>
                                     <div class="p-3">
-                                        <span class="text-xs text-[#d1922f] font-medium">{{ mc.niveau }}</span>
+                                        <span class="text-xs text-primary font-medium">{{ mc.niveau }}</span>
                                         <p class="font-medium text-gray-900 text-sm line-clamp-1 mt-0.5">{{ mc.title }}</p>
                                     </div>
                                 </Link>
@@ -175,7 +175,7 @@
                                 Aucune session disponible pour le moment.
                             </div>
 
-                            <div v-else-if="!selectedSession" class="text-sm text-[#d1922f] text-center py-4 bg-[#d1922f]/5 rounded-lg">
+                            <div v-else-if="!selectedSession" class="text-sm text-primary text-center py-4 bg-primary/5 rounded-lg">
                                 ← Sélectionnez une session pour vous inscrire
                             </div>
 
@@ -257,39 +257,39 @@
 
                             <form v-else @submit.prevent="submitForm" class="space-y-4">
                                 <!-- Récap session sélectionnée -->
-                                <div v-if="selectedSession" class="bg-[#d1922f]/5 rounded-lg p-3 text-sm">
+                                <div v-if="selectedSession" class="bg-primary/5 rounded-lg p-3 text-sm">
                                     <p class="font-medium text-gray-800">{{ selectedSession.start_date }} à {{ selectedSession.start_time }}</p>
                                     <p class="text-gray-600">{{ selectedSession.location_label }}</p>
-                                    <p class="text-[#d1922f] font-semibold mt-1">{{ selectedSession.formatted_price }}</p>
+                                    <p class="text-primary font-semibold mt-1">{{ selectedSession.formatted_price }}</p>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
-                                    <input v-model="form.name" type="text" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f] text-sm" />
+                                    <input v-model="form.name" type="text" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm" />
                                     <p v-if="errors.name" class="text-red-600 text-xs mt-1">{{ errors.name }}</p>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                                    <input v-model="form.email" type="email" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f] text-sm" />
+                                    <input v-model="form.email" type="email" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm" />
                                     <p v-if="errors.email" class="text-red-600 text-xs mt-1">{{ errors.email }}</p>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
-                                    <input v-model="form.phone" type="tel" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f] text-sm" />
+                                    <input v-model="form.phone" type="tel" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm" />
                                     <p v-if="errors.phone" class="text-red-600 text-xs mt-1">{{ errors.phone }}</p>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Message (optionnel)</label>
-                                    <textarea v-model="form.message" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f] text-sm"></textarea>
+                                    <textarea v-model="form.message" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm"></textarea>
                                 </div>
 
                                 <button
                                     type="submit"
                                     :disabled="processing"
-                                    class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#d1922f] hover:bg-[#c08529] disabled:opacity-50"
+                                    class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark disabled:opacity-50"
                                 >
                                     <svg v-if="processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -374,7 +374,7 @@ const schemaEvents = computed(() =>
             : { '@type': 'VirtualLocation', url: s.online_link ?? props.og.url },
         organizer: {
             '@type': 'Organization',
-            name: 'Sophie Weddings Dreams',
+            name: 'Amaël Fondation',
             url: window.location.origin,
         },
         offers: {

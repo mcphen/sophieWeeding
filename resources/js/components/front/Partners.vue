@@ -27,7 +27,7 @@
 
                   <Link :href="partner.website_url" :target="'_blank'" >
                       <img
-                          :src="`${partner.logo_path}`"
+                          :src="partner.logo_url"
                           :alt="partner.name"
                           class="max-h-16 max-w-full object-contain"
                       />
@@ -91,6 +91,7 @@ interface Partner {
     id: number;
     name: string;
     logo_path: string;
+    logo_url: string;
     website_url: string;
 }
 

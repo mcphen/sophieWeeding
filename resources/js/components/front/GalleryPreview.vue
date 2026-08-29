@@ -49,8 +49,7 @@ const fetchLatestAlbums = async () => {
 // Récupérer une photo d'un album
 const getAlbumPhoto = (album: Album) => {
   if (album.photos && album.photos.length > 0) {
-    //return `${album.photos[0].image_path}`;
-    return `${album.photos[0].image_path}`;
+    return album.photos[0].image_url;
   }
   return '/images/placeholder.jpg';
 };
@@ -70,36 +69,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <section :class="['py-20', bgColor || 'bg-gray-50']">
+  <section :class="['py-24', bgColor || 'bg-gray-50']">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
-        <h2 class="text-3xl font-serif font-bold text-gray-900">Notre Galerie</h2>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-gray-900">Notre galerie</h2>
         <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-          Des moments magiques capturés lors des mariages que nous avons organisés
+          Des moments capturés sur le terrain, aux côtés des communautés que nous accompagnons
         </p>
       </div>
 
       <!-- Loader -->
       <div v-if="isLoading" class="py-12 flex justify-center items-center">
-        <div class="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-[#d1922f]"></div>
+        <div class="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
       </div>
 
-      <!-- Albums Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Albums Grid - mosaic layout: the first album is featured larger -->
+      <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[140px] sm:auto-rows-[160px] md:auto-rows-[180px]">
         <div
-          v-for="album in albums"
+          v-for="(album, index) in albums"
           :key="album.id"
-          class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow"
+          v-reveal:up
+          class="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-shadow"
+          :class="index === 0 ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1'"
         >
           <img
             :src="getAlbumPhoto(album)"
             :alt="album.title"
-            class="w-full h-64 object-cover object-center"
+            class="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-110"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
             <div class="p-4 text-white">
-              <h3 class="text-lg font-semibold">{{ album.title }}</h3>
-              <p class="text-sm">{{ formatDate(album.event_date) }}</p>
+              <h3 class="font-semibold" :class="index === 0 ? 'text-xl' : 'text-sm'">{{ album.title }}</h3>
+              <p class="text-xs" :class="index === 0 ? 'block' : 'hidden sm:block'">{{ formatDate(album.event_date) }}</p>
             </div>
           </div>
         </div>
@@ -108,7 +109,7 @@ onMounted(() => {
       <div class="text-center mt-12">
         <Link
           :href="route('portfolio')"
-          class="inline-block px-8 py-3 rounded-full border border-[#d1922f]/30 text-[#d1922f] hover:border-[#d1922f] hover:bg-[#d1922f]/5 font-medium transition-colors"
+          class="inline-block px-8 py-3 rounded-full border border-primary/30 text-primary hover:border-primary hover:bg-primary-bg-light font-medium transition-colors"
         >
           Voir toute la galerie
         </Link>

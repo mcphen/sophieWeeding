@@ -20,8 +20,8 @@ const currentUrl = ref('');
 let jsonLdScript: HTMLScriptElement | null = null;
 
 // Computed properties for meta tags
-const metaTitle = computed(() => "Nos Services de Mariage | Sophie Weddings Dreams");
-const metaDescription = computed(() => "Découvrez les services professionnels d'organisation et de planification de mariage proposés par Sophie Weddings Dreams à Dakar, Sénégal. Faites de votre mariage un événement inoubliable.");
+const metaTitle = computed(() => "Nos actions | Amaël Fondation");
+const metaDescription = computed(() => "Découvrez les actions solidaires menées par Amaël Fondation à Dakar, Sénégal : éducation, santé maternelle et soutien aux familles vulnérables.");
 
 // JSON-LD structured data for services
 const servicesJsonLd = computed(() => {
@@ -37,7 +37,7 @@ const servicesJsonLd = computed(() => {
         description: service.description,
         provider: {
           '@type': 'Organization',
-          name: 'Sophie Weddings Dreams',
+          name: 'Amaël Fondation',
           image: '/images/logo.png',
           address: {
             '@type': 'PostalAddress',
@@ -72,7 +72,7 @@ onMounted(async () => {
     const response = await axios.get('/api/services');
     services.value = response.data.map((service: Service) => ({
       ...service,
-      alt: `${service.title} - Sophie Weddings`
+      alt: `${service.title} - Amaël Fondation`
     }));
     // Inject JSON-LD after services are loaded
     injectJsonLdScript();
@@ -113,11 +113,15 @@ onUnmounted(() => {
     </Head>
 
     <!-- En-tête de la page -->
-    <div class="bg-primary-bg-light py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl md:text-5xl font-serif font-bold text-primary mb-4">Nos Services</h1>
-        <p class="text-lg text-gray-700 max-w-3xl mx-auto">
-          Amour Éternel vous propose une gamme de services personnalisés pour rendre votre mariage aussi unique que votre histoire d'amour.
+    <div class="relative bg-[#1A1512]">
+      <div class="absolute inset-0 overflow-hidden">
+        <img src="/images/breadcrumb-bg.jpg" alt="Nos actions" class="w-full h-full object-cover object-center opacity-30">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/50 to-primary/30"></div>
+      </div>
+      <div class="relative max-w-7xl mx-auto py-28 px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-4">Nos actions</h1>
+        <p class="text-lg text-white/85 max-w-3xl mx-auto">
+          Amaël Fondation mène des actions concrètes de solidarité, d'éducation et de santé auprès des enfants et des familles vulnérables de Dakar.
         </p>
       </div>
     </div>
@@ -153,10 +157,10 @@ onUnmounted(() => {
                 <h2 class="text-3xl font-serif font-bold text-primary mb-6">{{ service.title }}</h2>
                 <p class="text-gray-700 text-lg mb-8 leading-relaxed" v-html="service.description"></p>
                 <Link
-                  :href="route('appointment.create')"
+                  :href="route('donate')"
                   class="inline-block px-8 py-3 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors font-medium"
                 >
-                  prendre rendez-vous
+                  Soutenir cette action
                 </Link>
               </div>
             </div>
@@ -168,16 +172,16 @@ onUnmounted(() => {
     <!-- Section CTA -->
     <div class="bg-primary-bg-light py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl md:text-4xl font-serif font-bold text-primary mb-6">Prêt à créer votre mariage de rêve ?</h2>
+        <h2 class="font-display text-3xl md:text-4xl font-semibold text-primary mb-6">Envie de soutenir ces actions ?</h2>
         <p class="text-lg text-gray-700 max-w-3xl mx-auto mb-8">
-          Contactez-nous dès aujourd'hui pour discuter de vos envies et découvrir comment nous pouvons les réaliser.
+          Votre don ou votre engagement bénévole nous permet d'aller plus loin dans chacune de ces actions.
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
           <Link
-            :href="route('appointment.create')"
+            :href="route('donate')"
             class="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors font-medium"
           >
-            prendre rendez-vous
+            Faire un don
           </Link>
           <Link
             :href="route('contact')"

@@ -71,7 +71,7 @@ const productsJsonLd = computed(() => {
         '@type': 'Product',
         name: product.title,
         description: product.description,
-        image: product.image_path ? `${window.location.origin}/storage/${product.image_path}` : '',
+        image: product.image_url ? `${window.location.origin}${product.image_url}` : '',
         offers: {
           '@type': 'Offer',
           price: product.price,
@@ -268,8 +268,8 @@ onUnmounted(() => {
                         <!-- Image du produit -->
                         <Link :href="route('product.show', { slug: product.slug })" class="h-48 overflow-hidden block">
                             <img
-                                v-if="product.image_path"
-                                :src="product.image_path"
+                                v-if="product.image_url"
+                                :src="product.image_url"
                                 :alt="product.title"
                                 class="w-full h-full object-cover object-center"
                             />

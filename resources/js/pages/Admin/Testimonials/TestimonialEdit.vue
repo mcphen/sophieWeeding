@@ -13,6 +13,7 @@ interface Testimonial {
     author_title: string | null;
     content: string;
     image_path: string | null;
+    image_url: string | null;
 }
 
 // Props
@@ -39,7 +40,7 @@ const form = useForm({
 });
 
 // Prévisualisation de l'image
-const imagePreview = ref<string | null>(props.testimonial.image_path ? `${props.testimonial.image_path}` : null);
+const imagePreview = ref<string | null>(props.testimonial.image_url || null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
 // Quill editor

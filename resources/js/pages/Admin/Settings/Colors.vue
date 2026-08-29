@@ -48,16 +48,16 @@ if (props.settings) {
 // Create form with default values
 const form = useForm<FormData>({
     // Color settings
-    primary_color: settingsObject['primary_color'] || '#AA6808',
-    primary_light: settingsObject['primary_light'] || '#d1922f',
-    primary_dark: settingsObject['primary_dark'] || '#8a5406',
-    primary_bg_light: settingsObject['primary_bg_light'] || '#fcf5ea',
-    accent_light: settingsObject['accent_light'] || '#f3e3c8',
-    text_dark: settingsObject['text_dark'] || '#1b1b18',
+    primary_color: settingsObject['primary_color'] || '#1E2F52',
+    primary_light: settingsObject['primary_light'] || '#3E5A8A',
+    primary_dark: settingsObject['primary_dark'] || '#10192E',
+    primary_bg_light: settingsObject['primary_bg_light'] || '#FAF3E6',
+    accent_light: settingsObject['accent_light'] || '#F1E4C0',
+    text_dark: settingsObject['text_dark'] || '#1B2237',
     text_light: settingsObject['text_light'] || '#ffffff',
-    gray_light: settingsObject['gray_light'] || '#f8f8f8',
-    gray_medium: settingsObject['gray_medium'] || '#e5e5e5',
-    gray_dark: settingsObject['gray_dark'] || '#4b4b4b',
+    gray_light: settingsObject['gray_light'] || '#F7F5F0',
+    gray_medium: settingsObject['gray_medium'] || '#E7E2D6',
+    gray_dark: settingsObject['gray_dark'] || '#4B4A47',
 });
 
 const submit = () => {

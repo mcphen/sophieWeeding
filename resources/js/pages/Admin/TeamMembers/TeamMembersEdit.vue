@@ -15,6 +15,7 @@ const props = defineProps<{
     position: string;
     bio: string | null;
     image_path: string | null;
+    image_url: string | null;
   }
 }>();
 
@@ -36,11 +37,7 @@ const form = useForm({
 });
 
 // Prévisualisation de l'image
-const imagePreview = ref<string | null>(
-    props.member.image_path
-    ? `${props.member.image_path}`
-    : null
-);
+const imagePreview = ref<string | null>(props.member.image_url || null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
 // Quill editor

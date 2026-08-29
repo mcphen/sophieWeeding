@@ -2,10 +2,10 @@
     <section class="py-20 " :class="props.bgColor">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 :class="props.classNamesTitle">Ce que disent nos clients</h2>
+                <h2 :class="props.classNamesTitle">Témoignages</h2>
                 <div class="w-24 h-1 bg-primary mx-auto mb-8" v-if="props.isHorizontalDiv"></div>
                 <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                    Des moments inoubliables créés pour des couples extraordinaires
+                    La parole à celles et ceux qui vivent nos actions au quotidien
                 </p>
             </div>
 

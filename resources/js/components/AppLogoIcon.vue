@@ -14,7 +14,7 @@ defineProps<Props>();
 </script>
 
 <template>
-    <img v-if="logoUrl" style="width: 100px;height: 100px" :src="logoUrl" :class="className" v-bind="$attrs" alt="Site Logo" />
+    <img v-if="logoUrl" :src="logoUrl" :class="className" v-bind="$attrs" alt="Site Logo" />
     <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42" :class="className" v-bind="$attrs">
         <path
             fill="currentColor"

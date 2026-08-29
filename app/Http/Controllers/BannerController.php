@@ -55,7 +55,7 @@ class BannerController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Banner photos updated successfully');
+        return redirect()->back()->with('success', 'Bannière mise à jour avec succès');
     }
 
     /**

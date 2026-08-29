@@ -3,7 +3,7 @@
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6 bg-white shadow-sm">
             <div class="border-b pb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Nouvelle masterclass</h2>
+                <h2 class="text-2xl font-bold text-gray-800">Nouvel événement</h2>
             </div>
 
             <form @submit.prevent="submit" class="space-y-6" enctype="multipart/form-data">
@@ -15,8 +15,15 @@
                         <p v-if="form.errors.title" class="text-red-600 text-sm mt-1">{{ form.errors.title }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Niveau *</label>
-                        <input v-model="form.niveau" type="text" required placeholder="ex: Niveau 1, Avancé…" class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f]" />
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type d'événement *</label>
+                        <input v-model="form.niveau" type="text" required placeholder="ex: Sensibilisation, Collecte de fonds, Bénévolat, Distribution…" list="event-types" class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f]" />
+                        <datalist id="event-types">
+                            <option value="Sensibilisation" />
+                            <option value="Collecte de fonds" />
+                            <option value="Bénévolat" />
+                            <option value="Distribution" />
+                            <option value="Formation communautaire" />
+                        </datalist>
                         <p v-if="form.errors.niveau" class="text-red-600 text-sm mt-1">{{ form.errors.niveau }}</p>
                     </div>
                 </div>
@@ -50,7 +57,7 @@
 
                 <div class="flex items-center gap-2">
                     <input id="is_active" type="checkbox" v-model="form.is_active" class="rounded border-gray-300 text-[#d1922f] focus:ring-[#d1922f]" />
-                    <label for="is_active" class="text-sm font-medium text-gray-700">Masterclass active (visible sur le site)</label>
+                    <label for="is_active" class="text-sm font-medium text-gray-700">Événement actif (visible sur le site)</label>
                 </div>
 
                 <!-- Section annonce par email -->
@@ -85,7 +92,7 @@
 
                 <div class="flex gap-3 pt-2">
                     <button type="submit" :disabled="form.processing" class="px-6 py-2 bg-[#d1922f] text-white rounded-md hover:bg-[#c08529] disabled:opacity-50 font-medium">
-                        {{ form.processing ? 'Création en cours…' : 'Créer la masterclass' }}
+                        {{ form.processing ? 'Création en cours…' : "Créer l'événement" }}
                     </button>
                     <Link :href="route('admin.masterclasses.index')" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                         Annuler
@@ -106,7 +113,7 @@ import 'quill/dist/quill.snow.css';
 
 const breadcrumbs: BreadcrumbItemType[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Masterclasses', href: route('admin.masterclasses.index') },
+    { title: 'Événements', href: route('admin.masterclasses.index') },
     { title: 'Nouvelle', href: '#' },
 ];
 

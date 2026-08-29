@@ -148,7 +148,7 @@ onMounted(() => {
 
 const breadcrumbItems = [
     { name: 'Accueil', href: '/', current: false },
-    { name: 'Portfolio', href: '/portfolio', current: true },
+    { name: 'Galerie', href: '/portfolio', current: true },
 
 ];
 </script>
@@ -156,19 +156,26 @@ const breadcrumbItems = [
 <template>
   <LayoutFront>
     <Head>
-      <title>Portfolio </title>
-      <meta name="description" content="Découvrez notre portfolio de mariages exceptionnels" />
+      <title>Galerie - Amaël Fondation</title>
+      <meta name="description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain à Dakar." />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="Galerie - Amaël Fondation" />
+      <meta property="og:description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain à Dakar." />
+      <meta property="og:url" content="/portfolio" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Galerie - Amaël Fondation" />
+      <meta name="twitter:description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain à Dakar." />
     </Head>
-      <div class="relative bg-gray-900">
+      <div class="relative bg-[#1A1512]">
           <!-- Image d'arrière-plan avec overlay -->
           <div class="absolute inset-0 overflow-hidden">
-              <img src="/images/breadcrumb-bg.jpg" alt="Bannière À Propos" class="w-full h-full object-cover object-center opacity-40">
+              <img src="/images/breadcrumb-bg.jpg" alt="Bannière Galerie" class="w-full h-full object-cover object-center opacity-30">
               <div class="absolute inset-0 bg-gradient-to-r from-primary/50 to-primary/30"></div>
           </div>
 
           <!-- Contenu du breadcrumb -->
-          <div class="relative max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
-              <h1 class="text-4xl md:text-5xl font-serif font-bold text-white text-center mb-4">Portfolio</h1>
+          <div class="relative max-w-7xl mx-auto pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+              <h1 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">Galerie</h1>
 
               <!-- Breadcrumb navigation -->
               <nav class="flex" aria-label="Breadcrumb">
@@ -332,7 +339,7 @@ const breadcrumbItems = [
             >
               <div class="relative pb-[100%]">
                 <img
-                    :src="`${photo.image_path}`"
+                  :src="photo.image_url"
                   :alt="photo.caption || album.title"
                   class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
@@ -403,8 +410,7 @@ const breadcrumbItems = [
           <div class="relative bg-black h-full flex items-center justify-center">
             <img
               v-if="selectedAlbum?.photos[currentPhotoIndex]"
-              :src="`${selectedAlbum.photos[currentPhotoIndex].image_path}`"
-
+              :src="selectedAlbum.photos[currentPhotoIndex].image_url"
               :alt="selectedAlbum.photos[currentPhotoIndex].caption || selectedAlbum.title"
               class="max-h-[70vh] max-w-full object-contain"
             />
@@ -444,7 +450,7 @@ const breadcrumbItems = [
                 :class="{'ring-2 ring-primary': currentPhotoIndex === index, 'opacity-60': currentPhotoIndex !== index}"
               >
                 <img
-                    :src="`${photo.image_path}`"
+                  :src="photo.image_url"
                   :alt="photo.caption || selectedAlbum?.title"
                   class="w-full h-full object-cover"
                   loading="lazy"

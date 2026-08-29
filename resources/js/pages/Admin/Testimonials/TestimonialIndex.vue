@@ -11,6 +11,7 @@ interface Testimonial {
     author_title: string | null;
     content: string;
     image_path: string | null;
+    image_url: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -182,7 +183,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                     <div class="relative h-48 bg-gray-100">
                         <img
                             v-if="testimonial.image_path"
-                            :src="`${testimonial.image_path}`"
+                            :src="testimonial.image_url"
                             :alt="testimonial.author_name"
                             class="w-full h-full object-cover"
                         >
@@ -261,7 +262,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
                                     v-if="testimonial.image_path"
-                                    :src="`${testimonial.image_path}`"
+                                    :src="testimonial.image_url"
                                     :alt="testimonial.author_name"
                                     class="w-16 h-16 object-cover rounded-full border border-gray-200"
                                 >

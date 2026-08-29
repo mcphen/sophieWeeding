@@ -10,6 +10,7 @@ interface Service {
     title: string;
     description: string | null;
     image_path: string | null;
+    image_url: string | null;
     min_price: number | null;
     created_at: string;
     updated_at: string;
@@ -189,7 +190,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                     <div class="relative h-48 bg-gray-100">
                         <img
                             v-if="service.image_path"
-                            :src="`${service.image_path}`"
+                            :src="service.image_url"
                             :alt="service.title"
                             class="w-full h-full object-cover"
                         >
@@ -271,7 +272,7 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
                                     v-if="service.image_path"
-                                    :src="`${service.image_path}`"
+                                    :src="service.image_url"
                                     :alt="service.title"
                                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                                 >

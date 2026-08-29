@@ -1,10 +1,10 @@
 <template>
-    <Head title="Gestion des masterclasses" />
+    <Head title="Gestion des événements" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6 bg-white shadow-sm">
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Masterclasses</h2>
+                <h2 class="text-2xl font-bold text-gray-800">Événements</h2>
                 <div class="flex items-center gap-3">
                     <!-- Toggle vue -->
                     <div class="flex items-center rounded-lg border border-gray-200 overflow-hidden">
@@ -38,7 +38,7 @@
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Nouvelle masterclass
+                        Nouvel événement
                     </Link>
                 </div>
             </div>
@@ -48,15 +48,15 @@
                 <svg class="mx-auto h-14 w-14 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <h3 class="mt-4 text-base font-semibold text-gray-800">Aucune masterclass</h3>
-                <p class="mt-1 text-sm text-gray-500">Commencez par créer votre première masterclass.</p>
+                <h3 class="mt-4 text-base font-semibold text-gray-800">Aucun événement</h3>
+                <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier événement.</p>
                 <div class="mt-6">
                     <Link :href="route('admin.masterclasses.create')"
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#d1922f] hover:bg-[#c08529] shadow-sm">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Créer une masterclass
+                        Créer un événement
                     </Link>
                 </div>
             </div>
@@ -128,7 +128,7 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Masterclass</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Événement</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Niveau</th>
                             <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
                             <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Sessions</th>
@@ -220,7 +220,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h2 class="text-base font-semibold text-gray-900">Supprimer cette masterclass ?</h2>
+                        <h2 class="text-base font-semibold text-gray-900">Supprimer cet événement ?</h2>
                         <p class="mt-1 text-sm text-gray-500">
                             Toutes ses sessions et inscriptions seront définitivement supprimées. Cette action est irréversible.
                         </p>

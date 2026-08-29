@@ -155,7 +155,7 @@ onMounted(() => {
           </div>
 
           <!-- Contenu du breadcrumb -->
-          <div class="relative max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+          <div class="relative max-w-7xl mx-auto pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
               <h1 class="text-4xl md:text-5xl font-serif font-bold text-white text-center mb-4">{{actualite.title}}</h1>
 
               <!-- Breadcrumb navigation -->
@@ -212,8 +212,7 @@ onMounted(() => {
           <!-- Image principale -->
           <div class="relative mb-10 shadow-xl rounded-lg overflow-hidden">
             <img
-                :src="`${actualite.image_path}`"
-
+              :src="actualite.image_url"
               :alt="actualite.title"
               class="w-full h-auto object-cover object-center rounded-lg"
             />

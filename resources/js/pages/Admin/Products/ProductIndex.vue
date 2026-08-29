@@ -12,6 +12,7 @@ interface Product {
     price: number;
     stock: number;
     image_path: string | null;
+    image_url: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -192,7 +193,7 @@ function getStockStatus(stock: number): string {
                     <div class="relative h-48 bg-gray-100">
                         <img
                             v-if="product.image_path"
-                            :src="`${product.image_path}`"
+                            :src="product.image_url"
                             :alt="product.name"
                             class="w-full h-full object-cover"
                         >
@@ -288,7 +289,7 @@ function getStockStatus(stock: number): string {
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
                                     v-if="product.image_path"
-                                    :src="`${product.image_path}`"
+                                    :src="product.image_url"
                                     :alt="product.name"
                                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                                 >

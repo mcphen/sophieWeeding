@@ -87,7 +87,9 @@ class ActualiteController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($actualite->image_path);
+            if ($actualite->image_path) {
+                Storage::disk('public')->delete($actualite->image_path);
+            }
             $data['image_path'] = $request->file('image')->store('actualites', 'public');
         }
 
@@ -114,7 +116,9 @@ class ActualiteController extends Controller
 
     public function destroy(Actualite $actualite)
     {
-        Storage::disk('public')->delete($actualite->image_path);
+        if ($actualite->image_path) {
+            Storage::disk('public')->delete($actualite->image_path);
+        }
         $actualite->delete();
         return redirect()->route('admin.actualites.index')
             ->with('success', 'Actualité supprimée.');

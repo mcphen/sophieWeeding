@@ -4,7 +4,6 @@ import LayoutFront from '@/layouts/Front/LayoutFront.vue';
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
 import Partners from '@/components/front/Partners.vue';
-import Temoignages from '@/components/front/Temoignages.vue';
 import CtaSection from '@/components/front/CtaSection.vue';
 
 interface AboutData{
@@ -29,6 +28,7 @@ interface TeamMember {
     position: string;
     bio: string;
     image_path: string;
+    image_url: string;
 }
 // État pour stocker les membres de l'équipe
 const teamMembers = ref<TeamMember[]>([]);
@@ -98,35 +98,48 @@ interface CtaSettings {
 const page = usePage();
 const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
     fromColor: '#d1922f',
-    toColor: '#bf8529',
-    title: 'Prêts à planifier le mariage de vos rêves ?',
-    description: 'Contactez-nous dès aujourd\'hui pour une consultation gratuite et commencez à transformer votre vision en réalité.',
-    paragraphColor: '#faecd2',
-    linkRoute: 'appointment.create',
-    buttonText: 'Prendre rendez-vous',
-    buttonTextColor: '#d1922f'
+    toColor: '#8a5e12',
+    title: 'Ensemble, changeons des vies à Dakar',
+    description: 'Votre don, même modeste, nous permet d\'agir concrètement auprès des enfants et des familles qui en ont besoin. Rejoignez-nous.',
+    paragraphColor: '#FBF1E9',
+    linkRoute: 'donate',
+    buttonText: 'Faire un don',
+    buttonTextColor: '#1E2F52'
 });
+
+const values = [
+    { title: 'Solidarité', description: 'Nous croyons en la force du collectif pour soutenir les plus vulnérables.' },
+    { title: 'Impact', description: 'Chaque action est pensée pour produire un changement concret et durable.' },
+    { title: 'Humanité', description: 'Nous agissons avec respect, écoute et dignité envers chaque personne accompagnée.' },
+];
 
 </script>
 
 <template>
     <Head>
-        <title>À Propos - Sophie Weddings Dreams</title>
-        <meta name="description" content="Découvrez l'histoire d'Amour Éternel, notre équipe passionnée, nos partenaires de confiance et les témoignages de nos mariés" />
+        <title>À propos - Amaël Fondation</title>
+        <meta name="description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires à Dakar." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="À propos - Amaël Fondation" />
+        <meta property="og:description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires à Dakar." />
+        <meta property="og:url" content="/about" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="À propos - Amaël Fondation" />
+        <meta name="twitter:description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires à Dakar." />
     </Head>
 
     <LayoutFront>
         <!-- Bannière du breadcrumb avec image de fond -->
-        <div class="relative bg-gray-900">
+        <div class="relative bg-[#1A1512]">
             <!-- Image d'arrière-plan avec overlay -->
             <div class="absolute inset-0 overflow-hidden">
-                <img src="/images/breadcrumb-bg.jpg" alt="Bannière À Propos" class="w-full h-full object-cover object-center opacity-40">
+                <img src="/images/breadcrumb-bg.jpg" alt="Bannière À propos" class="w-full h-full object-cover object-center opacity-30">
                 <div class="absolute inset-0 bg-gradient-to-r from-primary/50 to-primary/30"></div>
             </div>
 
             <!-- Contenu du breadcrumb -->
-            <div class="relative max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
-                <h1 class="text-4xl md:text-5xl font-serif font-bold text-white text-center mb-4">À Propos</h1>
+            <div class="relative max-w-7xl mx-auto pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">À propos</h1>
 
                 <!-- Breadcrumb navigation -->
                 <nav class="flex" aria-label="Breadcrumb">
@@ -161,22 +174,39 @@ const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
         </div>
 
         <div class="py-12 bg-white">
-            <!-- Section À Propos de Nous -->
+            <!-- Section Notre Histoire -->
             <section id="about-us" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-                <h1 class="text-3xl md:text-4xl font-serif font-bold text-center text-primary mb-3">À Propos de Nous</h1>
+                <h1 class="font-display text-3xl md:text-4xl font-semibold text-center text-gray-900 mb-3">Notre histoire</h1>
                 <div class="w-24 h-1 bg-primary mx-auto mb-8"></div>
 
                 <div class="flex flex-col md:flex-row items-center gap-8">
                     <div class="md:w-1/2">
                         <img
                             :src="props.about.image_url || '/images/about-us.jpg'"
-                            alt="L'équipe Sophie Weddings Dreams"
-                            class="rounded-lg shadow-lg w-full h-auto object-cover"
+                            alt="L'équipe Amaël Fondation"
+                            class="rounded-2xl shadow-lg w-full h-auto object-cover"
                         >
                     </div>
                     <div class="md:w-1/2">
-                        <h2 class="text-2xl font-serif font-semibold text-gray-800 mb-4">Notre Histoire</h2>
-                        <div v-html="props.about.content"></div>
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Notre motivation</h2>
+                        <div v-if="props.about?.content" v-html="props.about.content"></div>
+                        <p v-else class="text-gray-600 leading-relaxed">
+                            Amaël Fondation est née de la conviction qu'un geste de solidarité, aussi modeste soit-il,
+                            peut changer une vie. À Dakar, nous accompagnons au quotidien les enfants, les mères et
+                            les familles en situation de précarité, avec une mission claire&nbsp;: rendre l'espoir
+                            accessible à tous, et une vision&nbsp;: bâtir une communauté solidaire où personne n'est
+                            laissé pour compte.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Nos Valeurs -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div v-for="value in values" :key="value.title" v-reveal:up class="rounded-2xl border border-gray-100 p-6 bg-primary-bg-light">
+                        <h3 class="text-lg font-semibold text-primary mb-2">{{ value.title }}</h3>
+                        <p class="text-gray-600 text-sm">{{ value.description }}</p>
                     </div>
                 </div>
             </section>
@@ -184,15 +214,15 @@ const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
             <!-- Section Notre Équipe -->
             <section id="our-team" class="bg-primary-bg-light py-16">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 class="text-3xl font-serif font-bold text-center text-primary mb-3">Notre Équipe</h2>
+                    <h2 class="text-3xl font-bold text-center text-gray-900 mb-3">Notre équipe</h2>
                     <div class="w-24 h-1 bg-primary mx-auto mb-8"></div>
                     <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
-                        Notre équipe de professionnels passionnés travaille avec dévouement pour transformer vos rêves en réalité. Chacun apporte son expertise unique pour créer des événements inoubliables.
+                        Une équipe engagée, sur le terrain, aux côtés des communautés que nous accompagnons chaque jour.
                     </p>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div v-for="member in teamMembers" :key="member.firstname" class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:scale-105">
-                            <img :src="`${member.image_path}`" :alt="member.firstname" class="w-full h-64 object-cover">
+                            <img :src="member.image_url" :alt="member.firstname" class="w-full h-64 object-cover">
                             <div class="p-6">
                                 <h3 class="text-xl font-semibold text-gray-800 mb-1">{{ member.firstname }} {{member.lastname}}</h3>
                                 <p class="text-primary font-medium mb-3">{{ member.position }}</p>
@@ -207,15 +237,7 @@ const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
             <Partners
                 v-show="showPartnersSection"
                 ref="partnersRef"
-                :class-names="'text-3xl font-serif font-bold text-center text-primary mb-3'"
-            />
-
-
-
-            <Temoignages
-                :bg-color="'bg-primary-bg-light'"
-                :class-names-title="'text-3xl font-serif font-bold text-center text-primary mb-3'"
-                :is-horizontal-div="true"
+                :class-names="'text-3xl font-bold text-center text-gray-900 mb-3'"
             />
 
             <CtaSection

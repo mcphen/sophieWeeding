@@ -26,7 +26,33 @@ const showBackToTop = ref(false);
 const newsletterEmail = ref('');
 const isSubscribing = ref(false);
 const showCookieConsent = ref(true);
+const logoFailed = ref(false);
+const isScrolled = ref(false);
 const toast = useToast();
+
+// Classes applied to the primary nav links: white/transparent while floating over the hero,
+// solid once the header has become opaque on scroll.
+const navLinkClass = computed(() =>
+    isScrolled.value
+        ? 'px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors'
+        : 'px-3 py-2 text-white hover:text-white/70 font-medium transition-colors'
+);
+
+const joinButtonClass = computed(() =>
+    isScrolled.value
+        ? 'ml-2 px-4 py-2 text-primary border border-primary/40 rounded-full hover:bg-primary-bg-light font-medium transition-colors'
+        : 'ml-2 px-4 py-2 text-white border border-white/50 rounded-full hover:bg-white/10 font-medium transition-colors'
+);
+
+const logoTextClass = computed(() =>
+    isScrolled.value ? 'text-xl font-bold tracking-tight text-gray-900' : 'text-xl font-bold tracking-tight text-white'
+);
+
+const mobileButtonClass = computed(() =>
+    isScrolled.value
+        ? 'inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary hover:bg-primary-bg-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-light'
+        : 'inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white/70 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white/40'
+);
 
 // Function to fetch services from the backend
 const fetchServices = async () => {
@@ -56,17 +82,17 @@ interface ContactSettings {
 // Get contact settings from props
 const page = usePage();
 const contactSettings = computed(() => page.props.contactSettings as ContactSettings || {
-    contact_phone: '(+221) 78 538 30 69',
-    contact_phone_fixed: '(+221) 33 865 27 11',
-    contact_email: 'sophieweddings5@gmail.com',
-    social_facebook: 'https://www.facebook.com/Sophieweddingsdreams22/',
+    contact_phone: '(+221) 78 000 00 00',
+    contact_phone_fixed: '(+221) 33 000 00 00',
+    contact_email: 'contact@amaelfondation.org',
+    social_facebook: '#',
     social_twitter: '#',
     social_youtube: '#',
     social_linkedin: '#',
     social_tiktok: '#',
-    social_instagram: 'https://www.instagram.com/sophie_weddings_dreams/',
-    contact_address: 'Rue NG-70, 91 Ngor Almadies, Dakar 12000',
-    opening_hours: 'Lundi - Vendredi: 8am - 6pm'
+    social_instagram: '#',
+    contact_address: 'Dakar, Sénégal',
+    opening_hours: 'Lundi - Vendredi : 9h - 18h'
 });
 
 
@@ -78,9 +104,10 @@ const closeMobileMenu = () => {
     mobileMenuOpen.value = false;
 };
 
-// Function to handle scroll for back-to-top button
+// Function to handle scroll for back-to-top button and the floating header
 const handleScroll = () => {
     showBackToTop.value = window.scrollY > 500;
+    isScrolled.value = window.scrollY > 40;
 };
 
 // Function to scroll back to top
@@ -130,13 +157,15 @@ onMounted(() => {
         setTimeout(() => {
             isLoading.value = false;
         }, 200);
+        handleScroll();
     });
 
     // Fetch services when component is mounted
     fetchServices();
 
-    // Add scroll event listener for back-to-top button
+    // Add scroll event listener for back-to-top button and the floating header
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
 
     // Check if cookies have been accepted
     if (localStorage.getItem('cookiesAccepted') === 'true') {
@@ -211,23 +240,23 @@ const subscribeToNewsletter = async () => {
     <Head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Sophie Weddings Dreams - Votre agence de mariage pour un événement inoubliable à Dakar, Sénégal. Organisation de mariages, décoration, traiteur et plus." />
-        <meta name="keywords" content="mariage, wedding planner, organisation mariage, décoration mariage, Dakar, Sénégal, Sophie Weddings, événementiel" />
-        <meta name="author" content="Sophie Weddings Dreams" />
+        <meta name="description" content="Amaël Fondation - ONG basée à Dakar, Sénégal, engagée pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
+        <meta name="keywords" content="ONG, fondation, association, solidarité, Dakar, Sénégal, don, bénévolat, Amaël Fondation" />
+        <meta name="author" content="Amaël Fondation" />
         <meta name="robots" content="index, follow" />
 
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Sophie Weddings Dreams - Votre agence de mariage à Dakar" />
-        <meta property="og:description" content="Sophie Weddings Dreams - Votre agence de mariage pour un événement inoubliable à Dakar, Sénégal. Organisation de mariages, décoration, traiteur et plus." />
+        <meta property="og:title" content="Amaël Fondation - Donner espoir, agir pour demain" />
+        <meta property="og:description" content="Amaël Fondation - ONG basée à Dakar, Sénégal, engagée pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
         <meta property="og:image" :content="contactSettings.site_logo" />
-        <meta property="og:site_name" content="Sophie Weddings Dreams" />
+        <meta property="og:site_name" content="Amaël Fondation" />
 
         <!-- Twitter -->
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Sophie Weddings Dreams - Votre agence de mariage à Dakar" />
-        <meta name="twitter:description" content="Sophie Weddings Dreams - Votre agence de mariage pour un événement inoubliable à Dakar, Sénégal. Organisation de mariages, décoration, traiteur et plus." />
+        <meta name="twitter:title" content="Amaël Fondation - Donner espoir, agir pour demain" />
+        <meta name="twitter:description" content="Amaël Fondation - ONG basée à Dakar, Sénégal, engagée pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
         <meta name="twitter:image" :content="contactSettings.site_logo" />
 
         <!-- Favicon -->
@@ -245,143 +274,112 @@ const subscribeToNewsletter = async () => {
 
 
     <div class="min-h-screen bg-white text-[#1b1b18]">
-        <!-- Top Bar -->
-        <div class="bg-primary text-white py-2 hidden md:block">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center">
-                        <i class="bi bi-telephone text-current"></i>
-                        <span class="text-sm">{{ contactSettings.contact_phone }}</span>
+        <!-- Floating header: transparent over the hero, solid once scrolled -->
+        <div
+            class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+            :class="(isScrolled || mobileMenuOpen) ? 'bg-white/95 backdrop-blur-sm shadow-sm' : 'bg-transparent'"
+        >
+            <!-- Top Bar -->
+            <div
+                class="bg-primary text-white hidden md:block overflow-hidden transition-all duration-300"
+                :class="isScrolled ? 'max-h-0 py-0 opacity-0' : 'max-h-12 py-2 opacity-100'"
+            >
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <i class="bi bi-telephone text-current"></i>
+                            <span class="text-sm">{{ contactSettings.contact_phone }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="bi bi-phone-fill text-current"></i>
+                            <span class="text-sm">{{ contactSettings.contact_phone_fixed }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="bi bi-envelope mr-1 text-current"></i>
+                            <span class="text-sm">{{ contactSettings.contact_email }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-center">
-                        <i class="bi bi-phone-fill text-current"></i>
-                        <span class="text-sm">{{ contactSettings.contact_phone_fixed }}</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="bi bi-envelope mr-1 text-current"></i>
-                        <span class="text-sm">{{ contactSettings.contact_email }}</span>
-                    </div>
-                </div>
 
-                <div class="flex items-center space-x-3">
-                    <a :href="contactSettings.social_facebook" target="_blank" class="hover:text-rose-200 transition-colors">
-                        <i class="bi bi-facebook text-current text-lg"></i>
-                    </a>
-                    <a :href="contactSettings.social_instagram" target="_blank" class="hover:text-rose-200 transition-colors">
-                        <i class="bi bi-instagram text-current text-lg"></i>
-                    </a>
-                    <a :href="contactSettings.social_linkedin" target="_blank" class="hover:text-rose-200 transition-colors">
-                        <i class="bi bi-linkedin text-current text-lg"></i>
-                    </a>
-                    <a :href="contactSettings.social_youtube" target="_blank" class="hover:text-rose-200 transition-colors">
-                        <i class="bi bi-youtube text-current text-lg"></i>
-                    </a>
-                    <a :href="contactSettings.social_tiktok" target="_blank" class="hover:text-rose-200 transition-colors">
-                        <i class="bi bi-tiktok text-current text-lg"></i>
-                    </a>
-                </div>
+                    <div class="flex items-center space-x-3">
+                        <a :href="contactSettings.social_facebook" target="_blank" class="hover:text-white/70 transition-colors">
+                            <i class="bi bi-facebook text-current text-lg"></i>
+                        </a>
+                        <a :href="contactSettings.social_instagram" target="_blank" class="hover:text-white/70 transition-colors">
+                            <i class="bi bi-instagram text-current text-lg"></i>
+                        </a>
+                        <a :href="contactSettings.social_linkedin" target="_blank" class="hover:text-white/70 transition-colors">
+                            <i class="bi bi-linkedin text-current text-lg"></i>
+                        </a>
+                        <a :href="contactSettings.social_youtube" target="_blank" class="hover:text-white/70 transition-colors">
+                            <i class="bi bi-youtube text-current text-lg"></i>
+                        </a>
+                    </div>
 
+                </div>
             </div>
-        </div>
 
 
-        <!-- Navigation -->
-        <header class="w-full bg-white shadow-sm sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-20">
-                    <div class="flex items-center">
-                        <Link :href="'#'" class="flex-shrink-0 flex items-center">
-                            <span class="text-2xl font-serif font-bold text-primary">
-                                <img :src="contactSettings.site_logo" style="width: 115px;">
-                            </span>
-                        </Link>
-                    </div>
+            <!-- Navigation -->
+            <header class="w-full">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between transition-all duration-300" :class="isScrolled ? 'h-16' : 'h-20'">
+                        <div class="flex items-center">
+                            <Link :href="route('home')" class="flex-shrink-0 flex items-center gap-2">
+                                <img
+                                    v-if="contactSettings.site_logo && !logoFailed"
+                                    :src="contactSettings.site_logo"
+                                    class="h-11 w-11 rounded-full object-cover"
+                                    alt="Amaël Fondation"
+                                    @error="logoFailed = true"
+                                />
+                                <span v-else class="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white font-serif text-lg font-bold">AF</span>
+                                <span :class="logoTextClass">Amaël <span class="text-primary">Fondation</span></span>
+                            </Link>
+                        </div>
 
-                    <!-- Desktop Menu -->
-                    <nav class="hidden md:flex items-center space-x-1">
-                        <Link
-                            :href="route('home')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Accueil
-                        </Link>
-                        <Link
-                            :href="route('about')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            A propos
-                        </Link>
+                        <!-- Desktop Menu -->
+                        <nav class="hidden md:flex items-center space-x-1">
+                            <Link :href="route('home')" :class="navLinkClass">
+                                Accueil
+                            </Link>
+                            <Link :href="route('about')" :class="navLinkClass">
+                                À propos
+                            </Link>
+                            <Link :href="route('services')" :class="navLinkClass">
+                                Nos actions
+                            </Link>
+                            <Link :href="route('portfolio')" :class="navLinkClass">
+                                Galerie
+                            </Link>
+                            <Link :href="route('masterclasses')" :class="navLinkClass">
+                                Événements
+                            </Link>
+                            <Link :href="route('blog')" :class="navLinkClass">
+                                Blog
+                            </Link>
+                            <Link :href="route('contact')" :class="navLinkClass">
+                                Contact
+                            </Link>
+                            <Link :href="route('volunteer')" :class="joinButtonClass">
+                                Nous rejoindre
+                            </Link>
+                            <Link
+                                :href="route('donate')"
+                                class="ml-2 px-6 py-2 bg-primary text-white rounded-full hover:bg-primary-dark font-semibold shadow-sm transition-colors"
+                            >
+                                Faire un don
+                            </Link>
+                        </nav>
 
-
-
-                        <!-- Services Dropdown -->
-
-
-                        <Link
-                            :href="route('services')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Services
-                        </Link>
-
-                        <Link
-                            :href="route('products')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Produits
-                        </Link>
-
-                        <Link
-                            :href="route('portfolio')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Portfolio
-                        </Link>
-                        <Link
-                            :href="route('masterclasses')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Masterclasses
-                        </Link>
-                        <Link
-                            :href="route('blog')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Blog
-                        </Link>
-                        <Link
-                            :href="route('contact')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors"
-                        >
-                            Contact
-                        </Link>
-                        <Link
-                            :href="route('prospect.portal.login')"
-                            class="px-3 py-2 text-gray-800 hover:text-primary font-medium transition-colors flex items-center gap-1"
-                        >
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            Mon espace
-                        </Link>
-                        <Link
-                            :href="route('appointment.create')"
-                            class="ml-3 px-6 py-2 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors"
-                        >
-                            prendre rendez-vous
-                        </Link>
-                    </nav>
-
-                    <!-- Mobile menu button -->
-                    <div class="flex md:hidden items-center">
-                        <button
-                            @click="mobileMenuOpen = !mobileMenuOpen"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary hover:bg-primary-bg-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-light"
-                            :aria-expanded="mobileMenuOpen"
-                            aria-controls="mobile-menu"
-                            aria-label="Menu principal"
-                        >
+                        <!-- Mobile menu button -->
+                        <div class="flex md:hidden items-center">
+                            <button
+                                @click="mobileMenuOpen = !mobileMenuOpen"
+                                :class="mobileButtonClass"
+                                :aria-expanded="mobileMenuOpen"
+                                aria-controls="mobile-menu"
+                                aria-label="Menu principal"
+                            >
                             <span class="sr-only">Ouvrir le menu</span>
                             <svg
                                 :class="{'hidden': mobileMenuOpen, 'block': !mobileMenuOpen}"
@@ -434,66 +432,31 @@ const subscribeToNewsletter = async () => {
                     <!-- Mobile À Propos dropdown -->
                     <Link
                         :href="route('about')"
-                        class="block px-4 py-2 text-base font-medium text-primary border-l-4 border-primary bg-primary-bg-light"
-                        @click="closeMobileMenu"
-                    >
-                        A Propos
-                    </Link>
-
-                    <!-- Mobile Services dropdown -->
-                    <div>
-                        <button
-                            @click="toggleDropdown('services')"
-                            class="w-full flex justify-between items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
-                        >
-                            <span>Nos Services</span>
-                            <svg
-                                :class="{'transform rotate-180': dropdownStates.services}"
-                                class="h-5 w-5 transition-transform duration-200"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                        <div v-show="dropdownStates.services" class="pl-4 pr-2 py-2 space-y-1 bg-gray-50">
-                            <Link
-                                :href="route('services')"
-                                class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-primary-bg-light rounded-md"
-                                @click="closeMobileMenu"
-                            >
-                                Tous les services
-                            </Link>
-                        </div>
-                    </div>
-
-                    <Link
-                        :href="route('products')"
                         class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
                         @click="closeMobileMenu"
                     >
-                        Produits
+                        À propos
                     </Link>
-
+                    <Link
+                        :href="route('services')"
+                        class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
+                        @click="closeMobileMenu"
+                    >
+                        Nos actions
+                    </Link>
                     <Link
                         :href="route('portfolio')"
                         class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
                         @click="closeMobileMenu"
                     >
-                        Portfolio
+                        Galerie
                     </Link>
                     <Link
                         :href="route('masterclasses')"
                         class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
                         @click="closeMobileMenu"
                     >
-                        Masterclasses
+                        Événements
                     </Link>
                     <Link
                         :href="route('blog')"
@@ -510,22 +473,23 @@ const subscribeToNewsletter = async () => {
                         Contact
                     </Link>
                     <Link
-                        :href="route('prospect.portal.login')"
-                        class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary-bg-light"
+                        :href="route('volunteer')"
+                        class="block mx-4 mt-3 px-4 py-2 text-center text-primary border border-primary/40 rounded-full hover:bg-primary-bg-light transition-colors"
                         @click="closeMobileMenu"
                     >
-                        Mon espace
+                        Nous rejoindre
                     </Link>
                     <Link
-                        :href="route('appointment.create')"
-                        class="block mx-4 mt-3 px-4 py-2 bg-primary text-center text-white rounded-full hover:bg-primary-dark transition-colors"
+                        :href="route('donate')"
+                        class="block mx-4 mt-3 px-4 py-2 bg-primary text-center text-white rounded-full hover:bg-primary-dark transition-colors font-semibold"
                         @click="closeMobileMenu"
                     >
-                        prendre rendez-vous
+                        Faire un don
                     </Link>
                 </div>
             </div>
         </header>
+        </div>
 
         <!-- Contenu principal (slot pour les pages) -->
         <main>
@@ -533,14 +497,14 @@ const subscribeToNewsletter = async () => {
         </main>
 
         <!-- Footer -->
-        <footer class="bg-gray-800 text-white">
+        <footer class="bg-[#1A1512] text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <!-- Newsletter Subscription -->
-                    <div class="lg:col-span-4 mb-8 p-6 bg-gray-700 rounded-lg shadow-lg">
-                        <h3 class="text-xl font-semibold mb-4 text-white">Abonnez-vous à notre Newsletter</h3>
+                    <div class="lg:col-span-4 mb-8 p-6 bg-white/5 rounded-2xl border border-white/10">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Restez informés de nos actions</h3>
                         <p class="text-gray-300 mb-5">
-                            Recevez nos dernières actualités, offres spéciales et conseils pour votre mariage.
+                            Recevez nos actualités et l'impact de vos dons directement par email.
                         </p>
                         <form @submit.prevent="subscribeToNewsletter" class="flex flex-col sm:flex-row gap-3">
                             <div class="relative flex-grow">
@@ -569,12 +533,11 @@ const subscribeToNewsletter = async () => {
                         </form>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">Sophie Weddings Dreams</h3>
+                        <h3 class="text-lg font-semibold mb-4">Amaël Fondation</h3>
                         <p class="text-gray-300 mb-4">
-                            Wedding Planner & Wedding Designer Depuis 2016
+                            Donner espoir, agir pour demain. Une fondation basée à Dakar au service des enfants et des familles.
                         </p>
                         <div class="flex space-x-4">
-
                             <a :href="contactSettings.social_facebook" target="_blank" class="text-gray-300 hover:text-primary transition-colors">
                                 <i class="bi bi-facebook text-xl"></i>
                             </a>
@@ -587,14 +550,11 @@ const subscribeToNewsletter = async () => {
                             <a :href="contactSettings.social_youtube" target="_blank" class="text-gray-300 hover:text-primary transition-colors">
                                 <i class="bi bi-youtube text-xl"></i>
                             </a>
-                            <a :href="contactSettings.social_tiktok" target="_blank" class="text-gray-300 hover:text-primary transition-colors">
-                                <i class="bi bi-tiktok text-xl"></i>
-                            </a>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">Liens Rapides</h3>
+                        <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
                         <ul class="space-y-2">
                             <li>
                                 <Link :href="route('home')" class="text-gray-300 hover:text-primary transition-colors">
@@ -603,27 +563,22 @@ const subscribeToNewsletter = async () => {
                             </li>
                             <li>
                                 <Link :href="route('about')" class="text-gray-300 hover:text-primary transition-colors">
-                                    À Propos
+                                    À propos
                                 </Link>
                             </li>
                             <li>
                                 <Link :href="route('services')" class="text-gray-300 hover:text-primary transition-colors">
-                                    Nos Services
-                                </Link>
-                            </li>
-                            <li>
-                                <Link :href="route('products')" class="text-gray-300 hover:text-primary transition-colors">
-                                    Nos Produits
+                                    Nos actions
                                 </Link>
                             </li>
                             <li>
                                 <Link :href="route('portfolio')" class="text-gray-300 hover:text-primary transition-colors">
-                                    Portfolio
+                                    Galerie
                                 </Link>
                             </li>
                             <li>
                                 <Link :href="route('masterclasses')" class="text-gray-300 hover:text-primary transition-colors">
-                                    Masterclasses
+                                    Événements
                                 </Link>
                             </li>
                             <li>
@@ -640,16 +595,22 @@ const subscribeToNewsletter = async () => {
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">Nos Services</h3>
+                        <h3 class="text-lg font-semibold mb-4">Nous soutenir</h3>
                         <ul class="space-y-2">
-                            <li v-for="service in services" :key="service.id">
+                            <li>
+                                <Link :href="route('donate')" class="text-gray-300 hover:text-primary transition-colors">
+                                    Faire un don
+                                </Link>
+                            </li>
+                            <li>
+                                <Link :href="route('volunteer')" class="text-gray-300 hover:text-primary transition-colors">
+                                    Devenir bénévole
+                                </Link>
+                            </li>
+                            <li v-for="service in services.slice(0, 3)" :key="service.id">
                                 <Link :href="route('services') + '#service-' + service.id" class="text-gray-300 hover:text-primary transition-colors">
                                     {{ service.title }}
                                 </Link>
-                            </li>
-                            <!-- Fallback if no services are loaded -->
-                            <li v-if="services.length === 0">
-                                <span class="text-gray-400">Chargement des services...</span>
                             </li>
                         </ul>
                     </div>
@@ -680,10 +641,15 @@ const subscribeToNewsletter = async () => {
                     </div>
                 </div>
 
-                <div class="mt-12 pt-8 border-t border-gray-700">
-                    <p class="text-gray-400 text-center">
-                        &copy; 2021 Sophie Weddings Dreams. Tous droits réservés.
+                <div class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-gray-400 text-center sm:text-left">
+                        &copy; {{ new Date().getFullYear() }} Amaël Fondation. Tous droits réservés.
                     </p>
+                    <div class="flex items-center gap-4 text-sm text-gray-400">
+                        <Link :href="route('legal.notice')" class="hover:text-primary transition-colors">Mentions légales</Link>
+                        <span class="text-gray-600">·</span>
+                        <Link :href="route('legal.privacy')" class="hover:text-primary transition-colors">Politique de confidentialité</Link>
+                    </div>
                 </div>
             </div>
         </footer>
@@ -698,7 +664,7 @@ const subscribeToNewsletter = async () => {
                 <div>
                     <p class="text-sm">
                         Nous utilisons des cookies pour améliorer votre expérience sur notre site. En continuant à naviguer, vous acceptez notre utilisation des cookies.
-                        <a href="#" class="underline hover:text-primary">En savoir plus</a>
+                        <Link :href="route('legal.privacy')" class="underline hover:text-primary">En savoir plus</Link>
                     </p>
                 </div>
                 <div class="flex gap-2">
@@ -725,7 +691,7 @@ const subscribeToNewsletter = async () => {
 
         <!-- WhatsApp Button -->
         <a
-            :href="`https://wa.me/${(contactSettings.whatsapp_number || contactSettings.contact_phone || '221785383069').replace(/[^0-9]/g, '')}`"
+            :href="`https://wa.me/${(contactSettings.whatsapp_number || contactSettings.contact_phone || '221780000000').replace(/[^0-9]/g, '')}`"
             target="_blank"
             class="fixed bottom-6 right-6 bg-green-500 text-white rounded-full p-3 shadow-lg hover:bg-green-600 transition-all z-50 flex items-center justify-center"
             style="width: 60px; height: 60px;"

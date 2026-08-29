@@ -62,7 +62,9 @@ class TestimonialController extends Controller
             'image'        => 'nullable|image|max:2048',
         ]);
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($testimonial->image_path);
+            if ($testimonial->image_path) {
+                Storage::disk('public')->delete($testimonial->image_path);
+            }
             $data['image_path'] = $request->file('image')->store('testimonials', 'public');
         }
         $testimonial->update($data);
@@ -72,7 +74,9 @@ class TestimonialController extends Controller
 
     public function destroy(Testimonial $testimonial)
     {
-        Storage::disk('public')->delete($testimonial->image_path);
+        if ($testimonial->image_path) {
+            Storage::disk('public')->delete($testimonial->image_path);
+        }
         $testimonial->delete();
         return redirect()->route('admin.testimonials.index')
             ->with('success', 'Témoignage supprimé.');

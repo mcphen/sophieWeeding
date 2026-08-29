@@ -66,22 +66,29 @@ const breadcrumbItems = [
 
 <template>
     <Head>
-        <title>Contact - Sophie Weddings Dreams</title>
-        <meta name="description" content="Contactez Sophie Weddings Dreams pour planifier votre mariage de rêve ou pour toute question concernant nos services." />
+        <title>Contact - Amaël Fondation</title>
+        <meta name="description" content="Contactez Amaël Fondation à Dakar pour toute question, partenariat ou soutien à nos actions." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Contact - Amaël Fondation" />
+        <meta property="og:description" content="Contactez Amaël Fondation à Dakar pour toute question, partenariat ou soutien à nos actions." />
+        <meta property="og:url" content="/contact" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact - Amaël Fondation" />
+        <meta name="twitter:description" content="Contactez Amaël Fondation à Dakar pour toute question, partenariat ou soutien à nos actions." />
     </Head>
 
     <LayoutFront>
         <!-- Bannière du breadcrumb avec image de fond -->
-        <div class="relative bg-gray-900">
+        <div class="relative bg-[#1A1512]">
             <!-- Image d'arrière-plan avec overlay -->
             <div class="absolute inset-0 overflow-hidden">
-                <img src="/images/breadcrumb-bg.jpg" alt="Bannière Contact" class="w-full h-full object-cover object-center opacity-40">
+                <img src="/images/breadcrumb-bg.jpg" alt="Bannière Contact" class="w-full h-full object-cover object-center opacity-30">
                 <div class="absolute inset-0 bg-gradient-to-r from-primary/50 to-primary/30"></div>
             </div>
 
             <!-- Contenu du breadcrumb -->
-            <div class="relative max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
-                <h1 class="text-4xl md:text-5xl font-serif font-bold text-white text-center mb-4">Contact</h1>
+            <div class="relative max-w-7xl mx-auto pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">Contact</h1>
 
                 <!-- Breadcrumb navigation -->
                 <nav class="flex" aria-label="Breadcrumb">
@@ -119,10 +126,10 @@ const breadcrumbItems = [
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Formulaire de Contact -->
                 <section class="mb-16">
-                    <h2 class="text-3xl font-serif font-bold text-center text-primary mb-3">Contactez-nous</h2>
+                    <h2 class="text-3xl font-bold text-center text-gray-900 mb-3">Contactez-nous</h2>
                     <div class="w-24 h-1 bg-primary mx-auto mb-8"></div>
                     <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
-                        Vous avez des questions ou souhaitez discuter de votre projet de mariage ? N'hésitez pas à nous contacter en remplissant le formulaire ci-dessous.
+                        Une question sur nos actions, une envie de partenariat ou de soutien ? Écrivez-nous en remplissant le formulaire ci-dessous.
                     </p>
 
                     <div class="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
@@ -241,8 +248,8 @@ const breadcrumbItems = [
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Téléphone</h3>
-                        <p class="text-gray-600 mb-1">Mobile: (+221) 78 538 30 69</p>
-                        <p class="text-gray-600">Fixe: (+221) 33 865 27 11</p>
+                        <p class="text-gray-600 mb-1">Mobile : (+221) 78 000 00 00</p>
+                        <p class="text-gray-600">Fixe : (+221) 33 000 00 00</p>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
@@ -252,7 +259,7 @@ const breadcrumbItems = [
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Email</h3>
-                        <p class="text-gray-600">sophieweddings5@gmail.com</p>
+                        <p class="text-gray-600">contact@amaelfondation.org</p>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
@@ -263,7 +270,7 @@ const breadcrumbItems = [
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Adresse</h3>
-                        <p class="text-gray-600">Rue NG-70, 91 Ngor Almadies, Dakar 12000</p>
+                        <p class="text-gray-600">Dakar, Sénégal</p>
                     </div>
                 </section>
 

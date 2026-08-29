@@ -12,7 +12,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="flex h-full flex-col rounded-xl border border-sidebar-border/70 bg-white p-4 shadow-sm dark:border-sidebar-border dark:bg-sidebar-bg">
+  <div class="flex h-full flex-col rounded-xl border border-border bg-card p-4 shadow-sm">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ title }}</h3>
       <div v-if="icon" class="rounded-full bg-gray-100 p-2 dark:bg-gray-700">

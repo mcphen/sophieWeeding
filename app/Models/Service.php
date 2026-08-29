@@ -14,6 +14,8 @@ class Service extends Model
         'description',
         'image_path',
         'min_price',
+        'stat_value',
+        'stat_label',
     ];
 
     protected $appends = ['image_url'];

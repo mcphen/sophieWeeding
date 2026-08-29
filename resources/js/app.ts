@@ -8,6 +8,7 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { initializeTracking } from './lib/tracker';
 import vTrack from './lib/trackingDirective';
+import vReveal from './lib/revealDirective';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 
@@ -43,6 +44,7 @@ createInertiaApp({
 
         // Register directives
         app.directive('track', vTrack);
+        app.directive('reveal', vReveal);
 
         app.mount(el);
     },

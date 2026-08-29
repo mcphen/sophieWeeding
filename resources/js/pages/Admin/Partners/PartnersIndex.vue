@@ -11,6 +11,7 @@ interface Partner {
     name: string;
     website_url: string | null;
     logo_path: string;
+    logo_url: string;
     created_at: string;
     updated_at: string;
 }
@@ -207,7 +208,7 @@ function formatDate(dateString: string): string {
                     <div class="relative h-48 bg-gray-100 p-4 flex items-center justify-center">
                         <img
                             v-if="partner.logo_path"
-                            :src="`${partner.logo_path}`"
+                            :src="partner.logo_url"
                             :alt="partner.name"
                             class="max-w-full max-h-full object-contain"
                         >
@@ -288,7 +289,7 @@ function formatDate(dateString: string): string {
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
                                     v-if="partner.logo_path"
-                                    :src="`${partner.logo_path}`"
+                                    :src="partner.logo_url"
                                     :alt="partner.name"
                                     class="w-20 h-16 object-contain"
                                 >
@@ -514,7 +515,7 @@ function formatDate(dateString: string): string {
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Logo actuel</label>
                     <div v-if="currentPartner?.logo_path" class="mb-3 bg-gray-100 p-2 rounded flex justify-center">
-                        <img :src="`${currentPartner.logo_path}`" :alt="currentPartner.name" class="h-20 object-contain">
+                        <img :src="currentPartner.logo_url" :alt="currentPartner.name" class="h-20 object-contain">
                     </div>
 
                     <label for="edit_logo" class="block text-gray-700 text-sm font-bold mb-2">Nouveau logo (optionnel)</label>

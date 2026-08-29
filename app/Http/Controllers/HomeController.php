@@ -423,9 +423,9 @@ class HomeController extends Controller
             'contactSettings'   => $this->contactService->getContactSettings(),
             'ctaSettings'       => $this->ctaService->getCtaSettings(),
             'og'                => [
-                'title'       => $masterclass->title . ' – Niveau ' . $masterclass->niveau,
+                'title'       => $masterclass->title . ($masterclass->niveau ? ' – ' . $masterclass->niveau : ''),
                 'description' => $masterclass->description
-                    ?? 'Masterclass ' . $masterclass->niveau . ' organisée par Sophie Weddings Dreams.',
+                    ?? 'Événement ' . ($masterclass->niveau ?: '') . ' organisé par Amaël Fondation.',
                 'image'       => $ogImage,
                 'url'         => request()->url(),
             ],

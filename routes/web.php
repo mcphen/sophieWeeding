@@ -24,6 +24,10 @@ use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\EmailListController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\VolunteerController;
+use App\Http\Controllers\LegalController;
+use App\Http\Controllers\DashboardController;
 
 
 Route::get('/', [HomeController::class,'index'])->name('home');
@@ -38,12 +42,12 @@ Route::get('/testimonials/listes', [TestimonialController::class,'getListeDatas'
 Route::get('/blog', [HomeController::class, 'blog'])->name('blog');
 Route::get('/blog/{slug}', [HomeController::class, 'blogShow'])->name('blog.show');
 
-// Masterclass routes (front)
-Route::get('/masterclasses', [HomeController::class, 'masterclasses'])->name('masterclasses');
-Route::get('/masterclasses/inscription/{registration}/confirmation', [TrainingRegistrationController::class, 'confirmation'])->name('masterclass.registration.confirmation');
-Route::get('/masterclasses/{slug}', [HomeController::class, 'masterclassShow'])->name('masterclass.show');
-Route::post('/masterclasses/{masterclass}/sessions/{session}/inscription', [TrainingRegistrationController::class, 'store'])->name('masterclass.register');
-Route::post('/masterclasses/{masterclass}/sessions/{session}/liste-attente', [WaitlistController::class, 'store'])->name('masterclass.waitlist');
+// Events routes (front) - reuses the masterclass/session infrastructure, exposed publicly as "Événements"
+Route::get('/evenements', [HomeController::class, 'masterclasses'])->name('masterclasses');
+Route::get('/evenements/inscription/{registration}/confirmation', [TrainingRegistrationController::class, 'confirmation'])->name('masterclass.registration.confirmation');
+Route::get('/evenements/{slug}', [HomeController::class, 'masterclassShow'])->name('masterclass.show');
+Route::post('/evenements/{masterclass}/sessions/{session}/inscription', [TrainingRegistrationController::class, 'store'])->name('masterclass.register');
+Route::post('/evenements/{masterclass}/sessions/{session}/liste-attente', [WaitlistController::class, 'store'])->name('masterclass.waitlist');
 
 // Espace inscrit (portail prospect)
 Route::prefix('mon-espace')->name('prospect.portal.')->group(function () {
@@ -64,12 +68,24 @@ Route::get('/certificat/{id}/verifier/{token}', [ProspectPortalController::class
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+// Donation routes
+Route::get('/faire-un-don', [DonationController::class, 'create'])->name('donate');
+Route::post('/faire-un-don', [DonationController::class, 'store'])->name('donate.store');
+
+// Volunteer / join routes
+Route::get('/nous-rejoindre', [VolunteerController::class, 'create'])->name('volunteer');
+Route::post('/nous-rejoindre', [VolunteerController::class, 'store'])->name('volunteer.store');
+
+// Legal pages
+Route::get('/mentions-legales', [LegalController::class, 'legalNotice'])->name('legal.notice');
+Route::get('/politique-de-confidentialite', [LegalController::class, 'privacyPolicy'])->name('legal.privacy');
+
 // Appointment booking routes
 Route::get('/appointment', [AppointmentController::class, 'create'])->name('appointment.create');
 Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
 Route::get('/appointment/{appointment}/confirmation', [AppointmentController::class, 'confirmation'])->name('appointment.confirmation');
 
-Route::get('dashboard', [VisitorTrackerController::class, 'dashboard'])
+Route::get('dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -81,6 +97,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->group(function () {
 
         Route::get('analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
+        Route::get('visites-site', [VisitorTrackerController::class, 'dashboard'])->name('admin.visitor-stats');
 
         Route::resource('services', ServiceController::class)
             ->except(['show'])
@@ -218,6 +235,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('contacts', [ContactController::class, 'adminIndex'])->name('admin.contacts.index');
         Route::get('contacts/{contact}', [ContactController::class, 'show'])->name('admin.contacts.show');
         Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+
+        // Donations management routes
+        Route::get('donations', [DonationController::class, 'adminIndex'])->name('admin.donations.index');
+        Route::delete('donations/{donation}', [DonationController::class, 'destroy'])->name('admin.donations.destroy');
+
+        // Volunteers management routes
+        Route::get('volunteers', [VolunteerController::class, 'adminIndex'])->name('admin.volunteers.index');
+        Route::delete('volunteers/{volunteer}', [VolunteerController::class, 'destroy'])->name('admin.volunteers.destroy');
 
         // Newsletter subscribers management routes
         Route::get('newsletter', [App\Http\Controllers\NewsletterController::class, 'index'])->name('admin.newsletter.index');

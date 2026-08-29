@@ -12,6 +12,7 @@ interface TeamMember {
     position: string;
     bio: string | null;
     image_path: string | null;
+    image_url: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -187,7 +188,7 @@ function getFullName(member: TeamMember): string {
                     <div class="relative h-48 bg-gray-100">
                         <img
                             v-if="member.image_path"
-                            :src="`${member.image_path}`"
+                            :src="member.image_url"
                             :alt="getFullName(member)"
                             class="w-full h-full object-cover"
                         >
@@ -271,7 +272,7 @@ function getFullName(member: TeamMember): string {
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
                                     v-if="member.image_path"
-                                    :src="`${member.image_path}`"
+                                    :src="member.image_url"
                                     :alt="getFullName(member)"
                                     class="w-16 h-16 object-cover rounded-full border border-gray-200"
                                 >

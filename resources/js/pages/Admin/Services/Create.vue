@@ -18,7 +18,9 @@ const form = useForm({
     title: '',
     description: '',
     image: null as File | null,
-    min_price: null as number | null
+    min_price: null as number | null,
+    stat_value: '',
+    stat_label: ''
 });
 
 // Prévisualisation de l'image
@@ -163,6 +165,34 @@ function submit() {
                                 Laisser vide si le prix est sur demande
                             </p>
                             <p v-if="form.errors.min_price" class="mt-2 text-sm text-red-600">{{ form.errors.min_price }}</p>
+                        </div>
+
+                        <!-- Chiffre clé -->
+                        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Chiffre clé (affiché sur la page d'accueil)</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <input
+                                        id="stat_value"
+                                        v-model="form.stat_value"
+                                        type="text"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                        placeholder="Ex : 500+"
+                                    >
+                                    <p v-if="form.errors.stat_value" class="mt-2 text-sm text-red-600">{{ form.errors.stat_value }}</p>
+                                </div>
+                                <div>
+                                    <input
+                                        id="stat_label"
+                                        v-model="form.stat_label"
+                                        type="text"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                        placeholder="Ex : enfants scolarisés"
+                                    >
+                                    <p v-if="form.errors.stat_label" class="mt-2 text-sm text-red-600">{{ form.errors.stat_label }}</p>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Optionnel. Laisser vide pour ne pas afficher de badge chiffré.</p>
                         </div>
 
                         <!-- Image -->

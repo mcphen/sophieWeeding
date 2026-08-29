@@ -166,7 +166,7 @@
                             {{ editingSession ? 'Modifier la session' : 'Nouvelle session' }}
                         </h2>
                         <p class="text-sm text-gray-500 mt-0.5">
-                            Masterclass : <span class="font-medium text-[#d1922f]">{{ masterclass.title }}</span>
+                            Événement : <span class="font-medium text-[#d1922f]">{{ masterclass.title }}</span>
                         </p>
                     </div>
                     <button @click="closeSessionModal" class="text-gray-400 hover:text-gray-600 transition">
@@ -447,7 +447,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItemType[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Masterclasses', href: route('admin.masterclasses.index') },
+    { title: 'Événements', href: route('admin.masterclasses.index') },
     { title: props.masterclass.title, href: '#' },
 ];
 

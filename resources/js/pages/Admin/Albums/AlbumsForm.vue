@@ -9,6 +9,7 @@ interface Photo {
     id: number;
     album_id: number;
     image_path: string;
+    image_url: string;
     caption: string | null;
 }
 
@@ -236,7 +237,7 @@ function handleSubmit() {
                             ]"
                         >
                             <img
-                                :src="`${photo.image_path}`"
+                                :src="photo.image_url"
                                 :alt="photo.caption || 'Photo d\'album'"
                                 class="w-full h-48 object-cover"
                             />

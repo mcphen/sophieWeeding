@@ -83,7 +83,7 @@ const blogJsonLd = computed(() => {
                 description: description,
                 datePublished: post.published_at,
                 dateModified: post.updated_at,
-                image: post.image_path ? `${window.location.origin}/storage/${post.image_path}` : '',
+                image: post.image_url ? `${window.location.origin}${post.image_url}` : '',
                 url: `${window.location.origin}/blog/${post.id}`,
                 author: {
                     '@type': 'Organization',
@@ -311,7 +311,7 @@ onMounted(() => {
             </div>
 
             <!-- Contenu du breadcrumb -->
-            <div class="relative max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+            <div class="relative max-w-7xl mx-auto pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
                 <h1 class="text-4xl md:text-5xl font-serif font-bold text-white text-center mb-4">Blog</h1>
 
                 <!-- Breadcrumb navigation -->

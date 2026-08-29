@@ -46,20 +46,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
             'ziggy' => [
-                ...(new Ziggy(null, null, null, [
-                    'only' => [
-                        'home', 'about', 'services', 'products', 'product.show', 'portfolio',
-                        'api.team-members.listes', 'blog', 'blog.show', 'contact', 'contact.store',
-                        'appointment.create', 'appointment.store', 'appointment.confirmation',
-                        'dashboard', 'login', 'password.request', 'password.email', 'password.reset',
-                        'password.store', 'verification.notice', 'verification.verify',
-                        'verification.send', 'password.confirm', 'logout', 'profile.edit',
-                        'profile.update', 'profile.destroy', 'password.edit', 'password.update',
-                        'appearance', 'api.track-action'
-                        // 'register' is intentionally excluded
-                    ]
-                ]))->toArray(),
+                ...(new Ziggy())->toArray(),
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

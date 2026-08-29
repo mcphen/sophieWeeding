@@ -173,16 +173,16 @@ class SettingController extends Controller
     {
         // Get all settings that are used in the color settings form
         $colorSettings = collect([
-            'primary_color' => Setting::get('primary_color', '#AA6808'),
-            'primary_light' => Setting::get('primary_light', '#d1922f'),
-            'primary_dark' => Setting::get('primary_dark', '#8a5406'),
-            'primary_bg_light' => Setting::get('primary_bg_light', '#fcf5ea'),
-            'accent_light' => Setting::get('accent_light', '#f3e3c8'),
-            'text_dark' => Setting::get('text_dark', '#1b1b18'),
+            'primary_color' => Setting::get('primary_color', '#1E2F52'),
+            'primary_light' => Setting::get('primary_light', '#3E5A8A'),
+            'primary_dark' => Setting::get('primary_dark', '#10192E'),
+            'primary_bg_light' => Setting::get('primary_bg_light', '#FAF3E6'),
+            'accent_light' => Setting::get('accent_light', '#F1E4C0'),
+            'text_dark' => Setting::get('text_dark', '#1B2237'),
             'text_light' => Setting::get('text_light', '#ffffff'),
-            'gray_light' => Setting::get('gray_light', '#f8f8f8'),
-            'gray_medium' => Setting::get('gray_medium', '#e5e5e5'),
-            'gray_dark' => Setting::get('gray_dark', '#4b4b4b'),
+            'gray_light' => Setting::get('gray_light', '#F7F5F0'),
+            'gray_medium' => Setting::get('gray_medium', '#E7E2D6'),
+            'gray_dark' => Setting::get('gray_dark', '#4B4A47'),
         ])->map(function ($value, $key) {
             return [
                 'id' => $key,
@@ -222,14 +222,14 @@ class SettingController extends Controller
     {
         // Get all settings that are used in the CTA settings form
         $ctaSettings = collect([
-            'cta_from_color' => Setting::get('cta_from_color', '#d1922f'),
-            'cta_to_color' => Setting::get('cta_to_color', '#bf8529'),
-            'cta_title' => Setting::get('cta_title', 'Prêts à planifier le mariage de vos rêves ?'),
-            'cta_description' => Setting::get('cta_description', 'Contactez-nous dès aujourd\'hui pour une consultation gratuite et commencez à transformer votre vision en réalité.'),
-            'cta_paragraph_color' => Setting::get('cta_paragraph_color', '#faecd2'),
-            'cta_link_route' => Setting::get('cta_link_route', 'appointment.create'),
-            'cta_button_text' => Setting::get('cta_button_text', 'Prendre rendez-vous'),
-            'cta_button_text_color' => Setting::get('cta_button_text_color', '#d1922f'),
+            'cta_from_color' => Setting::get('cta_from_color', '#2A3F66'),
+            'cta_to_color' => Setting::get('cta_to_color', '#10192E'),
+            'cta_title' => Setting::get('cta_title', 'Ensemble, changeons des vies à Dakar'),
+            'cta_description' => Setting::get('cta_description', 'Votre don, même modeste, nous permet d\'agir concrètement auprès des enfants et des familles qui en ont besoin. Rejoignez-nous.'),
+            'cta_paragraph_color' => Setting::get('cta_paragraph_color', '#F3ECDD'),
+            'cta_link_route' => Setting::get('cta_link_route', 'donate'),
+            'cta_button_text' => Setting::get('cta_button_text', 'Faire un don'),
+            'cta_button_text_color' => Setting::get('cta_button_text_color', '#1E2F52'),
         ])->map(function ($value, $key) {
             return [
                 'id' => $key,

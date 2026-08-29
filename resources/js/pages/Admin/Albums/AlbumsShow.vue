@@ -9,6 +9,7 @@ interface Photo {
     id: number;
     album_id: number;
     image_path: string;
+    image_url: string;
     caption: string | null;
 }
 
@@ -170,7 +171,7 @@ function formatDate(dateString: string): string {
                         @click="openLightbox(index)"
                     >
                         <img
-                            :src="`${photo.image_path}`"
+                            :src="photo.image_url"
                             :alt="photo.caption || 'Photo d\'album'"
                             class="w-full h-48 object-cover"
                         />
@@ -194,7 +195,7 @@ function formatDate(dateString: string): string {
             <!-- Image principale -->
             <div class="relative w-full flex items-center justify-center">
                 <img
-                    :src="`${album.photos[currentPhotoIndex].image_path}`"
+                    :src="album.photos[currentPhotoIndex].image_url"
                     :alt="album.photos[currentPhotoIndex].caption || 'Photo d\'album'"
                     class="max-h-[80vh] max-w-full object-contain"
                 />

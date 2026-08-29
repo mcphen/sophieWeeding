@@ -89,7 +89,7 @@ function fillRate(session: typeof props.upcomingSessions[0]): number | null {
             </div>
 
             <!-- Inscriptions par période -->
-            <div class="rounded-xl border border-sidebar-border/70 bg-white p-5 shadow-sm dark:border-sidebar-border dark:bg-gray-800">
+            <div class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-gray-800">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">
                     Inscriptions — 30 derniers jours
                 </h2>
@@ -104,7 +104,7 @@ function fillRate(session: typeof props.upcomingSessions[0]): number | null {
 
             <!-- Masterclasses populaires + Revenus -->
             <div class="grid gap-6 lg:grid-cols-2">
-                <div class="rounded-xl border border-sidebar-border/70 bg-white p-5 shadow-sm dark:border-sidebar-border dark:bg-gray-800">
+                <div class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-gray-800">
                     <h2 class="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">
                         Masterclasses les plus populaires
                     </h2>
@@ -116,7 +116,7 @@ function fillRate(session: typeof props.upcomingSessions[0]): number | null {
                         />
                     </div>
                 </div>
-                <div class="rounded-xl border border-sidebar-border/70 bg-white p-5 shadow-sm dark:border-sidebar-border dark:bg-gray-800">
+                <div class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-gray-800">
                     <h2 class="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">
                         Revenus estimés par masterclass
                     </h2>
@@ -131,7 +131,7 @@ function fillRate(session: typeof props.upcomingSessions[0]): number | null {
             </div>
 
             <!-- Prochaines sessions -->
-            <div class="rounded-xl border border-sidebar-border/70 bg-white p-5 shadow-sm dark:border-sidebar-border dark:bg-gray-800">
+            <div class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-gray-800">
                 <div class="flex items-center justify-between mb-4 border-b pb-2 border-gray-100 dark:border-gray-700">
                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Prochaines sessions</h2>
                     <Link :href="route('admin.masterclasses.index')" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">

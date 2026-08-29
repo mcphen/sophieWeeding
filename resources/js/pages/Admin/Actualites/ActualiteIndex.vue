@@ -9,6 +9,7 @@ interface Actualite {
     id: number;
     title: string;
     image_path: string | null;
+    image_url: string | null;
     published_at: string;
     created_at: string;
     updated_at: string;
@@ -198,8 +199,8 @@ function getBlockText(actualite: Actualite, maxLength = 100): string {
                     <!-- Image de l'actualité -->
                     <div class="relative h-48 bg-gray-100">
                         <img
-                            v-if="actualite.image_path"
-                            :src="`${actualite.image_path}`"
+                            v-if="actualite.image_url"
+                            :src="actualite.image_url"
                             :alt="actualite.title"
                             class="w-full h-full object-cover"
                         >
@@ -286,8 +287,8 @@ function getBlockText(actualite: Actualite, maxLength = 100): string {
                         <tr v-for="actualite in actualitesList" :key="actualite.id" class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <img
-                                    v-if="actualite.image_path"
-                                    :src="`${actualite.image_path}`"
+                                    v-if="actualite.image_url"
+                                    :src="actualite.image_url"
                                     :alt="actualite.title"
                                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                                 >

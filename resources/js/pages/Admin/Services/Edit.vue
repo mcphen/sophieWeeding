@@ -12,7 +12,10 @@ interface Service {
     title: string;
     description: string | null;
     image_path: string | null;
+    image_url: string | null;
     min_price: number | null;
+    stat_value: string | null;
+    stat_label: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -37,11 +40,13 @@ const form = useForm({
     description: props.service.description || '',
     image: null as File | null,
     min_price: props.service.min_price,
+    stat_value: props.service.stat_value || '',
+    stat_label: props.service.stat_label || '',
     _method: 'PUT' // Pour simuler une requête PUT avec un formulaire
 });
 
 // Prévisualisation de l'image
-const imagePreview = ref<string | null>(props.service.image_path ? `${props.service.image_path}` : null);
+const imagePreview = ref<string | null>(props.service.image_url || null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
 // Quill editor
@@ -187,6 +192,34 @@ function submit() {
                                 Laisser vide si le prix est sur demande
                             </p>
                             <p v-if="form.errors.min_price" class="mt-2 text-sm text-red-600">{{ form.errors.min_price }}</p>
+                        </div>
+
+                        <!-- Chiffre clé -->
+                        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Chiffre clé (affiché sur la page d'accueil)</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <input
+                                        id="stat_value"
+                                        v-model="form.stat_value"
+                                        type="text"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                        placeholder="Ex : 500+"
+                                    >
+                                    <p v-if="form.errors.stat_value" class="mt-2 text-sm text-red-600">{{ form.errors.stat_value }}</p>
+                                </div>
+                                <div>
+                                    <input
+                                        id="stat_label"
+                                        v-model="form.stat_label"
+                                        type="text"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                        placeholder="Ex : enfants scolarisés"
+                                    >
+                                    <p v-if="form.errors.stat_label" class="mt-2 text-sm text-red-600">{{ form.errors.stat_label }}</p>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Optionnel. Laisser vide pour ne pas afficher de badge chiffré.</p>
                         </div>
 
                         <!-- Image -->

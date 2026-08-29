@@ -1,5 +1,5 @@
 <template>
-    <Head title="Modifier la masterclass" />
+    <Head title="Modifier l'événement" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6 bg-white shadow-sm">
             <div class="border-b pb-4">
@@ -15,7 +15,7 @@
                         <p v-if="form.errors.title" class="text-red-600 text-sm mt-1">{{ form.errors.title }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Niveau *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type d'événement *</label>
                         <input v-model="form.niveau" type="text" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#d1922f] focus:ring-[#d1922f]" />
                         <p v-if="form.errors.niveau" class="text-red-600 text-sm mt-1">{{ form.errors.niveau }}</p>
                     </div>
@@ -56,7 +56,7 @@
 
                 <div class="flex items-center gap-2">
                     <input id="is_active" type="checkbox" v-model="form.is_active" class="rounded border-gray-300 text-[#d1922f] focus:ring-[#d1922f]" />
-                    <label for="is_active" class="text-sm font-medium text-gray-700">Masterclass active (visible sur le site)</label>
+                    <label for="is_active" class="text-sm font-medium text-gray-700">Événement actif (visible sur le site)</label>
                 </div>
 
                 <div class="flex gap-3 pt-2">
@@ -96,7 +96,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItemType[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Masterclasses', href: route('admin.masterclasses.index') },
+    { title: 'Événements', href: route('admin.masterclasses.index') },
     { title: props.masterclass.title, href: route('admin.masterclasses.show', props.masterclass.id) },
     { title: 'Modifier', href: '#' },
 ];

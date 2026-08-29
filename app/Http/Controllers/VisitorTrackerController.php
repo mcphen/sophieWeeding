@@ -231,8 +231,8 @@ class VisitorTrackerController extends Controller
         // Get the site logo from settings
         $siteLogo = StorageHelper::url(Setting::get('site_logo', 'images/logo.png'));
 
-        // Return the dashboard view with data
-        return Inertia::render('Dashboard', [
+        // Return the visitor-tracking view with data
+        return Inertia::render('Admin/VisitorStats', [
             'visitorStats' => [
                 'totalVisitors' => $totalVisitors,
                 'totalPageViews' => $totalPageViews,
