@@ -57,14 +57,14 @@ const breadcrumbItems = [
 <template>
     <Head>
         <title>Faire un don - Amaël Fondation</title>
-        <meta name="description" content="Soutenez les actions d'Amaël Fondation à Dakar en faisant un don via Orange Money, Wave ou virement bancaire." />
+        <meta name="description" content="Soutenez les actions d'Amaël Fondation en Afrique en faisant un don via Orange Money, Wave ou virement bancaire." />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Faire un don - Amaël Fondation" />
-        <meta property="og:description" content="Soutenez les actions d'Amaël Fondation à Dakar en faisant un don via Orange Money, Wave ou virement bancaire." />
+        <meta property="og:description" content="Soutenez les actions d'Amaël Fondation en Afrique en faisant un don via Orange Money, Wave ou virement bancaire." />
         <meta property="og:url" content="/faire-un-don" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Faire un don - Amaël Fondation" />
-        <meta name="twitter:description" content="Soutenez les actions d'Amaël Fondation à Dakar en faisant un don via Orange Money, Wave ou virement bancaire." />
+        <meta name="twitter:description" content="Soutenez les actions d'Amaël Fondation en Afrique en faisant un don via Orange Money, Wave ou virement bancaire." />
     </Head>
 
     <LayoutFront>
@@ -100,7 +100,7 @@ const breadcrumbItems = [
                     <h2 class="mt-2 font-display text-3xl font-semibold text-gray-900">Chaque don finance une action concrète</h2>
                     <p class="mt-4 text-lg text-gray-600">
                         Vos dons financent l'achat de fournitures scolaires, le soutien à la maternité et nos actions
-                        solidaires auprès des familles vulnérables de Dakar. 100% de votre générosité sert nos actions
+                        solidaires auprès des familles vulnérables en Afrique. 100% de votre générosité sert nos actions
                         de terrain.
                     </p>
                 </div>

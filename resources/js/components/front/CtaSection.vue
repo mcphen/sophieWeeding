@@ -55,7 +55,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
     fromColor: '#d1922f',
     toColor: '#8a5e12',
-    title: 'Ensemble, changeons des vies à Dakar',
+    title: 'Ensemble, changeons des vies en Afrique',
     description: 'Votre don, même modeste, nous permet d\'agir concrètement auprès des enfants et des familles qui en ont besoin. Rejoignez-nous.',
     paragraphColor: '#FBF1E9',
     linkRoute: 'donate',

@@ -32,14 +32,14 @@ const breadcrumbItems = [
 <template>
     <Head>
         <title>Nous rejoindre - Amaël Fondation</title>
-        <meta name="description" content="Devenez bénévole ou partenaire d'Amaël Fondation et engagez-vous à nos côtés à Dakar." />
+        <meta name="description" content="Devenez bénévole ou partenaire d'Amaël Fondation et engagez-vous à nos côtés en Afrique." />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Nous rejoindre - Amaël Fondation" />
-        <meta property="og:description" content="Devenez bénévole ou partenaire d'Amaël Fondation et engagez-vous à nos côtés à Dakar." />
+        <meta property="og:description" content="Devenez bénévole ou partenaire d'Amaël Fondation et engagez-vous à nos côtés en Afrique." />
         <meta property="og:url" content="/nous-rejoindre" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Nous rejoindre - Amaël Fondation" />
-        <meta name="twitter:description" content="Devenez bénévole ou partenaire d'Amaël Fondation et engagez-vous à nos côtés à Dakar." />
+        <meta name="twitter:description" content="Devenez bénévole ou partenaire d'Amaël Fondation et engagez-vous à nos côtés en Afrique." />
     </Head>
 
     <LayoutFront>

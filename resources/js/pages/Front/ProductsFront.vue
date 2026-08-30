@@ -26,7 +26,7 @@ let jsonLdScript: HTMLScriptElement | null = null;
 
 // WhatsApp sharing
 const whatsappShareUrl = computed(() => {
-    const message = `Découvrez les produits chez Sophie Weddings - ${currentUrl.value}`;
+    const message = `Découvrez la boutique solidaire d'Amaël Fondation - ${currentUrl.value}`;
     // Default WhatsApp number if not provided in settings
     const whatsappNumber = props.contactSettings?.whatsapp_number || '+221785383069';
     // Format number: remove spaces, +, and ensure it starts with country code
@@ -47,8 +47,8 @@ const injectJsonLdScript = () => {
 };
 
 // Computed properties for meta tags
-const metaTitle = computed(() => "Produits de Mariage | Sophie Weddings Dreams");
-const metaDescription = computed(() => "Découvrez notre collection de produits de mariage de haute qualité. Accessoires, décorations et plus pour rendre votre mariage parfait à Dakar, Sénégal.");
+const metaTitle = computed(() => "Boutique solidaire | Amaël Fondation");
+const metaDescription = computed(() => "Découvrez notre boutique solidaire : chaque achat soutient les actions d'Amaël Fondation en faveur des enfants défavorisés en Afrique.");
 
 // JSON-LD structured data for product listing
 const productsJsonLd = computed(() => {
@@ -183,7 +183,7 @@ onUnmounted(() => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h1 class="text-4xl md:text-5xl font-serif font-bold text-primary mb-4">Nos Produits</h1>
                 <p class="text-lg text-gray-700 max-w-3xl mx-auto">
-                    Découvrez notre sélection de produits de qualité pour rendre votre mariage inoubliable.
+                    Découvrez notre sélection de produits solidaires : chaque achat soutient nos actions auprès des enfants.
                 </p>
             </div>
         </div>

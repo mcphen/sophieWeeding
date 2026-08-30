@@ -2,10 +2,10 @@
     <LayoutFront>
         <Head>
             <title>Événements - Amaël Fondation</title>
-            <meta name="description" content="Retrouvez les prochains événements d'Amaël Fondation à Dakar : journées de sensibilisation, collectes, distributions et rencontres bénévoles." />
+            <meta name="description" content="Retrouvez les prochains événements d'Amaël Fondation en Afrique : journées de sensibilisation, collectes, distributions et rencontres bénévoles." />
             <meta property="og:type" content="website" />
             <meta property="og:title" content="Événements - Amaël Fondation" />
-            <meta property="og:description" content="Retrouvez les prochains événements d'Amaël Fondation à Dakar : journées de sensibilisation, collectes, distributions et rencontres bénévoles." />
+            <meta property="og:description" content="Retrouvez les prochains événements d'Amaël Fondation en Afrique : journées de sensibilisation, collectes, distributions et rencontres bénévoles." />
             <meta property="og:url" content="/evenements" />
         </Head>
 
@@ -17,7 +17,7 @@
             <div class="relative max-w-7xl mx-auto pt-32 pb-16 px-4 sm:px-6 lg:px-8 text-center">
                 <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-4">Nos événements</h1>
                 <p class="max-w-2xl mx-auto text-lg text-white/85">
-                    Journées de sensibilisation, collectes solidaires, distributions et rencontres bénévoles : retrouvez ici nos prochains rendez-vous à Dakar.
+                    Journées de sensibilisation, collectes solidaires, distributions et rencontres bénévoles : retrouvez ici nos prochains rendez-vous en Afrique.
                 </p>
             </div>
         </div>

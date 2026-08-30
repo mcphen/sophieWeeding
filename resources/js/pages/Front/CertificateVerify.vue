@@ -13,7 +13,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <Head title="Vérification de certificat — Sophie Weddings Dreams" />
+    <Head title="Vérification de certificat — Amaël Fondation" />
     <LayoutFront>
         <div class="min-h-[70vh] flex items-center justify-center px-4 py-16">
             <div class="max-w-lg w-full text-center">
@@ -29,7 +29,7 @@ const props = defineProps<{
                 <template v-else>
                     <div class="text-6xl mb-6" style="color: #c9a84c;">✓</div>
                     <h1 class="text-2xl font-bold mb-2" style="color: #c9a84c;">Certificat authentique</h1>
-                    <p class="text-gray-500 mb-8 text-sm">Ce certificat est authentique et a été délivré par Sophie Weddings Dreams.</p>
+                    <p class="text-gray-500 mb-8 text-sm">Ce certificat est authentique et a été délivré par Amaël Fondation.</p>
 
                     <div class="border border-gray-200 rounded-xl p-6 text-left space-y-4">
                         <div>
@@ -51,7 +51,7 @@ const props = defineProps<{
                             </div>
                         </div>
                         <div class="pt-3 border-t border-gray-100 text-xs text-gray-400">
-                            Émis par <strong>Sophie Weddings Dreams / S.W.D. Academy</strong> · Dakar, Sénégal
+                            Émis par <strong>Amaël Fondation</strong> · Afrique de l'Ouest
                         </div>
                     </div>
                 </template>

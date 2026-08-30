@@ -21,7 +21,7 @@ let jsonLdScript: HTMLScriptElement | null = null;
 
 // Computed properties for meta tags
 const metaTitle = computed(() => "Nos actions | Amaël Fondation");
-const metaDescription = computed(() => "Découvrez les actions solidaires menées par Amaël Fondation à Dakar, Sénégal : éducation, santé maternelle et soutien aux familles vulnérables.");
+const metaDescription = computed(() => "Découvrez les actions solidaires menées par Amaël Fondation en Afrique : éducation, santé maternelle et soutien aux familles vulnérables.");
 
 // JSON-LD structured data for services
 const servicesJsonLd = computed(() => {
@@ -41,9 +41,7 @@ const servicesJsonLd = computed(() => {
           image: '/images/logo.png',
           address: {
             '@type': 'PostalAddress',
-            addressLocality: 'Dakar',
-            addressRegion: 'Dakar',
-            addressCountry: 'SN'
+            addressRegion: "Afrique de l'Ouest"
           }
         },
         image: service.image_url
@@ -121,7 +119,7 @@ onUnmounted(() => {
       <div class="relative max-w-7xl mx-auto py-28 px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-4">Nos actions</h1>
         <p class="text-lg text-white/85 max-w-3xl mx-auto">
-          Amaël Fondation mène des actions concrètes de solidarité, d'éducation et de santé auprès des enfants et des familles vulnérables de Dakar.
+          Amaël Fondation mène des actions concrètes de solidarité, d'éducation et de santé auprès des enfants et des familles vulnérables en Afrique.
         </p>
       </div>
     </div>

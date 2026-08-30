@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ActualiteSeeder::class,
             TestimonialSeeder::class,
             EventSeeder::class,
+            FondationContentSeeder::class,
         ]);
     }
 }

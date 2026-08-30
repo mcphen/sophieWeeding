@@ -126,7 +126,7 @@ const page = usePage();
 const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
     fromColor: '#d1922f',
     toColor: '#8a5e12',
-    title: 'Ensemble, changeons des vies à Dakar',
+    title: 'Ensemble, changeons des vies en Afrique',
     description: 'Votre don, même modeste, nous permet d\'agir concrètement auprès des enfants et des familles qui en ont besoin. Rejoignez-nous.',
     paragraphColor: '#FBF1E9',
     linkRoute: 'donate',
@@ -149,7 +149,7 @@ const pillars = [
     {
         label: 'Éducation',
         title: 'Des fournitures scolaires pour ne laisser aucun enfant de côté',
-        description: "Chaque rentrée, nous distribuons cahiers, manuels et kits scolaires aux enfants des familles les plus vulnérables de Dakar, pour que l'école reste un droit accessible à tous.",
+        description: "Chaque rentrée, nous distribuons cahiers, manuels et kits scolaires aux enfants des familles les plus vulnérables, pour que l'école reste un droit accessible à tous.",
         icon: GraduationCap,
         gradient: 'linear-gradient(135deg, #8a5e12, #d1922f)',
     },
@@ -213,7 +213,7 @@ onMounted(() => {
                     <span class="block text-primary">agir pour demain</span>
                 </h1>
                 <p class="mt-6 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto">
-                    Amaël Fondation accompagne les enfants, les mères et les familles vulnérables de Dakar à travers
+                    Amaël Fondation accompagne les enfants, les mères et les familles vulnérables en Afrique à travers
                     des actions concrètes de solidarité, d'éducation et de santé.
                 </p>
                 <div class="mt-10 flex flex-wrap justify-center gap-4">
@@ -257,7 +257,7 @@ onMounted(() => {
                         </h2>
                         <p class="mt-6 text-white/75 leading-relaxed">
                             Depuis sa création, Amaël Fondation porte des projets de solidarité, de fournitures scolaires,
-                            d'aide à la maternité et de soutien communautaire à Dakar. Chaque don, chaque bénévole,
+                            d'aide à la maternité et de soutien communautaire en Afrique. Chaque don, chaque bénévole,
                             chaque partenaire nous permet d'aller plus loin.
                         </p>
                         <Link

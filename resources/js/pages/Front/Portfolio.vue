@@ -157,14 +157,14 @@ const breadcrumbItems = [
   <LayoutFront>
     <Head>
       <title>Galerie - Amaël Fondation</title>
-      <meta name="description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain à Dakar." />
+      <meta name="description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain en Afrique." />
       <meta property="og:type" content="website" />
       <meta property="og:title" content="Galerie - Amaël Fondation" />
-      <meta property="og:description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain à Dakar." />
+      <meta property="og:description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain en Afrique." />
       <meta property="og:url" content="/portfolio" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="Galerie - Amaël Fondation" />
-      <meta name="twitter:description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain à Dakar." />
+      <meta name="twitter:description" content="Découvrez en images les actions et projets d'Amaël Fondation sur le terrain en Afrique." />
     </Head>
       <div class="relative bg-[#1A1512]">
           <!-- Image d'arrière-plan avec overlay -->

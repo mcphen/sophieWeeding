@@ -99,7 +99,7 @@ const page = usePage();
 const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
     fromColor: '#d1922f',
     toColor: '#8a5e12',
-    title: 'Ensemble, changeons des vies à Dakar',
+    title: 'Ensemble, changeons des vies en Afrique',
     description: 'Votre don, même modeste, nous permet d\'agir concrètement auprès des enfants et des familles qui en ont besoin. Rejoignez-nous.',
     paragraphColor: '#FBF1E9',
     linkRoute: 'donate',
@@ -108,9 +108,11 @@ const ctaSettings = computed(() => page.props.ctaSettings as CtaSettings || {
 });
 
 const values = [
+    { title: 'Amour', description: 'Nous plaçons l\'attention portée à chaque enfant au cœur de nos actions.' },
     { title: 'Solidarité', description: 'Nous croyons en la force du collectif pour soutenir les plus vulnérables.' },
-    { title: 'Impact', description: 'Chaque action est pensée pour produire un changement concret et durable.' },
-    { title: 'Humanité', description: 'Nous agissons avec respect, écoute et dignité envers chaque personne accompagnée.' },
+    { title: 'Respect', description: 'Nous agissons avec écoute et dignité envers chaque personne accompagnée.' },
+    { title: 'Espoir', description: 'Nous aidons chaque enfant à grandir avec confiance en son avenir.' },
+    { title: 'Engagement', description: 'Nous inscrivons notre soutien dans la durée, sur le terrain, aux côtés des familles.' },
 ];
 
 </script>
@@ -118,14 +120,14 @@ const values = [
 <template>
     <Head>
         <title>À propos - Amaël Fondation</title>
-        <meta name="description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires à Dakar." />
+        <meta name="description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires en Afrique." />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="À propos - Amaël Fondation" />
-        <meta property="og:description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires à Dakar." />
+        <meta property="og:description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires en Afrique." />
         <meta property="og:url" content="/about" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="À propos - Amaël Fondation" />
-        <meta name="twitter:description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires à Dakar." />
+        <meta name="twitter:description" content="Découvrez l'histoire d'Amaël Fondation, notre mission, notre équipe engagée et nos partenaires en Afrique." />
     </Head>
 
     <LayoutFront>
@@ -192,7 +194,7 @@ const values = [
                         <div v-if="props.about?.content" v-html="props.about.content"></div>
                         <p v-else class="text-gray-600 leading-relaxed">
                             Amaël Fondation est née de la conviction qu'un geste de solidarité, aussi modeste soit-il,
-                            peut changer une vie. À Dakar, nous accompagnons au quotidien les enfants, les mères et
+                            peut changer une vie. En Afrique, nous accompagnons au quotidien les enfants, les mères et
                             les familles en situation de précarité, avec une mission claire&nbsp;: rendre l'espoir
                             accessible à tous, et une vision&nbsp;: bâtir une communauté solidaire où personne n'est
                             laissé pour compte.

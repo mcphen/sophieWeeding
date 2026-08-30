@@ -48,20 +48,20 @@ function stripAndTruncateHtml(html: string | null, maxLength: number = 100): str
     return text;
 }
 // Computed properties for meta tags
-const metaTitle = computed(() => "Blog | Sophie Weddings Dreams - Conseils et Actualités Mariage");
-const metaDescription = computed(() => "Découvrez nos articles, conseils et actualités sur l'organisation de mariage à Dakar, Sénégal. Tendances, idées et inspiration pour votre mariage parfait.");
+const metaTitle = computed(() => "Blog | Amaël Fondation — Actualités et actions solidaires");
+const metaDescription = computed(() => "Découvrez les articles et actualités d'Amaël Fondation : éducation, santé maternelle et soutien aux enfants défavorisés en Afrique.");
 
 // JSON-LD structured data for blog listing
 const blogJsonLd = computed(() => {
     return {
         '@context': 'https://schema.org',
         '@type': 'Blog',
-        headline: 'Blog Sophie Weddings Dreams',
+        headline: 'Blog Amaël Fondation',
         description: metaDescription.value,
         url: currentUrl.value,
         publisher: {
             '@type': 'Organization',
-            name: 'Sophie Weddings Dreams',
+            name: 'Amaël Fondation',
             logo: {
                 '@type': 'ImageObject',
                 url: `${window.location.origin}/images/logo.png`
@@ -87,7 +87,7 @@ const blogJsonLd = computed(() => {
                 url: `${window.location.origin}/blog/${post.id}`,
                 author: {
                     '@type': 'Organization',
-                    name: 'Sophie Weddings Dreams'
+                    name: 'Amaël Fondation'
                 }
             };
         })
@@ -524,7 +524,7 @@ onMounted(() => {
             <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
                 <h2 class="text-primary mb-4 font-serif text-3xl font-bold">Restez informé</h2>
                 <p class="mx-auto mb-8 max-w-3xl text-lg text-gray-700">
-                    Abonnez-vous à notre newsletter pour recevoir nos derniers articles, conseils et tendances sur l'organisation de mariages.
+                    Abonnez-vous à notre newsletter pour suivre nos derniers articles et l'actualité de nos actions solidaires.
                 </p>
                 <div class="mx-auto max-w-md">
                     <div class="flex">

@@ -46,7 +46,7 @@ const attestationUrl = (reg: Registration) => route('prospect.portal.attestation
 </script>
 
 <template>
-    <Head title="Mon espace — Sophie Weddings Dreams" />
+    <Head title="Mon espace — Amaël Fondation" />
     <LayoutFront>
         <section class="min-h-screen bg-gray-50 py-12 px-4">
             <div class="max-w-4xl mx-auto">

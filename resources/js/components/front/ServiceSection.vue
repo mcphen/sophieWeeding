@@ -5,7 +5,7 @@
                 <span class="inline-block text-sm font-semibold tracking-wide uppercase text-primary-dark">Nos actions</span>
                 <h2 class="mt-2 font-display text-3xl sm:text-4xl font-semibold text-gray-900">Ce que nous faisons sur le terrain</h2>
                 <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                    Des actions concrètes menées avec et pour les communautés que nous accompagnons à Dakar.
+                    Des actions concrètes menées avec et pour les communautés que nous accompagnons en Afrique.
                 </p>
             </div>
             <div v-if="isLoading" class="flex justify-center items-center py-12">

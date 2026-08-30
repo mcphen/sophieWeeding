@@ -67,14 +67,14 @@ const breadcrumbItems = [
 <template>
     <Head>
         <title>Contact - Amaël Fondation</title>
-        <meta name="description" content="Contactez Amaël Fondation à Dakar pour toute question, partenariat ou soutien à nos actions." />
+        <meta name="description" content="Contactez Amaël Fondation pour toute question, partenariat ou soutien à nos actions en Afrique." />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Contact - Amaël Fondation" />
-        <meta property="og:description" content="Contactez Amaël Fondation à Dakar pour toute question, partenariat ou soutien à nos actions." />
+        <meta property="og:description" content="Contactez Amaël Fondation pour toute question, partenariat ou soutien à nos actions en Afrique." />
         <meta property="og:url" content="/contact" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact - Amaël Fondation" />
-        <meta name="twitter:description" content="Contactez Amaël Fondation à Dakar pour toute question, partenariat ou soutien à nos actions." />
+        <meta name="twitter:description" content="Contactez Amaël Fondation pour toute question, partenariat ou soutien à nos actions en Afrique." />
     </Head>
 
     <LayoutFront>
@@ -270,7 +270,7 @@ const breadcrumbItems = [
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Adresse</h3>
-                        <p class="text-gray-600">Dakar, Sénégal</p>
+                        <p class="text-gray-600">Afrique de l'Ouest</p>
                     </div>
                 </section>
 

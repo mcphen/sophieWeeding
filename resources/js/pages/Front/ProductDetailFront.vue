@@ -37,7 +37,7 @@ let jsonLdScript: HTMLScriptElement | null = null;
 
 // WhatsApp sharing
 const whatsappShareUrl = computed(() => {
-    const message = `Découvrez ce produit chez Sophie Weddings: ${props.product.title} - ${currentUrl.value}`;
+    const message = `Découvrez ce produit solidaire d'Amaël Fondation : ${props.product.title} - ${currentUrl.value}`;
     // Default WhatsApp number if not provided in settings
     const whatsappNumber = props.contactSettings?.whatsapp_number || '+221785383069';
     // Format number: remove spaces, +, and ensure it starts with country code
@@ -76,10 +76,10 @@ const formatPrice = (price: number): string => {
 };
 
 // Computed properties for meta tags
-const metaTitle = computed(() => `${props.product.title} | Sophie Weddings`);
+const metaTitle = computed(() => `${props.product.title} | Amaël Fondation`);
 const metaDescription = computed(() => props.product.description
     ? props.product.description.substring(0, 160)
-    : `Découvrez ${props.product.title} - Produit de mariage de qualité par Sophie Weddings Dreams`);
+    : `Découvrez ${props.product.title} — produit solidaire proposé par Amaël Fondation`);
 
 // JSON-LD structured data for product
 const productJsonLd = computed(() => {
@@ -109,7 +109,7 @@ const productJsonLd = computed(() => {
         },
         brand: {
             '@type': 'Brand',
-            name: 'Sophie Weddings Dreams'
+            name: 'Amaël Fondation'
         }
     };
 });

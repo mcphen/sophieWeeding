@@ -32,6 +32,27 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        @php
+            $metaTitle = $metaTitle ?? config('app.name');
+            $metaDescription = $metaDescription
+                ?? "Amaël Fondation — Réunir, protéger, aimer et guérir. Association d'aide à l'enfance.";
+            $metaImage = url($metaImage ?? $siteLogo ?? '/images/logo.png');
+        @endphp
+
+        <meta name="description" content="{{ $metaDescription }}">
+
+        {{-- Open Graph / réseaux sociaux --}}
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ config('app.name') }}">
+        <meta property="og:title" content="{{ $metaTitle }}">
+        <meta property="og:description" content="{{ $metaDescription }}">
+        <meta property="og:image" content="{{ $metaImage }}">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $metaTitle }}">
+        <meta name="twitter:description" content="{{ $metaDescription }}">
+        <meta name="twitter:image" content="{{ $metaImage }}">
+
         <link rel="icon" href="{{ $siteLogo ?? '/images/logo.png' }}" sizes="any">
         <link rel="icon" href="{{ $siteLogo ?? '/images/logo.png' }}" type="image/svg+xml">
         <link rel="apple-touch-icon" href="{{ $siteLogo ?? '/apple-touch-icon.png' }}">
