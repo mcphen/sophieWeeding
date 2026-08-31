@@ -91,7 +91,7 @@ const contactSettings = computed(() => page.props.contactSettings as ContactSett
     social_linkedin: '#',
     social_tiktok: '#',
     social_instagram: '#',
-    contact_address: 'Dakar, Sénégal',
+    contact_address: "Afrique de l'Ouest",
     opening_hours: 'Lundi - Vendredi : 9h - 18h'
 });
 
@@ -240,8 +240,8 @@ const subscribeToNewsletter = async () => {
     <Head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Amaël Fondation - ONG basée à Dakar, Sénégal, engagée pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
-        <meta name="keywords" content="ONG, fondation, association, solidarité, Dakar, Sénégal, don, bénévolat, Amaël Fondation" />
+        <meta name="description" content="Amaël Fondation - ONG engagée en Afrique pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
+        <meta name="keywords" content="ONG, fondation, association, solidarité, Afrique, Afrique de l'Ouest, don, bénévolat, Amaël Fondation" />
         <meta name="author" content="Amaël Fondation" />
         <meta name="robots" content="index, follow" />
 
@@ -249,18 +249,18 @@ const subscribeToNewsletter = async () => {
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Amaël Fondation - Donner espoir, agir pour demain" />
-        <meta property="og:description" content="Amaël Fondation - ONG basée à Dakar, Sénégal, engagée pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
-        <meta property="og:image" :content="contactSettings.site_logo" />
+        <meta property="og:description" content="Amaël Fondation - ONG engagée en Afrique pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
+        <meta property="og:image" content="/images/logo.png" />
         <meta property="og:site_name" content="Amaël Fondation" />
 
         <!-- Twitter -->
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Amaël Fondation - Donner espoir, agir pour demain" />
-        <meta name="twitter:description" content="Amaël Fondation - ONG basée à Dakar, Sénégal, engagée pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
-        <meta name="twitter:image" :content="contactSettings.site_logo" />
+        <meta name="twitter:description" content="Amaël Fondation - ONG engagée en Afrique pour l'éducation, la santé maternelle et la solidarité auprès des familles vulnérables." />
+        <meta name="twitter:image" content="/images/logo.png" />
 
         <!-- Favicon -->
-        <link rel="icon" :href="contactSettings.site_logo" type="image/png">
+        <link rel="icon" href="/images/logo.png" type="image/png">
     </Head>
 
     <!-- Loader -->
@@ -535,7 +535,7 @@ const subscribeToNewsletter = async () => {
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Amaël Fondation</h3>
                         <p class="text-gray-300 mb-4">
-                            Donner espoir, agir pour demain. Une fondation basée à Dakar au service des enfants et des familles.
+                            Donner espoir, agir pour demain. Une fondation au service des enfants et des familles en Afrique.
                         </p>
                         <div class="flex space-x-4">
                             <a :href="contactSettings.social_facebook" target="_blank" class="text-gray-300 hover:text-primary transition-colors">
